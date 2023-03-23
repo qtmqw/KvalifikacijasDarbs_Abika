@@ -1,0 +1,9 @@
+export const host = "http://localhost:8080";
+export const loginR = `${host}/login`;
+export const registerR = `${host}/register`;
+export const userR = `${host}/userData`;
+export const forgotP = `${host}/forgot-password`;
+export const gallU = `${host}/getAllUser`;
+export const deleteU = `${host}/deleteUser`;
+export const Product = `${host}/products`;
+export const Search = `${host}/products/search`;
