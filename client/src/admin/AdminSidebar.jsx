@@ -7,8 +7,6 @@ import {
     CDBSidebarMenu,
     CDBSidebarMenuItem,
     CDBDropDown,
-    CDBIcon
-
 } from 'cdbreact';
 import { NavLink } from 'react-router-dom';
 
@@ -16,13 +14,12 @@ const logOut = () => {
     window.localStorage.clear()
     window.location.href = "./"
 }
-const activeLink = " bg-violet-700 "
-const normalLink = " bg-black " 
+
 
 const Sidebar = () => {
     return (
         <div className='h-full flex overflow-y-auto fixed z-50 top-0 outline-none focus:outline-none'>
-            <CDBSidebar textColor="#fff" backgroundColor="#333">
+            <CDBSidebar textColor="#fff" backgroundColor="#333" >
                 <CDBSidebarHeader prefix={<i className="fa fa-bars fa-large"></i>}>
                     <a href="/" className="text-decoration-none text-white italic" >
                         Admin Sidebar

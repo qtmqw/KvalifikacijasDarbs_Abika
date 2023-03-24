@@ -53,9 +53,9 @@ function App() {
         <Route path="/Profils" element={loggedIn ? (<Profils />) : (<Sakums />)} />
         <Route path="/Grozs" element={<Grozs />} />
         <Route path="/UserDetails" element={loggedIn ? (<UserDetails />) : (<Sakums />)} />
-        <Route path="/AdminPage" element={isAdmin ? (<AdminPage />) : (<Sakums />)} />
-        <Route path="/AdminUserBoard" element={isAdmin ? (<AdminUserBoard />) : (<Sakums />)} />
-        <Route path="/AdminProducts" element={isAdmin ? (<AdminProducts />) : (<Sakums />)} />
+        <Route path="/AdminPage" element={isAdmin ? (<AdminPage />) : (<NF />)} />
+        <Route path="/AdminUserBoard" element={isAdmin ? (<AdminUserBoard />) : (<NF />)} />
+        <Route path="/AdminProducts" element={isAdmin ? (<AdminProducts />) : (<NF />)} />
         <Route path="/*" element={<NF />} />
 
         <Route path="*" element={<Navigate to="/" />} />

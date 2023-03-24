@@ -30,16 +30,39 @@ export default function Example() {
     useEffect(() => {
         window.addEventListener(
             "resize",
-            () => window.innerWidth >= 960 && setOpenNav(false),  
+            () => window.innerWidth >= 960 && setOpenNav(false),
         );
     }, []);
 
     const navList = (
         <ul className=" lg:flex my-auto gap-12">
-            <Link to="/" className={(url === "/" ? " flex uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-3  " : " flex uppercase text-black no-underline mt-3 relative before:absolute before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}>Sākums </Link>
-            <Link to="/Par_mums" className={(url === "/Par_mums" ? "  flex uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-3  " : " flex uppercase text-black no-underline mt-3 relative before:absolute before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}>Par Mums</Link>
-            <Link to="/Sortiments" className={(url === "/Sortiments" ? "  flex uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-3  " : " flex uppercase text-black no-underline mt-3 relative before:absolute before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}>Sortiments</Link>
-            <Link to="/Kontakti" className={(url === "/Kontakti" ? "  flex uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-3  " : " flex uppercase text-black no-underline mt-3 relative before:absolute before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}>Kontakti</Link>
+            <Link to="/"
+                className={(url === "/" ? " flex uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-3  "
+                    : " flex uppercase text-black no-underline mt-3 relative before:absolute before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}
+            >
+                Sākums
+            </Link>
+
+            <Link to="/Par_mums"
+                className={(url === "/Par_mums" ? "  flex uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-3  "
+                    : " flex uppercase text-black no-underline mt-3 relative before:absolute before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}
+            >
+                Par Mums
+            </Link>
+
+            <Link to="/Sortiments"
+                className={(url === "/Sortiments" ? "  flex uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-3  "
+                    : " flex uppercase text-black no-underline mt-3 relative before:absolute before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}
+            >
+                Sortiments
+            </Link>
+            
+            <Link to="/Kontakti"
+                className={(url === "/Kontakti" ? "  flex uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-3  "
+                    : " flex uppercase text-black no-underline mt-3 relative before:absolute before:-bottom-7 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}
+            >
+                Kontakti
+            </Link>
         </ul>
     );
 

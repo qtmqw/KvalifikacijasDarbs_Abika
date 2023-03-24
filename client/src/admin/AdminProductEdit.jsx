@@ -14,7 +14,6 @@ const AdminProductEdit = ({ product }) => {
     const [showModal, setShowModal] = useState(false);
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
         try {
             const productData = {
                 title,

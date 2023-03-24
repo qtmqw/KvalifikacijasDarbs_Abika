@@ -78,9 +78,9 @@ export default function AdminPage({ userData }) {
                                                     <div className="text-sm text-gray-900">{i.userType}</div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <Button className="bg-red-500">
+                                                    <Button className="bg-red-500" onClick={() => deleteUser(i._id, i.username)}>
                                                         <BsFillTrashFill
-                                                            className="text-sm" onClick={() => deleteUser(i._id, i.username)}
+                                                            className="text-sm" 
                                                         />
                                                     </Button>
                                                 </td>

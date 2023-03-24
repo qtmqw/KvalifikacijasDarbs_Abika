@@ -6,10 +6,24 @@ const jwt = require("jsonwebtoken")
 const sendMail = require('../modules/NodeMailer');
 const router = express.Router()
 const validator = require('validator');
+const passwordValidator = require('password-validator');
 require('dotenv').config();
 // db
 require("../models/UserSchema")
 const User = mongoose.model("UserInfo")
+
+
+const schema = new passwordValidator();
+
+// Add properties to the schema
+schema
+    .is().min(8)                                     // Minimum length 8
+    .is().max(100)                                   // Maximum length 100
+    .has().uppercase()                              // Must have uppercase letters
+    .has().lowercase()                              // Must have lowercase letters
+    .has().digits()                                 // Must have digits
+    .has().not().spaces()                           // Should not have spaces
+    .is().not().oneOf(['Passw0rd', 'Password123']); // Blacklist these values
 
 // routes
 
@@ -23,9 +37,13 @@ router.post("/register", async (req, res) => {
     if (!validator.isLength(username, { min: 4, max: 20 })) {
         return res.status(400).json({ error: "Username must be between 4 and 20 characters" });
     }
-    if (!validator.isLength(password, { min: 8 })) {
-        return res.status(400).json({ error: "Password must be at least 8 characters long" });
+    const isValidPassword = schema.validate(password, { list: true });
+    if (isValidPassword.length > 0) {
+        return res.status(400).json({ error: "Invalid password. Password requirements: " + isValidPassword.join(", ") });
     }
+/*     if (!validator.isLength(password, { min: 8 })) {
+        return res.status(400).json({ error: "Password must be at least 8 characters long" });
+    } */
     try {
         const oldUser = await User.findOne({ email })
         if (oldUser) {
@@ -51,12 +69,12 @@ router.post("/login", async (req, res) => {
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ error: "Invalddddddddddddid email or password" });
+            return res.status(400).json({ error: "Invalid email or password" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ error: "Invaswwwwwwwwwwlid email or password" });
+            return res.status(400).json({ error: "Invalid email or password" });
         }
 
         const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
