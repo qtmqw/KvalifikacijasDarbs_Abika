@@ -1,6 +1,7 @@
 const mongoose = require("mongoose")
+const { Schema } = mongoose;
 
-const productSchema = new mongoose.Schema(
+const productSchema = new Schema(
     {
         image: {
             type: String,
@@ -19,7 +20,7 @@ const productSchema = new mongoose.Schema(
             type: [
                 {
                     type: String,
-                    enum: ["red", "green", "blue"], // example validation
+                    enum: ["Red", "Green", "Blue", "White", "Brown", "Purple"], // example validation
                 },
             ],
             required: true,
@@ -27,6 +28,11 @@ const productSchema = new mongoose.Schema(
         price: {
             type: Number,
             required: true,
+        },
+        category: {
+            type: String,
+            ref: 'Category',
+            required: true
         },
         created_at: {
             type: Date,

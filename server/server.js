@@ -22,10 +22,12 @@ const db = require("./Database/db");
 // import routes
 const UserRoute = require('./routes/UserRoute');
 const ProductRoute = require('./routes/ProductRoute');
+const Product = require('./test/post');
 
 // user routes
 app.use('/', UserRoute);
 app.use('/products', ProductRoute);
+app.use('/prod', Product);
 
 // port
 const port = process.env.PORT || 8080

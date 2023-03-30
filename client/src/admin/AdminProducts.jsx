@@ -78,7 +78,7 @@ const AdminProducts = () => {
                                         >
                                             <input
                                                 type="checkbox"
-                                                className='p-2'
+                                                className='checkbox checkbox-error'
                                                 onChange={handleSelectAll}
                                                 checked={selectedProducts.length === products.length}
                                             />
@@ -131,6 +131,7 @@ const AdminProducts = () => {
                                                 <td scope="row" className="px-6 py-4 whitespace-nowrap">
                                                     <input
                                                         type="checkbox"
+                                                        className='checkbox checkbox-error'
                                                         value={product._id}
                                                         checked={selectedProducts.includes(product._id)}
                                                         onChange={handleSelectOne}
@@ -146,14 +147,14 @@ const AdminProducts = () => {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-900">{product.description}</div>
+                                                <td className="px-6 py-4 whitespace-wrap">
+                                                    <div className="text-sm text-gray-900 ">{product.description}</div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-900">{product.color}</div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-900">Category</div>
+                                                    <div className="text-sm text-gray-900">{product.category?.name}</div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     {product.price}

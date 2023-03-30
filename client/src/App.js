@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import 'react-range-slider-input/dist/style.css';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { UserData } from './API/Users';
 import Navbar from './components/Navbar';
@@ -22,7 +23,8 @@ import AdminProducts from '../src/admin/AdminProducts'
 import Footer from './components/Footer';
 import Product from './pages/Product';
 import NF from './components/404';
-
+import PD from './product/prod'
+import Add from './product/add'
 function App() {
 
   const [loggedIn, setLoggedIn] = useState(false);
@@ -36,32 +38,37 @@ function App() {
   }, []);
 
   return (
-    <div className='font-kumbh-sans'>
+    <div className='font-kumbh-sans flex flex-col min-h-[100vh]'>
 
       {!isAdmin && <Navbar />}
       {isAdmin && <Sidebar />}
       <ToastContainer />
-      <Routes>
-        <Route path="/" element={<Sakums />} />
-        <Route path="/Par_mums" element={<ParMums />} />
-        <Route path="/Sortiments" element={<Sortiments />} />
-        <Route path="/Kontakti" element={<Kontakti />} />
-        <Route path="/products/:id" element={<Product />} />
-        <Route path="/Registreties" element={loggedIn ? (<Sakums />) : (<Registreties />)} />
-        <Route path="/Pieslegties" element={loggedIn ? (<Sakums />) : (<Pieslegties />)} />
-        <Route path="/ParolesMaina" element={loggedIn ? (<Sakums />) : (<ParolesMaina />)} />
-        <Route path="/Profils" element={loggedIn ? (<Profils />) : (<Sakums />)} />
-        <Route path="/Grozs" element={<Grozs />} />
-        <Route path="/UserDetails" element={loggedIn ? (<UserDetails />) : (<Sakums />)} />
-        <Route path="/AdminPage" element={isAdmin ? (<AdminPage />) : (<NF />)} />
-        <Route path="/AdminUserBoard" element={isAdmin ? (<AdminUserBoard />) : (<NF />)} />
-        <Route path="/AdminProducts" element={isAdmin ? (<AdminProducts />) : (<NF />)} />
-        <Route path="/*" element={<NF />} />
+      <div className=' flex-grow-1'>
+        <Routes>
+          <Route path="/" element={<Sakums />} />
+          <Route path="/Par_mums" element={<ParMums />} />
+          <Route path="/Sortiments" element={<Sortiments />} />
+          <Route path="/Kontakti" element={<Kontakti />} />
+          <Route path="/products/:id" element={<Product />} />
+          <Route path="/Registreties" element={loggedIn ? (<Sakums />) : (<Registreties />)} />
+          <Route path="/Pieslegties" element={loggedIn ? (<Sakums />) : (<Pieslegties />)} />
+          <Route path="/ParolesMaina" element={loggedIn ? (<Sakums />) : (<ParolesMaina />)} />
+          <Route path="/Profils" element={loggedIn ? (<Profils />) : (<Sakums />)} />
+          <Route path="/Grozs" element={<Grozs />} />
+          <Route path="/UserDetails" element={loggedIn ? (<UserDetails />) : (<Sakums />)} />
+          <Route path="/AdminPage" element={isAdmin ? (<AdminPage />) : (<NF />)} />
+          <Route path="/AdminUserBoard" element={isAdmin ? (<AdminUserBoard />) : (<NF />)} />
+          <Route path="/AdminProducts" element={isAdmin ? (<AdminProducts />) : (<NF />)} />
+          <Route path="/*" element={<NF />} />
 
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+          <Route path="*" element={<Navigate to="/" />} />
 
-      {!isAdmin && <Footer />}
+          <Route path="/PD" element={<PD />} />
+          <Route path="/Add" element={<Add />} />
+        </Routes>
+      </div>
+
+      {!isAdmin && <Footer className="mt-auto" />}
     </div>
   );
 }

@@ -21,6 +21,9 @@ module.exports = {
       // => @media (min-width: 1536px) { ... }
     },
     extend: {
+      colors: {
+        orange: "#FF7D1A"
+      }
       
     },
     fontFamily : {
@@ -30,5 +33,6 @@ module.exports = {
   plugins: [
     // ...
     require('@tailwindcss/aspect-ratio'),
+    require('@tailwindcss/forms')
   ],
 }

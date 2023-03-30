@@ -12,7 +12,7 @@ import Abika from '../assets/abika.png'
 
 const Footer = () => {
   return (
-    <div className='bg-[#fdedd5]  shadow-lg max-w-full p-4 '>
+    <div className='bg-[#fdedd5] shadow-lg p-4 mt-auto'>
       <div className="flex justify-between   ">
         <img src={Abika} className='w-[10%] h-[10%] flex self-center mr-5' />
         <div className="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">

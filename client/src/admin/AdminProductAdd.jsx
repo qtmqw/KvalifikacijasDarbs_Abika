@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Product } from '../utils/APIRoutes'
 import { Button } from "@material-tailwind/react";
 import axios from 'axios'
@@ -9,9 +9,18 @@ const AdminProductAdd = () => {
     const [fileName, setFileName] = useState('')
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [color, setColor] = useState([]);
+    const [color, setColor] = useState("");
     const [price, setPrice] = useState("");
+    const [category, setCategory] = useState("");
+    const [categories, setCategories] = useState([]);
     const [showModal, setShowModal] = useState(false);
+
+    useEffect(() => {
+        // Fetch all categories and store in state
+        axios.get("http://localhost:8080/products/category").then((res) => {
+            setCategories(res.data);
+        });
+    }, []);
 
     const onChangeFile = (e) => {
         console.log(e.target.files[0])
@@ -26,9 +35,9 @@ const AdminProductAdd = () => {
             formData.append("title", title);
             formData.append("description", description);
             formData.append("color", color);
-            formData.append("price", price)
-
-            await axios.post(`${Product}`, formData).then((res) => {
+            formData.append("price", price);
+            formData.append("categoryId", category);
+            await axios.post(`${Product}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((res) => {
                 console.log(res.data);
             });
             toast("Product added successfully!");
@@ -37,6 +46,7 @@ const AdminProductAdd = () => {
             toast("Error adding product");
         }
     };
+
 
     return (
         <>
@@ -76,14 +86,17 @@ const AdminProductAdd = () => {
                                                 <h3>Color</h3>
                                                 <select
                                                     required
-                                                    className='px-3 py-3 w-full bg-white rounded shadow outline-none focus:outline-none focus:shadow-outline'
+                                                    class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
                                                     value={color}
                                                     onChange={(e) => setColor(Array.from(e.target.selectedOptions, option => option.value))}
                                                 >
                                                     <option>Colors</option>
-                                                    <option value="red">Red</option>
-                                                    <option value="green">Green</option>
-                                                    <option value="blue">Blue</option>
+                                                    <option value="Red">Red</option>
+                                                    <option value="Green">Green</option>
+                                                    <option value="Blue">Blue</option>
+                                                    <option value="White">White</option>
+                                                    <option value="Brown">Brown</option>
+                                                    <option value="Purple">Purple</option>
                                                 </select>
                                             </div>
                                         </label>
@@ -112,13 +125,20 @@ const AdminProductAdd = () => {
                                             </div>
                                             <div className='w-[50%] pl-2'>
                                                 <h3>Category</h3>
-                                                <input
-                                                    required
-                                                    type="text"
-                                                    placeholder="Category"
+                                                <select
+                                                    id="category"
+                                                    value={category}
                                                     class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
-
-                                                />
+                                                    onChange={(e) => setCategory(e.target.value)}
+                                                    required
+                                                >
+                                                    <option value="">Select a category</option>
+                                                    {categories.map((category) => (
+                                                        <option key={category._id} value={category._id}>
+                                                            {category.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
                                             </div>
                                         </label>
                                         <h3>Image</h3>
