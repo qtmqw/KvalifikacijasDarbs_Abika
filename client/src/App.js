@@ -23,6 +23,8 @@ import AdminProducts from '../src/admin/AdminProducts'
 import Footer from './components/Footer';
 import Product from './pages/Product';
 import NF from './components/404';
+
+
 import PD from './product/prod'
 import Add from './product/add'
 function App() {

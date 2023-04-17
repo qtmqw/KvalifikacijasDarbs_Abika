@@ -1,92 +1,104 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { Product, Category } from '../utils/APIRoutes'
 
-const AddProduct = () => {
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
-    const [price, setPrice] = useState(0);
-    const [category, setCategory] = useState("");
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const NewProduct = () => {
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [color, setColor] = useState('');
+    const [price, setPrice] = useState('');
+    const [categoryIds, setCategoryIds] = useState([]);
     const [categories, setCategories] = useState([]);
 
     useEffect(() => {
-        // Fetch all categories and store in state
-        axios.get("http://localhost:8080/prod/Cat").then((res) => {
+        const fetchCategories = async () => {
+            const res = await axios.get(Category);
             setCategories(res.data);
-        });
+        };
+        fetchCategories();
     }, []);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Send a POST request to create the new product
-        axios
-            .post("http://localhost:8080/prod/", {
-                name,
+
+        try {
+            const res = await axios.post(`${Product}`, {
+                title,
                 description,
+                color,
                 price,
-                categoryId: category, // Pass the selected category ID
-            })
-            .then((res) => {
-                console.log(res.data);
-                // Clear the form fields
-                setName("");
-                setDescription("");
-                setPrice(0);
-                setCategory("");
-            })
-            .catch((err) => {
-                console.error(err);
+                categoryIds,
             });
+            console.log(res.data);
+        } catch (err) {
+            console.log(err.response.data);
+        }
+    };
+
+    const handleCategoryChange = (e) => {
+        const selectedCategories = Array.from(
+            e.target.selectedOptions,
+            (option) => option.value
+        );
+        setCategoryIds(selectedCategories);
     };
 
     return (
-        <div>
-            <h2>Add a new product</h2>
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="name">Name:</label>
-                <input
-                    type="text"
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                />
+        <form onSubmit={handleSubmit}>
+            <label htmlFor="title">Title</label>
+            <input
+                type="text"
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+            />
 
-                <label htmlFor="description">Description:</label>
-                <textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    required
-                />
+            <label htmlFor="description">Description</label>
+            <textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+            />
 
-                <label htmlFor="price">Price:</label>
-                <input
-                    type="number"
-                    id="price"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    required
-                />
+            <label htmlFor="color">Color</label>
+            <input
+                type="text"
+                id="color"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                required
+            />
 
-                <label htmlFor="category">Category:</label>
-                <select
-                    id="category"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    required
-                >
-                    <option value="">Select a category</option>
-                    {categories.map((cat) => (
-                        <option key={cat._id} value={cat._id}>
-                            {cat.name}
-                        </option>
-                    ))}
-                </select>
+            <label htmlFor="price">Price</label>
+            <input
+                type="number"
+                id="price"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                required
+            />
 
-                <button type="submit">Add Product</button>
-            </form>
-        </div>
+            <label htmlFor="category">Categories</label>
+            <select
+                multiple
+                id="category"
+                value={categoryIds}
+                onChange={handleCategoryChange}
+                required
+            >
+                {categories.map((category) => (
+                    <option key={category._id} value={category._id}>
+                        {category.name}
+                    </option>
+                ))}
+            </select>
+
+            <button type="submit">Create Product</button>
+        </form>
     );
 };
 
-export default AddProduct;
+export default NewProduct;

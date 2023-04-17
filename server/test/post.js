@@ -4,60 +4,33 @@ const router = express.Router();
 const Products = require('./prod');
 const Cat = require('./cat');
 
-router.get("/", async (req, res) => {
-    try {
-        const products = await Products.find().populate('category');
-        res.json(products);
-    } catch (err) {
-        res.status(400).json(`Error: ${err}`);
-    }
+router.get("/products", async (req, res) => {
+    const products = await Products.find();
+    res.json(products);
 });
 
-router.get("/Cat", async (req, res) => {
-    try {
-        const products = await Cat.find();
-        res.json(products);
-    } catch (err) {
-        res.status(400).json(`Error: ${err}`);
-    }
+router.get("/carts", async (req, res) => {
+    const carts = await Cat.find().populate("productId");
+    res.json(carts);
 });
 
-// Create a new product
-router.post('/', async (req, res) => {
-    try {
-        const { name, description, price, categoryId } = req.body;
+router.post("/carts", async (req, res) => {
+    const { productId, quantity } = req.body;
 
-        // Check if the category exists
-        const category = await Cat.findById(categoryId);
-        if (!category) {
-            return res.status(400).json({ message: 'Category not found' });
-        }
-
-        // Create the new product
-        const product = new Products({
-            name,
-            description,
-            price,
-            category: categoryId
-        });
-
-        // Save the product to the database
-        await product.save();
-
-        res.status(201).json(product);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server Error' });
+    // Check if the product is already in the cart
+    const cartItem = await Cat.findOne({ productId });
+    if (cartItem) {
+        // If the product is already in the cart, update its quantity
+        cartItem.quantity += quantity;
+        await cartItem.save();
+    } else {
+        // If the product is not in the cart, add it
+        const cart = new Cat({ productId, quantity });
+        await cart.save();
     }
+
+    res.json({ message: "Product added to cart" });
 });
 
-router.get("/category/:categoryId", async (req, res) => {
-    try {
-        const products = await Products.find({ category: req.params.categoryId }).populate('category');
-        res.json(products);
-    } catch (err) {
-        res.status(400).json(`Error: ${err}`);
-    }
-});
 
 module.exports = router;

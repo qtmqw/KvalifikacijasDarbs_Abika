@@ -6,7 +6,6 @@ import { Button } from '@material-tailwind/react';
 import Spinner from '../assets/Spinner.gif';
 import AdminProductAdd from '../admin/AdminProductAdd';
 import AdminProductEdit from '../admin/AdminProductEdit';
-import DIN from '../assets/din.png';
 import { toast } from 'react-toastify';
 
 const AdminProducts = () => {

@@ -7,3 +7,4 @@ export const gallU = `${host}/getAllUser`;
 export const deleteU = `${host}/deleteUser`;
 export const Product = `${host}/products`;
 export const Search = `${host}/products/search`;
+export const Category = `${host}/products/category`;

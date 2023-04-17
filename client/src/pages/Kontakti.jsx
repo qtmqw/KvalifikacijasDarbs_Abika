@@ -14,9 +14,9 @@ const kont = () => {
 
             <div className='w-[100%] flex mb-5 justify-center'>
                 <div className='flex clex-col md:mx-auto xl:mx-0'>
-                    <FaMobile className='xl:w-4 xl:h-9 mx-1 mt-1' /><p className='md:text-md sm:text-sm xl:text-2xl xl:mr-10 lg:mr-10 md:mr-10 mt-[2px]'>67382030, 20005038, 29462665</p>
-                    <FaEnvelope className='xl:w-6 xl:h-10 mx-1 mt-1' /><a href="mailto:abika@inbox.lv" className='md:text-md sm:text-sm xl:text-2xl xl:mr-10 lg:mr-10 md:mr-10 sm:mr-3 no-underline text-black'><p>abika@inbox.lv</p></a>
-                    <FaMapMarked className='xl:w-6 xl:h-9 mx-1 mt-1' /><a href="" className='md:text-md sm:text-sm xl:text-2xl no-underline text-black'><p>Vagonu iela 23, Rīga</p></a>
+                    <FaMobile className='xl:w-4 xl:h-9 mx-1' /><p className='md:text-md sm:text-sm xl:text-2xl xl:mr-10 lg:mr-10 md:mr-10 mt-[2px]'>67382030, 20005038, 29462665</p>
+                    <FaEnvelope className='xl:w-6 xl:h-10 mx-1' /><a href="mailto:abika@inbox.lv" className='md:text-md sm:text-sm xl:text-2xl xl:mr-10 lg:mr-10 md:mr-10 sm:mr-3 no-underline text-black'><p>abika@inbox.lv</p></a>
+                    <FaMapMarked className='xl:w-6 xl:h-9 mx-1' /><p className='md:text-md sm:text-sm xl:text-2xl no-underline text-black'>Vagonu iela 23, Rīga</p>
                 </div>
             </div>
 

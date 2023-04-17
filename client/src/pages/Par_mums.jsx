@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react'
 import Abika1 from '../assets/abika1.png';
-import Drebes2 from '../assets/drebes2.jpeg'
 import { Container } from 'react-bootstrap'
 import ImageViewer from 'react-simple-image-viewer';
 

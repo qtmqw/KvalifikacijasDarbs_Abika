@@ -1,49 +1,76 @@
 import React, { useEffect, useState } from 'react'
-import { Product } from '../utils/APIRoutes'
+import { Product, Category } from '../utils/APIRoutes'
 import { Button } from "@material-tailwind/react";
 import axios from 'axios'
 import { toast } from 'react-toastify';
 
 const AdminProductAdd = () => {
 
-    const [fileName, setFileName] = useState('')
+    /*     const [fileName, setFileName] = useState('') */
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [color, setColor] = useState("");
     const [price, setPrice] = useState("");
-    const [category, setCategory] = useState("");
+    const [category, setCategory] = useState([]);
     const [categories, setCategories] = useState([]);
     const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         // Fetch all categories and store in state
-        axios.get("http://localhost:8080/products/category").then((res) => {
-            setCategories(res.data);
-        });
+        axios.get(Category)
+            .then((res) => {
+                setCategories(res.data);
+            })
+            .catch(err => {
+                console.error(err);
+                console.log(err)
+            });
     }, []);
 
-    const onChangeFile = (e) => {
-        console.log(e.target.files[0])
-        setFileName(e.target.files[0])
-    }
+    const handleTitleChange = (e) => {
+        setTitle(e.target.value);
+        console.log(setTitle)
+    };
+
+    const handleColorChange = (e) => {
+        setColor(Array.from(e.target.selectedOptions, option => option.value));
+        console.log(setColor)
+    };
+
+    const handleDescriptionChange = (e) => {
+        setDescription(e.target.value);
+        console.log(setDescription)
+    };
+
+    const handlePriceChange = (e) => {
+        setPrice(e.target.value);
+        console.log(setPrice)
+    };
+
+    const handleCategoryChange = (e) => {
+        const category = Array.from(e.target.selectedOptions, option => option.value);
+        setCategory(category);
+        console.log(setCategory)
+    };
+
+    /*     const onChangeFile = (e) => {
+            setFileName(e.target.files[0])
+        } */
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
+
         try {
-            const formData = new FormData();
-            formData.append("image", fileName);
-            formData.append("title", title);
-            formData.append("description", description);
-            formData.append("color", color);
-            formData.append("price", price);
-            formData.append("categoryId", category);
-            await axios.post(`${Product}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then((res) => {
-                console.log(res.data);
+            const res = await axios.post(`${Product}`, {
+                title,
+                description,
+                color,
+                price,
+                category,
             });
-            toast("Product added successfully!");
+            console.log(res.data);
         } catch (err) {
-            console.error(err);
-            toast("Error adding product");
+            console.log(err.response.data);
         }
     };
 
@@ -79,7 +106,7 @@ const AdminProductAdd = () => {
                                                     placeholder="Title"
                                                     class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
                                                     value={title}
-                                                    onChange={(e) => setTitle(e.target.value)}
+                                                    onChange={handleTitleChange}
                                                 />
                                             </div>
                                             <div className='w-[50%] pl-2'>
@@ -88,7 +115,7 @@ const AdminProductAdd = () => {
                                                     required
                                                     class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
                                                     value={color}
-                                                    onChange={(e) => setColor(Array.from(e.target.selectedOptions, option => option.value))}
+                                                    onChange={handleColorChange}
                                                 >
                                                     <option>Colors</option>
                                                     <option value="Red">Red</option>
@@ -108,7 +135,7 @@ const AdminProductAdd = () => {
                                                 placeholder="Description"
                                                 class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
                                                 value={description}
-                                                onChange={(e) => setDescription(e.target.value)}
+                                                onChange={handleDescriptionChange}
                                             />
                                         </label>
                                         <label className='mb-3 flex'>
@@ -120,23 +147,21 @@ const AdminProductAdd = () => {
                                                     placeholder="Price"
                                                     class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
                                                     value={price}
-                                                    onChange={(e) => setPrice(e.target.value)}
+                                                    onChange={handlePriceChange}
                                                 />
                                             </div>
                                             <div className='w-[50%] pl-2'>
                                                 <h3>Category</h3>
                                                 <select
+                                                    multiple
                                                     id="category"
                                                     value={category}
                                                     class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
-                                                    onChange={(e) => setCategory(e.target.value)}
+                                                    onChange={handleCategoryChange}
                                                     required
                                                 >
-                                                    <option value="">Select a category</option>
                                                     {categories.map((category) => (
-                                                        <option key={category._id} value={category._id}>
-                                                            {category.name}
-                                                        </option>
+                                                        <option key={category._id} value={category._id}>{category.name}</option>
                                                     ))}
                                                 </select>
                                             </div>
@@ -157,12 +182,13 @@ const AdminProductAdd = () => {
                                                 </span>
                                             </span>
                                             <input
-                                                multiple
-                                                type="file"
-                                                /* accept='.png, .jpg, .jpeg' */
-                                                filename='image'
-                                                className="hidden form-control-file"
-                                                onChange={onChangeFile} />
+                                            //    multiple
+                                            //    type="file"
+                                            //    /* accept='.png, .jpg, .jpeg' */
+                                            //    filename='image'
+                                            //    className="hidden form-control-file"
+                                            //    onChange={onChangeFile} 
+                                            />
                                         </label>
                                         <div className="flex items-center justify-end pt-3 border-t border-solid border-blueGray-200 rounded-b mt-4 jus">
                                             <Button type="submit" >Add Product</Button>

@@ -3,6 +3,8 @@ const express = require("express")
 const mongoose = require("mongoose")
 const { json, urlencoded } = express
 const cors = require("cors")
+const bodyParser = require('body-parser');
+
 
 
 // require
@@ -15,6 +17,7 @@ app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cors())
 app.set("view engine", "ejs")
+app.use(bodyParser.json());
 
 // db
 const db = require("./Database/db");

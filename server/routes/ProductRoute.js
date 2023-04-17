@@ -1,12 +1,13 @@
 // import modules
 const express = require("express");
 const router = express.Router();
-const multer = require("multer")
+/* const multer = require("multer") */
 const Product = require("../models/Products");
 const Category = require("../models/Category");
+const Cart = require("../models/Cart")
 
 
-const storage = multer.diskStorage({
+/* const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, '../client/public/uploads')
     },
@@ -14,7 +15,7 @@ const storage = multer.diskStorage({
         cb(null, file.originalname)
     }
 })
-const upload = multer({ storage: storage })
+const upload = multer({ storage: storage }) */
 
 
 // get all products
@@ -37,27 +38,26 @@ router.get("/category", async (req, res) => {
 });
 
 // add product
-router.post("/", upload.single("image"), async (req, res) => {
+router.post("/", /* upload.single("image"), */ async (req, res) => {
     try {
-        const { title, description, color, price, categoryId } = req.body;
+        const { title, description, color, price, categoryIds } = req.body;
 
-        const category = await Category.findById(categoryId);
-        if (!category) {
-            return res.status(400).json({ message: 'Category not found' });
+        const categories = await Category.find({ _id: { $in: categoryIds } });
+        if (categories.length !== categoryIds.length) {
+            return res.status(400).json({ message: 'One or more categories not found' });
         }
 
         const product = new Product({
-            image: req.file.originalname,
+/*             image: req.file.originalname, */
             title,
             description,
             color,
             price,
-            category: categoryId
+            category: categoryIds
         });
         await product.save();
 
         res.json(product);
-        console.log(req.file.path);
     } catch (err) {
         res.status(400).json(`Error: ${err}`);
     }
@@ -118,6 +118,29 @@ router.post("/search", async (req, res) => {
     } catch (err) {
         res.status(400).json(`Error: ${err}`);
     }
+});
+
+router.get("/cart", async (req, res) => {
+    const cart = await Cart.find().populate("productId");
+    res.json(cart);
+});
+
+router.post("/cart", async (req, res) => {
+    const { productId, quantity } = req.body;
+
+    // Check if the product is already in the cart
+    const cartItem = await Cart.findOne({ productId });
+    if (cartItem) {
+        // If the product is already in the cart, update its quantity
+        cartItem.quantity += quantity;
+        await cartItem.save();
+    } else {
+        // If the product is not in the cart, add it
+        const cart = new Cart({ productId, quantity });
+        await cart.save();
+    }
+
+    res.json({ message: "Product added to cart" });
 });
 
 module.exports = router;

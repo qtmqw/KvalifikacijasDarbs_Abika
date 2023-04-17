@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react'
 import { Container, Pagination } from 'react-bootstrap';
 import { Link } from 'react-router-dom'
-import { Product, Search } from '../utils/APIRoutes'
+import { Product, Search, Category } from '../utils/APIRoutes'
 import axios from 'axios'
 import _ from "lodash";
 import { Button } from "@material-tailwind/react"
@@ -17,17 +17,13 @@ import {
   ChevronDownIcon,
   FunnelIcon,
   MinusIcon,
-  PlusIcon,
-  Squares2X2Icon
+  PlusIcon
 } from '@heroicons/react/20/solid'
 
 import "../product/styles.css"
 
 
 const sortOptions = [
-  { name: 'Most Popular', href: '#', current: true },
-  { name: 'Best Rating', href: '#', current: false },
-  { name: 'Newest', href: '#', current: false },
   { name: 'Price: Low to High', href: '#', current: false },
   { name: 'Price: High to Low', href: '#', current: false },
 ]
@@ -72,7 +68,7 @@ const useStyles = makeStyles({
 
 const Sort = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
-  const [value, setValue] = useState([0, 1000]);
+  const [value, setValue] = useState([0, 100]);
 
   const handleInputChange = (index) => (event) => {
     const newValue = [...value];
@@ -85,42 +81,41 @@ const Sort = () => {
   };
   const classes = useStyles();
 
+  const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
 
-
-
-  const [products, setProducts] = useState([])
   useEffect(() => {
-    axios.get(Product).then((res) => {
-      setProducts(res.data);
-    })
-      .catch((err) => console.log(err));
+    axios
+      .get(Product)
+      .then((response) => setProducts(response.data))
+      .catch((error) => console.error(error));
 
-    axios.get('http://localhost:8080/products/category/')
-      .then(response => setCategories(response.data))
-      .catch(error => console.error(error));
+    axios
+      .get(Category)
+      .then((response) => setCategories(response.data))
+      .catch((error) => console.error(error));
   }, []);
-
+  
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
     const selectedCategoryIds = query.getAll('category');
     setSelectedCategories(selectedCategoryIds);
   }, []);
-
-  const updateSelectedCategories = (categoryId, add) => {
+  
+  /* const updateSelectedCategories = (categoryId, add) => {
     const updatedSelectedCategories = add
       ? [...selectedCategories, categoryId]
       : selectedCategories.filter((id) => id !== categoryId);
-
+  
     setSelectedCategories(updatedSelectedCategories);
-
+  
     const searchParams = new URLSearchParams();
     updatedSelectedCategories.forEach((categoryId) => searchParams.append('category', categoryId));
     const newUrl = `${window.location.origin}${window.location.pathname}?${searchParams.toString()}`;
     window.history.pushState({ path: newUrl }, '', newUrl);
   };
-
+  
   const handleClearAllCategories = (e) => {
     e.preventDefault()
     setSelectedCategories([]);
@@ -128,12 +123,32 @@ const Sort = () => {
     const newUrl = `${window.location.origin}${window.location.pathname}?${searchParams.toString()}`;
     window.history.pushState({ path: newUrl }, '', newUrl);
   };
+  
+  const filteredProducts = products.filter((product) => {
+    const isCategoryMatched = selectedCategories.length === 0 || selectedCategories.some(id => product.categories.includes(id));
+    const isPriceMatched = product.price >= value[0] && product.price <= value[1];
+    return isCategoryMatched && isPriceMatched;
+  }); */
+
+  const handleCategoryChange = (event) => {
+    const categoryId = event.target.value;
+    if (selectedCategories.includes(categoryId)) {
+      setSelectedCategories(selectedCategories.filter((id) => id !== categoryId));
+    } else {
+      setSelectedCategories([...selectedCategories, categoryId]);
+    }
+  };
 
   const filteredProducts = products.filter((product) => {
-    const isCategoryMatched = selectedCategories.length === 0 || selectedCategories.includes(product.category._id);
+    const productCategories = product.category.map((cat) => cat._id);
+    const isCategoryMatched =
+      selectedCategories.length === 0
+        ? true
+        : selectedCategories.every((cat) => productCategories.includes(cat));
     const isPriceMatched = product.price >= value[0] && product.price <= value[1];
     return isCategoryMatched && isPriceMatched;
   });
+
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -234,7 +249,7 @@ const Sort = () => {
                         </div>
                       </div>
                       <h1 className='font-bold text-2xl ml-5'>Category</h1>
-                      <div className='flex flex-col space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900 ml-10'>
+                      {/* <div className='flex flex-col space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900 ml-10'>
                         {categories.map(({ _id: id, name }) => (
                           <label key={id}>
                             <input
@@ -248,7 +263,7 @@ const Sort = () => {
                           </label>
                         ))}
                         <Button onClick={handleClearAllCategories} className="bg-orange p-2 w-[50%] mx-auto">Clear All Categories</Button>
-                      </div>
+                      </div> */}
                       <div className='px-4'>
                         Price <br />
                         <div className=' flex justify-between mt-3'>
@@ -257,7 +272,7 @@ const Sort = () => {
                             value={value[0]}
                             onChange={handleInputChange(0)}
                             min={0}
-                            max={1000}
+                            max={100}
                             className="w-[20%] rounded-xl text-center appearance-none m-0 focus:outline-none focus:ring-0 bg-white"
                           />
                           <input
@@ -265,7 +280,7 @@ const Sort = () => {
                             value={value[1]}
                             onChange={handleInputChange(1)}
                             min={0}
-                            max={1000}
+                            max={100}
                             className="w-[20%] rounded-xl text-center appearance-none m-0 focus:outline-none focus:ring-0 bg-white"
                           />
                         </div>
@@ -274,7 +289,7 @@ const Sort = () => {
                           onChange={rangeSelector}
                           valueLabelDisplay="auto"
                           min={0}
-                          max={1000}
+                          max={100}
                           step={1}
                           classes={{ root: classes.root }}
                         />
@@ -422,13 +437,13 @@ const Sort = () => {
                           type="checkbox"
                           value={id}
                           checked={selectedCategories.includes(id)}
-                          onChange={() => updateSelectedCategories(id, !selectedCategories.includes(id))}
+                          onChange={handleCategoryChange}
                           className=" mr-2 h-4 w-4 rounded border-gray-300 text-orange focus:ring-orange"
                         />
                         {name}
                       </label>
                     ))}
-                    <Button onClick={handleClearAllCategories} className="bg-orange p-2 w-[50%] mx-auto">Clear All Categories</Button>
+                    <Button onClick={() => setSelectedCategories([])}>Clear filters</Button>
                   </div>
                   <div >
                     Price <br />
@@ -438,7 +453,7 @@ const Sort = () => {
                         value={value[0]}
                         onChange={handleInputChange(0)}
                         min={0}
-                        max={1000}
+                        max={100}
                         className="w-[20%] rounded-xl text-center appearance-none m-0 focus:outline-none focus:ring-0 bg-white"
                       />
                       <input
@@ -446,7 +461,7 @@ const Sort = () => {
                         value={value[1]}
                         onChange={handleInputChange(1)}
                         min={0}
-                        max={1000}
+                        max={100}
                         className="w-[20%] rounded-xl text-center appearance-none m-0 focus:outline-none focus:ring-0 bg-white"
                       />
                     </div>
@@ -455,7 +470,7 @@ const Sort = () => {
                       onChange={rangeSelector}
                       valueLabelDisplay="auto"
                       min={0}
-                      max={1000}
+                      max={100}
                       step={1}
                       classes={{ root: classes.root }}
                     />
@@ -526,6 +541,7 @@ const Sort = () => {
                               <p className="mt-1 text-xs text-gray-500">Colors: {product.color}</p>
                             </div>
                             <p className="text-xs font-medium text-gray-900">{product.price} €</p>
+                            <p>Category: {product.category.map((cat) => cat.name).join(", ")}</p>
                           </div>
                         </div>
                       ))}

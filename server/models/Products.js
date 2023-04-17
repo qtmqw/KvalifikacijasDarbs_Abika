@@ -3,10 +3,10 @@ const { Schema } = mongoose;
 
 const productSchema = new Schema(
     {
-        image: {
+/*         image: {
             type: String,
             required: true,
-        },
+        }, */
         title: {
             type: String,
             required: true,
@@ -29,11 +29,11 @@ const productSchema = new Schema(
             type: Number,
             required: true,
         },
-        category: {
-            type: String,
+        category: [{
+            type: mongoose.Schema.Types.ObjectId,
             ref: 'Category',
             required: true
-        },
+        }],
         created_at: {
             type: Date,
             default: Date.now,
