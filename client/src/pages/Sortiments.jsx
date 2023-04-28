@@ -17,7 +17,7 @@ import {
   ChevronDownIcon,
   FunnelIcon,
   MinusIcon,
-  PlusIcon
+  PlusIcon,
 } from '@heroicons/react/20/solid'
 
 import "../product/styles.css"
@@ -86,69 +86,48 @@ const Sort = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   useEffect(() => {
-    axios
-      .get(Product)
+    axios.get(Product)
       .then((response) => setProducts(response.data))
       .catch((error) => console.error(error));
 
-    axios
-      .get(Category)
-      .then((response) => setCategories(response.data))
+    axios.get(Category)
+      .then((response) => {
+        setCategories(response.data);
+        const query = new URLSearchParams(window.location.search);
+        const selectedCategoryIds = query.getAll('category');
+        setSelectedCategories(selectedCategoryIds);
+      })
       .catch((error) => console.error(error));
   }, []);
-  
-  useEffect(() => {
-    const query = new URLSearchParams(window.location.search);
-    const selectedCategoryIds = query.getAll('category');
-    setSelectedCategories(selectedCategoryIds);
-  }, []);
-  
-  /* const updateSelectedCategories = (categoryId, add) => {
-    const updatedSelectedCategories = add
-      ? [...selectedCategories, categoryId]
-      : selectedCategories.filter((id) => id !== categoryId);
-  
-    setSelectedCategories(updatedSelectedCategories);
-  
-    const searchParams = new URLSearchParams();
-    updatedSelectedCategories.forEach((categoryId) => searchParams.append('category', categoryId));
-    const newUrl = `${window.location.origin}${window.location.pathname}?${searchParams.toString()}`;
-    window.history.pushState({ path: newUrl }, '', newUrl);
-  };
-  
-  const handleClearAllCategories = (e) => {
-    e.preventDefault()
+
+  const filteredProducts = products.filter((product) => {
+    const isPriceMatched = product.price >= value[0] && product.price <= value[1];
+    const isSelectedCategory = selectedCategories.length === 0
+      || selectedCategories.every((selectedCategory) => {
+        return product.category.some((cat) => selectedCategory === cat._id);
+      });
+    return isPriceMatched && isSelectedCategory;
+  });
+
+  const clearCategories = () => {
     setSelectedCategories([]);
     const searchParams = new URLSearchParams();
     const newUrl = `${window.location.origin}${window.location.pathname}?${searchParams.toString()}`;
     window.history.pushState({ path: newUrl }, '', newUrl);
   };
-  
-  const filteredProducts = products.filter((product) => {
-    const isCategoryMatched = selectedCategories.length === 0 || selectedCategories.some(id => product.categories.includes(id));
-    const isPriceMatched = product.price >= value[0] && product.price <= value[1];
-    return isCategoryMatched && isPriceMatched;
-  }); */
 
-  const handleCategoryChange = (event) => {
-    const categoryId = event.target.value;
-    if (selectedCategories.includes(categoryId)) {
-      setSelectedCategories(selectedCategories.filter((id) => id !== categoryId));
-    } else {
-      setSelectedCategories([...selectedCategories, categoryId]);
-    }
+  const updateSelectedCategories = (categoryId, add) => {
+    const updatedSelectedCategories = add
+      ? [...selectedCategories, categoryId]
+      : selectedCategories.filter((id) => id !== categoryId);
+
+    setSelectedCategories(updatedSelectedCategories);
+
+    const searchParams = new URLSearchParams();
+    updatedSelectedCategories.forEach((categoryId) => searchParams.append('category', categoryId));
+    const newUrl = `${window.location.origin}${window.location.pathname}?${searchParams.toString()}`;
+    window.history.pushState({ path: newUrl }, '', newUrl);
   };
-
-  const filteredProducts = products.filter((product) => {
-    const productCategories = product.category.map((cat) => cat._id);
-    const isCategoryMatched =
-      selectedCategories.length === 0
-        ? true
-        : selectedCategories.every((cat) => productCategories.includes(cat));
-    const isPriceMatched = product.price >= value[0] && product.price <= value[1];
-    return isCategoryMatched && isPriceMatched;
-  });
-
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -249,21 +228,19 @@ const Sort = () => {
                         </div>
                       </div>
                       <h1 className='font-bold text-2xl ml-5'>Category</h1>
-                      {/* <div className='flex flex-col space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900 ml-10'>
+                      <div className='flex flex-col space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900 ml-10'>
                         {categories.map(({ _id: id, name }) => (
                           <label key={id}>
                             <input
                               type="checkbox"
                               value={id}
-                              checked={selectedCategories.includes(id)}
-                              onChange={() => updateSelectedCategories(id, !selectedCategories.includes(id))}
                               className=" mr-2 h-4 w-4 rounded border-gray-300 text-orange focus:ring-orange"
                             />
                             {name}
                           </label>
                         ))}
-                        <Button onClick={handleClearAllCategories} className="bg-orange p-2 w-[50%] mx-auto">Clear All Categories</Button>
-                      </div> */}
+                        <Button className="bg-orange p-2 w-[50%] mx-auto">Clear All Categories</Button>
+                      </div>
                       <div className='px-4'>
                         Price <br />
                         <div className=' flex justify-between mt-3'>
@@ -437,13 +414,17 @@ const Sort = () => {
                           type="checkbox"
                           value={id}
                           checked={selectedCategories.includes(id)}
-                          onChange={handleCategoryChange}
-                          className=" mr-2 h-4 w-4 rounded border-gray-300 text-orange focus:ring-orange"
+                          onChange={(e) => {
+                            const categoryId = e.target.value;
+                            const add = e.target.checked;
+                            updateSelectedCategories(categoryId, add);
+                          }}
+                          className="mr-2 h-4 w-4 rounded border-gray-300 text-orange focus:ring-orange"
                         />
                         {name}
                       </label>
                     ))}
-                    <Button onClick={() => setSelectedCategories([])}>Clear filters</Button>
+                    <Button className="bg-orange p-2 w-[50%] mx-auto" onClick={clearCategories}>Clear All Categories</Button>
                   </div>
                   <div >
                     Price <br />
@@ -541,7 +522,6 @@ const Sort = () => {
                               <p className="mt-1 text-xs text-gray-500">Colors: {product.color}</p>
                             </div>
                             <p className="text-xs font-medium text-gray-900">{product.price} €</p>
-                            <p>Category: {product.category.map((cat) => cat.name).join(", ")}</p>
                           </div>
                         </div>
                       ))}

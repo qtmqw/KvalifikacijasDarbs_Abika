@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
-import { Product } from '../utils/APIRoutes';
+import { Product, host } from '../utils/APIRoutes';
 import { Container } from "react-bootstrap";
 import tee from '../assets/tee.jpg'
 import { BsCart2 } from 'react-icons/bs'
 import "../product/styles.css"
+import { toast } from "react-toastify";
 
 function Productshow() {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
-
+    const [userData, setUserData] = useState(null);
+    const [quantityq, setQuantity] = useState(1);
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
+    const isLoggedIn = window.localStorage.getItem("loggedIn")
     useEffect(() => {
         axios
             .get(`${Product}/${id}`)
@@ -18,9 +22,62 @@ function Productshow() {
             .catch((err) => console.log(err));
     }, [id]);
 
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        axios
+            .post(`${host}/userData`, { token })
+            .then((response) => {
+                setUserData(response.data.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }, []);
+
     if (!product) {
         return <div>Loading...</div>;
     }
+
+    const addToCart = async (userId, productId, quantity) => {
+        if (!isLoggedIn) {
+            return toast('You must be logged in');
+        } else {
+            try {
+                const response = await axios.post(`${host}/cart/add`, {
+                    userId,
+                    productId,
+                    quantity,
+                });
+                return response.data.data; // Return the added cart item
+            } catch (error) {
+                console.error(error);
+                return null; // Return null on error
+            }
+        }
+    };
+
+    const handleAddToCart = async () => {
+        const userId = userData?.userId;
+        const productId = product._id;
+        const cartItem = await addToCart(userId, productId, quantityq);
+
+        if (cartItem) {
+            setIsAddingToCart(true);
+            toast("Product added to cart");
+            window.location.reload();
+        } else {
+            setIsAddingToCart(false);
+            console.log("Failed to add product to cart.");
+        }
+    };
+
+    const totalDiscount = () => {
+        return (50).toFixed(2);
+    };
+
+    const newPrice = () => {
+        return `${product.price}` - (`${product.price}` * totalDiscount() / 100);
+    };
 
     return (
         <Container className="py-10">
@@ -79,13 +136,16 @@ function Productshow() {
                     <h3 cclassName="font-bold text-3xl sm:text-4xl sm:leading-none pb-3">
                         {product.title}
                     </h3>
-                    <p className="text-[#76787F] pb-6 lg:py-7 lg:leading-6">
+                    <p className="text-[#76787F]">
+                        Product ID: {product._id}
+                    </p>
+                    <p className="pb-6 lg:py-6 lg:leading-6">
                         {product.description}
                     </p>
                     <p className='md:text-xl sm:text-2xl pb-6 lg:pb-7 lg:leading-6'>Color: {product.color}</p>
                     <div className="amount font-bold flex items-center justify-between lg:flex-col lg:items-start mb-6">
                         <div className="discount-price items-center flex">
-                            <div className="text-3xl">{product.price} €</div>
+                            <div className="text-3xl">{newPrice()} €</div>
                             <div className="discount text-[#FF7D1A] bg-[#FFEDE0] w-max px-2 rounded mx-5 h-6">
                                 50%
                             </div>
@@ -96,16 +156,51 @@ function Productshow() {
                     </div>
                     <div className="sm:flex lg:mt-8 w-full">
                         <div className="quantity-container w-full bg-[#F7F8FD] rounded-lg h-14 mb-4 flex items-center justify-between px-6 lg:px-3 font-bold sm:mr-3 lg:mr-5 lg:w-1/3">
-                            <button className="text-[#FF7D1A] text-2xl leading-none font-bold mb-1 lg:text-3xl hover:opacity-60">-</button>
-                            <input className="focus:outline-none  bg-[#F7F8FD] font-bold flex text-center w-full border-0" type="number" defaultValue={1} min={1} max={100} name="quantity" aria-label="quantity number" />
-                            <button className="text-[#FF7D1A] text-2xl leading-none font-bold lg:text-3xl hover:opacity-60">+</button>
-                        </div>
+                            <button
+                                className="text-[#FF7D1A] text-2xl leading-none font-bold mb-1 lg:text-3xl hover:opacity-60"
+                                onClick={() => {
+                                    if (quantityq > 1) {
+                                        setQuantity(quantityq - 1);
+                                    }
+                                }}
+                            >
+                                -
+                            </button>
+                            <input
+                                className="focus:outline-none bg-[#F7F8FD] font-bold flex text-center w-full border-0"
+                                type="number"
+                                defaultValue={1}
+                                min={1}
+                                max={100}
+                                value={quantityq}
+                                onChange={(event) => {
+                                    const value = parseInt(event.target.value);
+                                    if (isNaN(value) || value <= 0 || value % 1 !== 0) {
+                                        // If value is null, negative or zero, or a decimal
+                                        event.preventDefault();
+                                    } else {
+                                        setQuantity(value);
+                                    }
+                                }}
+                            />
+                            <button
+                                className="text-[#FF7D1A] text-2xl leading-none font-bold lg:text-3xl hover:opacity-60"
+                                onClick={() => {
+                                    if (quantityq < 100) {
+                                        setQuantity(quantityq + 1);
+                                    }
+                                }}
+                            >
+                                +
+                            </button>
 
-                        <button className="cart w-full h-14 bg-[#FF7D1A] rounded-lg lg:rounded-xl mb-2 shadow-[#FFC799] shadow-2xl text-white flex items-center justify-center lg:w-3/5 hover:opacity-60">
-                            <i className='cursor-pointer text-white text-xl leading-0 pr-3'>
+                        </div>
+                        <button className="cart w-full h-14 bg-[#FF7D1A] rounded-lg lg:rounded-xl mb-2 shadow-[#FFC799] shadow-2xl text-white flex items-center justify-center lg:w-3/5 hover:opacity-60"
+                            onClick={handleAddToCart} disabled={isAddingToCart}>
+                            <i className='cursor-pointer text-white text-xl leading-0 pr-3 pb-1'>
                                 <BsCart2 name='cart-outline'></BsCart2>
                             </i>
-                            Add to cart
+                            {isAddingToCart ? "Adding..." : "Add to cart"}
                         </button>
                     </div>
 

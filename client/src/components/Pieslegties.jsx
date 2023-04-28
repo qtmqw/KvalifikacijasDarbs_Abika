@@ -17,10 +17,10 @@ const Prof = () => {
     }
 
     return (
-        <Container className='py-10' >
-            <div className='flex py-[50px] max-w-[85%] mx-auto'>
-                <div className='bg-[#fcedda] p-6 rounded-lg shadow-lg w-[50%]'>
-                    <h1 className='font-bold mx-auto md:text-4xl sm:text-3xl text-3xl py-2 mb-3 mt-3'>
+        <Container className='py-20' >
+            <div className='md:flex'>
+                <div className='bg-[#fcedda] p-6 rounded-lg shadow-lg w-full'>
+                    <h1 className='font-bold md:text-4xl sm:text-3xl text-3xl py-2 mb-3 mt-3'>
                         Pieslēgties
                     </h1>
                     <form onSubmit={handleSubmit}>
@@ -68,7 +68,7 @@ const Prof = () => {
                         <Link to="/ParolesMaina" className="text-black ml-5">Aizmirsāt paroli?</Link>
                     </form>
                 </div>
-                <div className='w-[50%] p-10'>
+                <div className='w-full p-10'>
                     <h1 className='font-bold mx-auto md:text-4xl sm:text-3xl text-3xl py-2 mb-5'>
                         Reģistrēties
                     </h1>

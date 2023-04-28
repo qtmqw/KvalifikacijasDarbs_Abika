@@ -46,6 +46,7 @@ const AdminProducts = () => {
                 await axios.delete(`${Product}/${productId}`);
                 setProducts(products.filter((product) => product._id !== productId));
                 toast("Product deleted")
+                window.location.reload();
 
             } catch (err) {
                 console.log(err);

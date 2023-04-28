@@ -3,10 +3,10 @@ const { Schema } = mongoose;
 
 const productSchema = new Schema(
     {
-/*         image: {
+        image: {
             type: String,
             required: true,
-        }, */
+        },
         title: {
             type: String,
             required: true,
@@ -29,21 +29,20 @@ const productSchema = new Schema(
             type: Number,
             required: true,
         },
-        category: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Category',
-            required: true
-        }],
+        category: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Category',
+                required: true
+            }
+        ],
         created_at: {
             type: Date,
             default: Date.now,
         },
     },
-    {
-        collection: "Products",
-    }
 );
 
-const Products = mongoose.model("Product", productSchema)
+const Product = mongoose.model("Product", productSchema)
 
-module.exports = Products
+module.exports = Product 

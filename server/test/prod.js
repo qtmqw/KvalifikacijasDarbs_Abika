@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+/* const mongoose = require("mongoose")
 
 const productSchema = new mongoose.Schema({
     name: String,
@@ -8,4 +8,4 @@ const productSchema = new mongoose.Schema({
 // Define a model for products
 const Products = mongoose.model("Products", productSchema);
 
-module.exports = Products
+module.exports = Products */

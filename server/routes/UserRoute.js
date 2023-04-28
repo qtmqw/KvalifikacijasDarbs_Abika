@@ -15,15 +15,15 @@ const User = mongoose.model("UserInfo")
 
 const schema = new passwordValidator();
 
-// Add properties to the schema
+
 schema
-    .is().min(8)                                     // Minimum length 8
-    .is().max(100)                                   // Maximum length 100
-    .has().uppercase()                              // Must have uppercase letters
-    .has().lowercase()                              // Must have lowercase letters
-    .has().digits()                                 // Must have digits
-    .has().not().spaces()                           // Should not have spaces
-    .is().not().oneOf(['Passw0rd', 'Password123']); // Blacklist these values
+    .is().min(8)
+    .is().max(100)
+    .has().uppercase()
+    .has().lowercase()
+    .has().digits()
+    .has().not().spaces()
+    .is().not().oneOf(['Passw0rd', 'Password123']);
 
 // routes
 
@@ -41,9 +41,6 @@ router.post("/register", async (req, res) => {
     if (isValidPassword.length > 0) {
         return res.status(400).json({ error: "Invalid password. Password requirements: " + isValidPassword.join(", ") });
     }
-/*     if (!validator.isLength(password, { min: 8 })) {
-        return res.status(400).json({ error: "Password must be at least 8 characters long" });
-    } */
     try {
         const oldUser = await User.findOne({ email })
         if (oldUser) {
@@ -92,21 +89,14 @@ router.post("/login", async (req, res) => {
 router.post("/userData", async (req, res) => {
     const { token } = req.body;
     try {
-        const user = jwt.verify(token, process.env.JWT_SECRET, (err, res) => {
-
-            return res;
-        });
-        console.log(user);
-
+        const user = jwt.verify(token, process.env.JWT_SECRET);
         const useremail = user.email;
-        User.findOne({ email: useremail })
-            .then((data) => {
-                res.send({ status: "OK", data: data });
-            })
-            .catch((error) => {
-                res.send({ status: "error", data: error });
-            });
-    } catch (error) { }
+        const userData = await User.findOne({ email: useremail }, "_id username email userType");
+        res.send({ status: "OK", data: { userId: userData._id, ...userData._doc } });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ error: "Server Error" });
+    }
 });
 
 // forgot password
@@ -121,7 +111,7 @@ router.post("/forgot-password", async (req, res) => {
         const token = jwt.sign({ email: oldUser.email, id: oldUser._id }, secret, {
             expiresIn: "999999999999999s",
         });
-        const link = `http://localhost:8080/reset-password/${oldUser._id}/${token}`;
+        const link = `${process.env.LINK}/reset-password/${oldUser._id}/${token}`;
         sendMail({ to: email, subject: 'Reset Password', text: link });
         console.log(link);
     } catch (error) { }

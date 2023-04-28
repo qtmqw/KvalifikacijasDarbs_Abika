@@ -45,7 +45,7 @@ const Saak = () => {
               <h1 className='font-bold text-base'>3. Jūs ietaupāt transporta izdevumus.</h1>Latvijas klientiem ceļš līdz Rīgai ir īsāks nekā līdz citu valstu galvaspilsētām un lielpilsētām.
             </p>
           </div>
-          <img className='h-full w-[50%]' src={Drebes1} />
+          <img className='h-full w-[50%] rounded-lg' src={Drebes1} />
         </div>
 
         {/* 

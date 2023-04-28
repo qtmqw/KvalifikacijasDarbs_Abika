@@ -6,72 +6,53 @@ import { toast } from 'react-toastify';
 
 const AdminProductAdd = () => {
 
-    /*     const [fileName, setFileName] = useState('') */
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [color, setColor] = useState("");
-    const [price, setPrice] = useState("");
+
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [color, setColor] = useState([]);
+    const [price, setPrice] = useState(0);
     const [category, setCategory] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [image, setImage] = useState(null);
+    const [error, setError] = useState('');
     const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
-        // Fetch all categories and store in state
-        axios.get(Category)
-            .then((res) => {
-                setCategories(res.data);
-            })
-            .catch(err => {
-                console.error(err);
-                console.log(err)
-            });
+        axios
+            .get(Category)
+            .then((response) => setCategory(response.data))
+            .catch((error) => console.error(error));
     }, []);
-
-    const handleTitleChange = (e) => {
-        setTitle(e.target.value);
-        console.log(setTitle)
-    };
-
-    const handleColorChange = (e) => {
-        setColor(Array.from(e.target.selectedOptions, option => option.value));
-        console.log(setColor)
-    };
-
-    const handleDescriptionChange = (e) => {
-        setDescription(e.target.value);
-        console.log(setDescription)
-    };
-
-    const handlePriceChange = (e) => {
-        setPrice(e.target.value);
-        console.log(setPrice)
-    };
-
-    const handleCategoryChange = (e) => {
-        const category = Array.from(e.target.selectedOptions, option => option.value);
-        setCategory(category);
-        console.log(setCategory)
-    };
-
-    /*     const onChangeFile = (e) => {
-            setFileName(e.target.files[0])
-        } */
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('description', description);
+        formData.append('color', color);
+        formData.append('price', price);
+        formData.append('categoryIds', categories.join(','));
+        formData.append('image', image);
         try {
-            const res = await axios.post(`${Product}`, {
-                title,
-                description,
-                color,
-                price,
-                category,
+            const res = await axios.post(`${Product}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
             });
             console.log(res.data);
+            // clear form data
+            setTitle('');
+            setDescription('');
+            setColor([]);
+            setPrice('');
+            setCategories([]);
+            setImage(null);
         } catch (err) {
-            console.log(err.response.data);
+            console.error(err);
+            setError(err.response.data.message);
         }
+    };
+
+    const handleImageChange = (e) => {
+        setImage(e.target.files[0]);
     };
 
 
@@ -103,21 +84,23 @@ const AdminProductAdd = () => {
                                                 <input
                                                     required
                                                     type="text"
+                                                    id="title"
                                                     placeholder="Title"
                                                     class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
                                                     value={title}
-                                                    onChange={handleTitleChange}
+                                                    onChange={(e) => setTitle(e.target.value)}
                                                 />
                                             </div>
                                             <div className='w-[50%] pl-2'>
                                                 <h3>Color</h3>
                                                 <select
+                                                    id="color"
                                                     required
                                                     class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
                                                     value={color}
-                                                    onChange={handleColorChange}
+                                                    onChange={(e) => setColor([e.target.value])}
                                                 >
-                                                    <option>Colors</option>
+                                                    <option value="">--Select a color--</option>
                                                     <option value="Red">Red</option>
                                                     <option value="Green">Green</option>
                                                     <option value="Blue">Blue</option>
@@ -130,12 +113,13 @@ const AdminProductAdd = () => {
                                         <label className='mb-3'>
                                             <h3>Description</h3>
                                             <textarea
+                                                id="description"
                                                 required
                                                 type="text"
                                                 placeholder="Description"
                                                 class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
                                                 value={description}
-                                                onChange={handleDescriptionChange}
+                                                onChange={(e) => setDescription(e.target.value)}
                                             />
                                         </label>
                                         <label className='mb-3 flex'>
@@ -143,25 +127,31 @@ const AdminProductAdd = () => {
                                                 <h3>Price</h3>
                                                 <input
                                                     required
+                                                    id="price"
                                                     type="number"
                                                     placeholder="Price"
                                                     class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
                                                     value={price}
-                                                    onChange={handlePriceChange}
+                                                    onChange={(e) => setPrice(e.target.value)}
                                                 />
                                             </div>
                                             <div className='w-[50%] pl-2'>
                                                 <h3>Category</h3>
                                                 <select
-                                                    multiple
-                                                    id="category"
-                                                    value={category}
+                                                    id="categories"
+                                                    value={categories}
                                                     class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
-                                                    onChange={handleCategoryChange}
+                                                    onChange={(e) =>
+                                                        setCategories(Array.from(e.target.selectedOptions, (option) => option.value))
+                                                    }
+                                                    multiple
                                                     required
                                                 >
-                                                    {categories.map((category) => (
-                                                        <option key={category._id} value={category._id}>{category.name}</option>
+                                                    <option value="">--Select categories--</option>
+                                                    {category.map((category) => (
+                                                        <option key={category._id} value={category._id}>
+                                                            {category.name}
+                                                        </option>
                                                     ))}
                                                 </select>
                                             </div>
@@ -182,12 +172,10 @@ const AdminProductAdd = () => {
                                                 </span>
                                             </span>
                                             <input
-                                            //    multiple
-                                            //    type="file"
-                                            //    /* accept='.png, .jpg, .jpeg' */
-                                            //    filename='image'
-                                            //    className="hidden form-control-file"
-                                            //    onChange={onChangeFile} 
+                                                type="file"                                                
+                                                id='image'
+                                                className="hidden form-control-file"
+                                                onChange={handleImageChange}
                                             />
                                         </label>
                                         <div className="flex items-center justify-end pt-3 border-t border-solid border-blueGray-200 rounded-b mt-4 jus">
