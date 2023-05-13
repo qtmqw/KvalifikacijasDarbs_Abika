@@ -9,15 +9,15 @@ const AdminPage = () => {
                     <h1>pirmais</h1>
                 </div>
                 <div className='bg-gray-300 rounded-lg p-5'>
-                <h1>otrais</h1>
+                    <h1>otrais</h1>
                 </div>
             </div>
             <div className='grid grid-cols-2 gap-3'>
                 <div className='bg-gray-300 rounded-lg p-5'>
-                <h1>tresais</h1>
+                    <h1>tresais</h1>
                 </div>
                 <div className='bg-gray-300 rounded-lg p-5'>
-                <h1>ceturtais</h1>
+                    <h1>ceturtais</h1>
                 </div>
             </div>
         </Container>

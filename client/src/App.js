@@ -20,6 +20,7 @@ import UserDetails from './components/userDetails';
 import AdminPage from '../src/admin/AdminPage';
 import AdminUserBoard from '../src/admin/AdminUserBord';
 import AdminProducts from '../src/admin/AdminProducts'
+import AdminFunctions from '../src/admin/AdminFunctions'
 import Footer from './components/Footer';
 import Product from './pages/Product';
 import NF from './components/404';
@@ -58,9 +59,11 @@ function App() {
           <Route path="/Profils" element={loggedIn ? (<Profils />) : (<Sakums />)} />
           <Route path="/Grozs" element={<Grozs />} />
           <Route path="/UserDetails" element={loggedIn ? (<UserDetails />) : (<Sakums />)} />
-          <Route path="/AdminPage" element={isAdmin ? (<AdminPage />) : (<NF />)} />
-          <Route path="/AdminUserBoard" element={isAdmin ? (<AdminUserBoard />) : (<NF />)} />
-          <Route path="/AdminProducts" element={isAdmin ? (<AdminProducts />) : (<NF />)} />
+          <Route path="/AdminPage" element={isAdmin ? (<AdminPage />) : (<Sakums />)} />
+          <Route path="/AdminUserBoard" element={isAdmin ? (<AdminUserBoard />) : (<Sakums />)} />
+          <Route path="/AdminProducts" element={isAdmin ? (<AdminProducts />) : (<Sakums />)} />
+          <Route path="/AdminFunctions" element={isAdmin ? (<AdminFunctions />) : (<Sakums />)} />
+
           <Route path="/*" element={<NF />} />
 
           <Route path="*" element={<Navigate to="/" />} />

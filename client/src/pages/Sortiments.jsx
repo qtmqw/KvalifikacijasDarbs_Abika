@@ -22,39 +22,6 @@ import {
 
 import "../product/styles.css"
 
-
-const sortOptions = [
-  { name: 'Price: Low to High', href: '#', current: false },
-  { name: 'Price: High to Low', href: '#', current: false },
-]
-const filters = [
-  {
-    id: 'color',
-    name: 'Color',
-    options: [
-      { value: 'white', label: 'White', checked: false },
-      { value: 'beige', label: 'Beige', checked: false },
-      { value: 'blue', label: 'Blue', checked: false },
-      { value: 'brown', label: 'Brown', checked: false },
-      { value: 'green', label: 'Green', checked: false },
-      { value: 'purple', label: 'Purple', checked: false },
-    ],
-  },
-  {
-    id: 'size',
-    name: 'Size',
-    options: [
-      { value: '2l', label: 'XS', checked: false },
-      { value: '6l', label: 'S', checked: false },
-      { value: '12l', label: 'M', checked: false },
-      { value: '18l', label: 'L', checked: false },
-      { value: '20l', label: 'XL', checked: false },
-      { value: '40l', label: 'XXL', checked: false },
-      { value: '40l', label: 'XXXL', checked: false },
-    ],
-  },
-]
-
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
@@ -69,25 +36,27 @@ const useStyles = makeStyles({
 const Sort = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const [value, setValue] = useState([0, 100]);
-
-  const handleInputChange = (index) => (event) => {
-    const newValue = [...value];
-    newValue[index] = event.target.value;
-    setValue(newValue);
-  };
-
-  const rangeSelector = (event, newValue) => {
-    setValue(newValue);
-  };
-  const classes = useStyles();
-
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [availableColors, setAvailableColors] = useState([]);
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [availableSizes, setAvailableSizes] = useState([]);
+  const [selectedSizes, setSelectedSizes] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [sortOrder, setSortOrder] = useState("");
 
   useEffect(() => {
-    axios.get(Product)
-      .then((response) => setProducts(response.data))
+    axios.get(Product, { params: { color: selectedColors.join(",") } })
+      .then(response => {
+        setProducts(response.data);
+        // Extract available colors from products
+        const colors = [...new Set(response.data.flatMap(product => product.color))];
+        setAvailableColors(colors);
+        const sizes = [...new Set(response.data.flatMap(product => product.size))];
+        setAvailableSizes(sizes);
+      })
       .catch((error) => console.error(error));
 
     axios.get(Category)
@@ -100,15 +69,7 @@ const Sort = () => {
       .catch((error) => console.error(error));
   }, []);
 
-  const filteredProducts = products.filter((product) => {
-    const isPriceMatched = product.price >= value[0] && product.price <= value[1];
-    const isSelectedCategory = selectedCategories.length === 0
-      || selectedCategories.every((selectedCategory) => {
-        return product.category.some((cat) => selectedCategory === cat._id);
-      });
-    return isPriceMatched && isSelectedCategory;
-  });
-
+  //category
   const clearCategories = () => {
     setSelectedCategories([]);
     const searchParams = new URLSearchParams();
@@ -129,9 +90,35 @@ const Sort = () => {
     window.history.pushState({ path: newUrl }, '', newUrl);
   };
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  //color
+  const handleColorSelection = (event) => {
+    const color = event.target.value;
+    const isChecked = event.target.checked;
 
+    setSelectedColors(prevSelectedColors => {
+      if (isChecked) {
+        return [...prevSelectedColors, color];
+      } else {
+        return prevSelectedColors.filter(selectedColor => selectedColor !== color);
+      }
+    });
+  };
+
+  //size
+  const handleSizeSelection = (event) => {
+    const size = event.target.value;
+    const isChecked = event.target.checked;
+
+    setSelectedSizes(prevSelectedSizes => {
+      if (isChecked) {
+        return [...prevSelectedSizes, size];
+      } else {
+        return prevSelectedSizes.filter(selectedSize => selectedSize !== size);
+      }
+    });
+  };
+
+  //search
   useEffect(() => {
     const debouncedSearch = _.debounce(handleSearch, 500);
     debouncedSearch();
@@ -154,8 +141,41 @@ const Sort = () => {
     }
   };
 
+  // price
+  const handleInputChange = (index) => (event) => {
+    const newValue = [...value];
+    newValue[index] = event.target.value;
+    setValue(newValue);
+  };
 
+  const rangeSelector = (event, newValue) => {
+    setValue(newValue);
+  };
+  const classes = useStyles();
 
+  // filter
+  const filteredProducts = products.filter(product => {
+    const isPriceMatched = product.price >= value[0] && product.price <= value[1];
+    const isSelectedCategory = selectedCategories.length === 0
+      || selectedCategories.every(selectedCategory => product.category.some(cat => selectedCategory === cat._id));
+    const isColorMatched = selectedColors.length === 0
+      || selectedColors.some((color) => product.color.includes(color));
+    const isSizeMatched = selectedSizes.length === 0
+      || selectedSizes.some((size) => product.size.includes(size));
+    return isPriceMatched && isSelectedCategory && isColorMatched && isSizeMatched;
+  });
+  const sortedProducts = filteredProducts.sort((a, b) => {
+    if (sortOrder === "lowToHigh") {
+      return a.price - b.price;
+    } else {
+      return b.price - a.price;
+    }
+  });
+
+  const sortOptions = [
+    { name: 'Low to High', value: 'lowToHigh' },
+    { name: 'High to Low', value: 'highToLow' }
+  ];
 
   return (
     <>
@@ -227,22 +247,28 @@ const Sort = () => {
                           )}
                         </div>
                       </div>
-                      <h1 className='font-bold text-2xl ml-5'>Category</h1>
-                      <div className='flex flex-col space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900 ml-10'>
+                      <h1 className='font-medium text-gray-900 text-2xl px-4'>Category</h1>
+                      <div className='flex flex-col space-y-4 border-b border-gray-200 text-sm font-medium text-gray-900 px-4 py-2'>
                         {categories.map(({ _id: id, name }) => (
                           <label key={id}>
                             <input
                               type="checkbox"
                               value={id}
-                              className=" mr-2 h-4 w-4 rounded border-gray-300 text-orange focus:ring-orange"
+                              checked={selectedCategories.includes(id)}
+                              onChange={(e) => {
+                                const categoryId = e.target.value;
+                                const add = e.target.checked;
+                                updateSelectedCategories(categoryId, add);
+                              }}
+                              className="mr-2 h-4 w-4 rounded border-gray-300 text-orange focus:ring-orange"
                             />
                             {name}
                           </label>
                         ))}
-                        <Button className="bg-orange p-2 w-[50%] mx-auto">Clear All Categories</Button>
+                        <Button className="bg-orange p-2 w-[50%] mx-auto" onClick={clearCategories}>Clear All Categories</Button>
                       </div>
                       <div className='px-4'>
-                        Price <br />
+                        <span className="font-medium text-gray-900 text-2xl">Price</span> <br />
                         <div className=' flex justify-between mt-3'>
                           <input
                             type="number"
@@ -271,48 +297,74 @@ const Sort = () => {
                           classes={{ root: classes.root }}
                         />
                       </div>
-                      {filters.map((section) => (
-                        <Disclosure as="div" key={section.id} className="border-t border-gray-200 px-4 py-6">
-                          {({ open }) => (
-                            <>
-                              <h3 className="-mx-2 -my-3 flow-root">
-                                <Disclosure.Button className="flex w-full items-center justify-between bg-white px-2 py-3 text-gray-400 hover:text-gray-500">
-                                  <span className="font-medium text-gray-900">{section.name}</span>
-                                  <span className="ml-6 flex items-center">
-                                    {open ? (
-                                      <MinusIcon className="h-5 w-5" aria-hidden="true" />
-                                    ) : (
-                                      <PlusIcon className="h-5 w-5" aria-hidden="true" />
-                                    )}
-                                  </span>
-                                </Disclosure.Button>
-                              </h3>
-                              <Disclosure.Panel className="pt-6">
-                                <div className="space-y-6">
-                                  {section.options.map((option, optionIdx) => (
-                                    <div key={option.value} className="flex items-center">
-                                      <input
-                                        id={`filter-mobile-${section.id}-${optionIdx}`}
-                                        name={`${section.id}[]`}
-                                        defaultValue={option.value}
-                                        type="checkbox"
-                                        defaultChecked={option.checked}
-                                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                      />
-                                      <label
-                                        htmlFor={`filter-mobile-${section.id}-${optionIdx}`}
-                                        className="ml-3 min-w-0 flex-1 text-gray-500"
-                                      >
-                                        {option.label}
-                                      </label>
-                                    </div>
-                                  ))}
-                                </div>
-                              </Disclosure.Panel>
-                            </>
-                          )}
-                        </Disclosure>
-                      ))}
+                      <Disclosure as="div" className="border-t border-gray-200 px-4 py-6">
+                        {({ open }) => (
+                          <>
+                            <h3 className="-mx-2 -my-3 flow-root">
+                              <Disclosure.Button className="flex w-full items-center justify-between bg-white px-2 py-3 text-gray-400 hover:text-gray-500">
+                                <span className="font-medium text-gray-900">Color</span>
+                                <span className="ml-6 flex items-center">
+                                  {open ? (
+                                    <MinusIcon className="h-5 w-5 text-orange" aria-hidden="true" />
+                                  ) : (
+                                    <PlusIcon className="h-5 w-5 text-orange" aria-hidden="true" />
+                                  )}
+                                </span>
+                              </Disclosure.Button>
+                            </h3>
+                            <Disclosure.Panel className="pt-6">
+                              <div className="space-y-6">
+                                {availableColors.map(color => (
+                                  <div key={color} className="flex items-center">
+                                    <input
+                                      type="checkbox"
+                                      value={color}
+                                      className="h-4 w-4 rounded border-gray-300 text-orange focus:ring-orange"
+                                      onChange={handleColorSelection}
+                                      checked={selectedColors.includes(color)}
+                                    />
+                                    <label className="ml-3 text-sm text-gray-600">{color}</label>
+                                  </div>
+                                ))}
+                              </div>
+                            </Disclosure.Panel>
+                          </>
+                        )}
+                      </Disclosure>
+                      <Disclosure as="div" className="border-t border-gray-200 px-4 py-6">
+                        {({ open }) => (
+                          <>
+                            <h3 className="-mx-2 -my-3 flow-root">
+                              <Disclosure.Button className="flex w-full items-center justify-between bg-white px-2 py-3 text-gray-400 hover:text-gray-500">
+                                <span className="font-medium text-gray-900">Size</span>
+                                <span className="ml-6 flex items-center">
+                                  {open ? (
+                                    <MinusIcon className="h-5 w-5 text-orange" aria-hidden="true" />
+                                  ) : (
+                                    <PlusIcon className="h-5 w-5 text-orange" aria-hidden="true" />
+                                  )}
+                                </span>
+                              </Disclosure.Button>
+                            </h3>
+                            <Disclosure.Panel className="pt-6">
+                              <div className="space-y-6">
+                                {availableSizes.map(size => (
+                                  <div key={size} className="flex items-center">
+                                    <input
+                                      type="checkbox"
+                                      value={size}
+                                      className="h-4 w-4 rounded border-gray-300 text-orange focus:ring-orange"
+                                      onChange={handleSizeSelection}
+                                      checked={selectedSizes.includes(size)}
+                                    />
+                                    <label className="ml-3 text-sm text-gray-600">{size}</label>
+                                  </div>
+                                ))}
+                              </div>
+                            </Disclosure.Panel>
+                          </>
+                        )}
+                      </Disclosure>
                     </form>
                   </Dialog.Panel>
                 </Transition.Child>
@@ -345,19 +397,14 @@ const Sort = () => {
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
                       <div className="py-1">
                         {sortOptions.map((option) => (
-                          <Menu.Item key={option.name}>
-                            {({ active }) => (
-                              <a
-                                href={option.href}
-                                className={classNames(
-                                  option.current ? 'font-medium text-gray-900' : 'text-gray-500',
-                                  active ? 'bg-gray-100' : '',
-                                  'block px-4 py-2 text-sm'
-                                )}
-                              >
-                                {option.name}
-                              </a>
-                            )}
+                          <Menu.Item key={option.value}>
+                            <a
+                              href={option.href}
+                              className=" text-black cursor-pointer block p-4 py-2 text-sm border-gray-300"
+                              onClick={() => setSortOrder(option.value)}
+                            >
+                              {option.name}
+                            </a>
                           </Menu.Item>
                         ))}
                       </div>
@@ -376,7 +423,7 @@ const Sort = () => {
             </div>
             <section aria-labelledby="products-heading" className="pt-6 pb-24">
               <div className="flex flex-wrap">
-                {/* Filters */}
+                {/*search*/}
                 <form className="hidden lg:block w-[20%]">
                   <div className=' flex flex-col p-3 rounded-xl w-[100%] '>
                     <input
@@ -406,6 +453,7 @@ const Sort = () => {
                       )}
                     </div>
                   </div>
+                  {/*cetegory*/}
                   <h1 className='font-bold text-2xl'>Category</h1>
                   <div className='flex flex-col space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900 pl-5'>
                     {categories.map(({ _id: id, name }) => (
@@ -426,8 +474,9 @@ const Sort = () => {
                     ))}
                     <Button className="bg-orange p-2 w-[50%] mx-auto" onClick={clearCategories}>Clear All Categories</Button>
                   </div>
+                  {/*price*/}
                   <div >
-                    Price <br />
+                    <div className=' font-semibold text-lg pt-2'>Price</div>
                     <div className=' flex justify-between mt-3'>
                       <input
                         type="number"
@@ -456,94 +505,109 @@ const Sort = () => {
                       classes={{ root: classes.root }}
                     />
                   </div>
-                  {filters.map((section) => (
-                    <Disclosure as="div" key={section.id} className="border-b border-gray-200 py-6">
-                      {({ open }) => (
-                        <>
-                          <h3 className="-my-3 flow-root">
-                            <Disclosure.Button className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                              <span className="font-medium text-gray-900">{section.name}</span>
-                              <span className="ml-6 flex items-center">
-                                {open ? (
-                                  <MinusIcon className="h-5 w-5 text-orange" aria-hidden="true" />
-                                ) : (
-                                  <PlusIcon className="h-5 w-5 text-orange" aria-hidden="true" />
-                                )}
-                              </span>
-                            </Disclosure.Button>
-                          </h3>
-                          <Disclosure.Panel className="pt-6">
-                            <div className="space-y-4">
-                              {section.options.map((option, optionIdx) => (
-                                <div key={option.value} className="flex items-center">
-                                  <input
-                                    id={`filter-${section.id}-${optionIdx}`}
-                                    name={`${section.id}[]`}
-                                    defaultValue={option.value}
-                                    type="checkbox"
-                                    defaultChecked={option.checked}
-                                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                  />
-                                  <label
-                                    htmlFor={`filter-${section.id}-${optionIdx}`}
-                                    className="ml-3 text-sm text-gray-600"
-                                  >
-                                    {option.label}
-                                  </label>
-                                </div>
-                              ))}
-                            </div>
-                          </Disclosure.Panel>
-                        </>
-                      )}
-                    </Disclosure>
-                  ))}
+                  {/*color*/}
+                  <Disclosure as="div" className="border-b border-gray-200 py-6">
+                    {({ open }) => (
+                      <>
+                        <h3 className="-my-3 flow-root">
+                          <Disclosure.Button className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
+                            <span className="font-semibold text-lg text-gray-900">Color</span>
+                            <span className="ml-6 flex items-center">
+                              {open ? (
+                                <MinusIcon className="h-5 w-5 text-orange" aria-hidden="true" />
+                              ) : (
+                                <PlusIcon className="h-5 w-5 text-orange" aria-hidden="true" />
+                              )}
+                            </span>
+                          </Disclosure.Button>
+                        </h3>
+                        <Disclosure.Panel className="pt-6">
+                          <div className="space-y-4">
+                            {availableColors.map(color => (
+                              <div key={color} className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  value={color}
+                                  className="h-4 w-4 rounded border-gray-300 text-orange focus:ring-orange"
+                                  onChange={handleColorSelection}
+                                  checked={selectedColors.includes(color)}
+                                />
+                                <label className="ml-3 text-sm text-gray-600">{color}</label>
+                              </div>
+                            ))}
+                          </div>
+                        </Disclosure.Panel>
+                      </>
+                    )}
+                  </Disclosure>
+                  {/*size*/}
+                  <Disclosure as="div" className="border-b border-gray-200 py-6">
+                    {({ open }) => (
+                      <>
+                        <h3 className="-my-3 flow-root">
+                          <Disclosure.Button className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
+                            <span className="font-semibold text-lg text-gray-900">Size</span>
+                            <span className="ml-6 flex items-center">
+                              {open ? (
+                                <MinusIcon className="h-5 w-5 text-orange" aria-hidden="true" />
+                              ) : (
+                                <PlusIcon className="h-5 w-5 text-orange" aria-hidden="true" />
+                              )}
+                            </span>
+                          </Disclosure.Button>
+                        </h3>
+                        <Disclosure.Panel className="pt-6">
+                          <div className="space-y-4">
+                            {availableSizes.map(size => (
+                              <div key={size} className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  value={size}
+                                  className="h-4 w-4 rounded border-gray-300 text-orange focus:ring-orange"
+                                  onChange={handleSizeSelection}
+                                  checked={selectedSizes.includes(size)}
+                                />
+                                <label className="ml-3 text-sm text-gray-600">{size}</label>
+                              </div>
+                            ))}
+                          </div>
+                        </Disclosure.Panel>
+                      </>
+                    )}
+                  </Disclosure>
                 </form>
-                <div className='w-[75%] mx-auto'>
-                  <div className=" lg:px-8">
-                    <div className="flex flex-wrap gap-4">
-                      {filteredProducts.map((product) => (
-                        <div key={product._id} className="group relative shadow-sm rounded-md mb-5">
-                          <div className="max-h-30 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-transparent group-hover:opacity-75 lg:aspect-none lg:h-60 shadow-md">
-                            <img
-                              src={`/uploads/${product.image}`}
-                              alt="..."
-                              className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-                            />
-                          </div>
-                          <div className="mt-2 flex justify-between mx-2">
-                            <div>
-                              <h3 className="text-xs text-gray-700">
-                                <Link to={`/products/${product._id}`} className="text-black no-underline">
-                                  <span aria-hidden="true" className="absolute inset-0" />
-                                  {product.title}
-                                </Link>
-                              </h3>
-                              <p className="mt-1 text-xs text-gray-500">Colors: {product.color}</p>
-                            </div>
-                            <p className="text-xs font-medium text-gray-900">{product.price} €</p>
-                          </div>
+                {/*product*/}
+                <div className="lg:w-[75%] lg:mx-auto md:w-full sm:mx-auto">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-4">
+                    {filteredProducts.map((product) => (
+                      <div key={product._id} className="group relative shadow-sm rounded-md">
+                        <div className="max-h-30 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-transparent group-hover:opacity-75 lg:aspect-none lg:h-60 shadow-md">
+                          <img
+                            src={`/uploads/${product.image}`}
+                            alt="..."
+                            className="h-full w-full object-cover object-center lg:h-full lg:w-full"
+                          />
                         </div>
-                      ))}
-                    </div>
+                        <div className="mt-2 flex justify-between mx-2">
+                          <div>
+                            <h3 className="text-xs text-gray-700">
+                              <Link to={`/products/${product._id}`} className="text-black no-underline">
+                                <span aria-hidden="true" className="absolute inset-0" />
+                                {product.title}
+                              </Link>
+                            </h3>
+                            <p className="mt-1 text-xs text-gray-500">Colors: {product.color}</p>
+                          </div>
+                          <p className="text-xs font-medium text-gray-900">{product.price} €</p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
             </section>
           </main>
         </div>
-        <Pagination className='justify-center my-5'>
-          <Pagination.First />
-          <Pagination.Prev />
-          <Pagination.Item active>{1}</Pagination.Item>
-          <Pagination.Item>{2}</Pagination.Item>
-          <Pagination.Item>{3}</Pagination.Item>
-          <Pagination.Item>{4}</Pagination.Item>
-          <Pagination.Ellipsis />
-          <Pagination.Item>{20}</Pagination.Item>
-          <Pagination.Next />
-          <Pagination.Last />
-        </Pagination>
       </Container>
     </>
   )

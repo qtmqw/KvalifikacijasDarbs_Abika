@@ -105,7 +105,7 @@ const AdminProducts = () => {
                                             scope="col"
                                             className="px-6 py-3 "
                                         >
-                                            Category
+                                            Size
                                         </th>
                                         <th
                                             scope="col"
@@ -154,7 +154,7 @@ const AdminProducts = () => {
                                                     <div className="text-sm text-gray-900">{product.color}</div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-900">{product.category?.name}</div>
+                                                    <div className="text-sm text-gray-900">{product.size}</div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     {product.price}

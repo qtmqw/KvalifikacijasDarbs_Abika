@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Container } from 'react-bootstrap'
-import Spinner from '../assets/Spinner.gif';
 import { Button } from '@material-tailwind/react';
 import { toast } from 'react-toastify';
 import axios from "axios";
-import EC from "../assets/empty-cart.png"
+import EEC from "../assets/EEC.gif"
+import { userR, CartR } from "../utils/APIRoutes";
+import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import { BsFillTrashFill } from 'react-icons/bs'
 
+function Cart() {
 
-const Cart = ({ userId }) => {
   const [userData, setUserData] = useState(null);
   const [cart, setCart] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     axios
-      .post("http://localhost:8080/userData", { token })
+      .post(userR, { token })
       .then((response) => {
         setUserData(response.data.data);
       })
@@ -25,7 +29,7 @@ const Cart = ({ userId }) => {
 
   const getUserCart = async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/cart/${userId}`);
+      const response = await axios.get(`${CartR}/${userId}`);
       return response.data;
     } catch (error) {
       console.error(error);
@@ -39,6 +43,7 @@ const Cart = ({ userId }) => {
         const result = await getUserCart(userData.userId);
         if (result.data) {
           setCart(result.data);
+          setIsLoading(false);
         } else {
           console.error(result.error);
         }
@@ -47,109 +52,223 @@ const Cart = ({ userId }) => {
     fetchCart();
   }, [userData]);
 
-  const deleteCartItem = async (cartItemId) => {
-    try {
-      const response = await axios.delete(`http://localhost:8080/cart/${cartItemId}`);
-      if (response.data.status === 'OK') {
-        setCart(cart.filter((item) => item._id !== cartItemId));
-        toast.success('Item removed from cart');
-      } else {
-        console.error(response.data.error);
-        toast.error('Failed to remove item from cart');
+  const MySwal = withReactContent(Swal);
+
+  const handleRemoveFromCart = async (itemId) => {
+    MySwal.fire({
+      title: <p>Are you sure?</p>,
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      confirmButtonColor: '#FF7D1A',
+      cancelButtonText: 'No, cancel',
+      reverseButtons: true,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.delete(`${CartR}/${itemId}`);
+          if (response.status === 200) {
+            setCart(prevCart => prevCart.filter(item => item._id !== itemId));
+            toast.success("Item removed from cart");
+          } else {
+            toast.error("Could not remove item from cart");
+          }
+        } catch (error) {
+          console.error(error);
+          toast.error("Server error");
+        }
       }
-    } catch (error) {
-      console.error(error.message);
-      toast.error('Failed to remove item from cart');
+    });
+  };
+
+  const handleDecrement = (itemIndex) => {
+    const updatedCart = [...cart];
+    if (updatedCart[itemIndex].quantity > 1) {
+      updatedCart[itemIndex].quantity--;
+      updateCartItemQuantity(updatedCart[itemIndex]._id, updatedCart[itemIndex].quantity);
+      setCart(updatedCart);
     }
-  }
+  };
+
+  const handleIncrement = (itemIndex) => {
+    const updatedCart = [...cart];
+    updatedCart[itemIndex].quantity++;
+    updateCartItemQuantity(updatedCart[itemIndex]._id, updatedCart[itemIndex].quantity);
+    setCart(updatedCart);
+  };
+
+  const updateCartItemQuantity = async (itemId, quantity) => {
+    try {
+      await axios.put(`${CartR}/${itemId}`, { quantity });
+      toast.success("Quantity updated successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update quantity");
+    }
+  };
+
+  const totalPrice = cart.reduce((accumulator, item) => {
+    if (item.quantity > 15) {
+      const discountedPrice = item.product.price * item.quantity * 0.95;
+      return accumulator + discountedPrice;
+    }
+    return accumulator + item.product.price * item.quantity;
+  }, 0);
+
+  const totalDiscountedPrice = cart.reduce((accumulator, item) => {
+    if (item.quantity > 14) {
+      const discountedPrice = item.product.price * item.quantity * 0.05;
+      return accumulator + discountedPrice;
+    }
+    return accumulator;
+  }, 0)
+
 
   return (
-    <Container className='py-10'>
-      <h1 className='md:text-7xl sm:text-5xl text-3xl font-bold text-center'>Cart</h1>
+    <>
 
-      <table className='mx-auto shadow-md mt-5'>
-        <thead className="bg-gray-50">
-          <tr className='text-black uppercase tracking-wider'>
-            <th
-              scope="col"
-              className="px-6 py-3 font-bold"
-            >
-              ID
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 font-bold"
-            >
-              Title
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 "
-            >
-              Quantity
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 "
-            >
-              Price
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 "
-            >
-              Remove
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-gray-200 rounded-md text-center">
-          {!cart.length ? (
-            <div className='flex flex-col'>
-              <img src={EC} alt="" className=''/>
-              <h1 className='text-base font-semibold'>Cart is empty</h1>
+      <div className="w-full h-full bg-black bg-opacity-90 top-0 overflow-y-auto overflow-x-hidden fixed sticky-0" id="chec-div">
+        <div className="w-full absolute z-10 right-0 h-full overflow-x-hidden transform translate-x-0 transition ease-in-out duration-700" id="checkout">
+          <div className="flex md:flex-row flex-col justify-end" id="cart">
+            <div className="lg:w-full w-full md:pl-10 pl-4 pr-10 md:pr-4 md:py-12 py-8 bg-white overflow-y-auto overflow-x-hidden h-screen" id="scroll">
+              <Link to={'/Sortiments'} className="flex items-center text-gray-500 hover:text-gray-600 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-chevron-left text-orange" width={18} height={18} viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <polyline points="15 6 9 12 15 18" />
+                </svg>
+                <span className="text-sm pl-1 leading-none">Back</span>
+              </Link>
+              <p className="text-5xl font-black leading-10 text-gray-800 pt-3">Cart</p>
+              {isLoading ? (
+                // If cart is loading, display loading message
+                <h1 className='text-center'>
+                  Loading...
+                </h1>
+              ) : (
+                !cart.length ? (
+                  <>
+                    <img src={EEC} alt='empty cart' className='mx-auto' />
+                    <h1 className=' text-center'>
+                      Cart is empty
+                    </h1>
+                  </>
+                ) : (
+                  cart.map((item, index) => (
+                    <div className="md:flex items-center mt-4 pt-8 border-t border-gray-200 w-full relative" key={item._id}>
+                      <div className="w-[15%]">
+                        <img src={`/uploads/${item.product?.image}`} alt className="w-full h-full object-center object-cover" />
+                      </div>
+                      <div className="md:pl-3 md:w-[75%] flex justify-between">
+                        <div className='w-[30%]'>
+                          <p className="text-xs text-gray-800 md:pt-0 ">{item.product?._id}</p>
+                          <p className="text-base font-black text-gray-800">{item.product?.title}</p>
+                          <p className="text-xs text-gray-600">Size: {item.product?.size}</p>
+                          <p className="text-xs text-gray-600 ">Color: {item.product?.color}</p>
+                          <p className="w-96 text-xs text-gray-600">{item.product?.description}</p>
+                        </div>
+                        <div className='w-[45%] flex flex-col justify-between items-end'>
+                          <div className=" w-full bg-[#F7F8FD] rounded-lg h-14 flex items-center justify-between lg:px-3 font-bold xl:w-[40%] lg:w-[30%] sm:w-[50%]">
+                            <button
+                              className="text-[#FF7D1A] text-2xl leading-none font-bold mb-1 lg:text-3xl hover:opacity-60"
+                              onClick={() => handleDecrement(index)}
+                            >
+                              -
+                            </button>
+                            <input
+                              className="focus:outline-none bg-[#F7F8FD] font-bold flex text-center w-full border-0"
+                              type="number"
+                              defaultValue={1}
+                              min={1}
+                              max={100}
+                              value={item.quantity}
+                              onChange={(e) => {
+                                const updatedCart = [...cart];
+                                updatedCart[index].quantity = parseInt(e.target.value);
+                                setCart(updatedCart);
+                                updateCartItemQuantity(item._id, parseInt(e.target.value));
+                              }}
+                            />
+                            <button
+                              className="text-[#FF7D1A] text-2xl leading-none font-bold lg:text-3xl hover:opacity-60"
+                              onClick={() => handleIncrement(index)}
+                            >
+                              +
+                            </button>
+                          </div>
+
+                          <p className="text-base font-black leading-none text-gray-800">{item.product?.price} $</p>
+
+                        </div>
+                      </div>
+                      <div className="w-[10%] flex justify-center">
+                        <BsFillTrashFill
+                          className=" cursor-pointer text-2xl "
+                          color="red"
+                          buttonType="filled"
+                          rounded={false}
+                          block={false}
+                          iconOnly={false}
+                          ripple="light"
+                          onClick={() => handleRemoveFromCart(item._id)}
+                        />
+                      </div>
+                    </div>
+                  ))))}
             </div>
-          ) : (
-            cart.map(item => (
-              <tr>
-                <th
-                  scope="col"
-                  className="px-6 "
-                >
-                  {item.product?._id}
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 "
-                >
-                  {item.product?.title}
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 "
-                >
-                  {item.quantity}
-                </th>
-                <th
-                  scope="col"
-                  className="px-6  "
-                >
-                  {item.product?.price}
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-1 "
-                >
-                  <Button className="bg-red-500" onClick={() => deleteCartItem(item._id)}>
-                    Delete
+            <div className="xl:w-1/3 sm:w-full w-full bg-gray-100 h-full">
+              <div className="flex flex-col md:h-screen px-14 py-20 justify-between overflow-y-auto">
+                <div>
+                  <p className="text-4xl font-black leading-9 text-gray-800">Summary</p>
+                  <div className="flex items-center justify-between pt-16 border-b-4">
+                    <p className="text-base leading-none text-gray-800">Subtotal</p>
+                    <p className="text-base leading-none text-gray-800">{totalPrice.toFixed(2)} $</p>
+                  </div>
+                  <div className="flex items-center justify-between pt-5 border-b-4">
+                    <p className="text-base leading-none text-gray-800">Tax (10%)</p>
+                    <p className="text-base leading-none text-gray-800">{(totalPrice * 0.1).toFixed(2)} $</p>
+                  </div>
+                  <div className="flex items-center justify-between pt-5 border-b-4">
+                    <p className="text-base leading-none text-gray-800">Discount</p>
+                    {totalDiscountedPrice > 0 && (
+                      <p className="text-base leading-none text-gray-800">{totalDiscountedPrice.toFixed(2)} $</p>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <div className="flex items-center pb-2 justify-between lg:pt-5 pt-20">
+                    <p className="text-2xl leading-normal text-gray-800">Total</p>
+                    <p className="text-2xl font-bold leading-normal text-right text-gray-800">{((totalPrice * 1.1) - totalDiscountedPrice).toFixed(2)}$</p>
+                    
+                  </div>
+                  <Button className="text-base leading-none w-full py-4 bg-orange text-white">
+                    Checkout
                   </Button>
-                </th>
-              </tr>
-            )))}
-        </tbody>
-      </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div >
+      <style>
+        {` /* width */
+                #scroll::-webkit-scrollbar {
+                    width: 1px;
+                }
 
-    </Container>
-  )
+                /* Track */
+                #scroll::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                }
+
+                /* Handle */
+                #scroll::-webkit-scrollbar-thumb {
+                    background: rgb(133, 132, 132);
+                }
+`}
+      </style>
+    </>
+  );
 }
 
-export default Cart
+export default Cart;

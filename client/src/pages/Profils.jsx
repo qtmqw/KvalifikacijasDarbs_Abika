@@ -17,10 +17,9 @@ export default function Profils({ userData }) {
                     </div>
                     <div className='max-w-[100%] flex justify-between'>
                         <div className='max-w-[50%] '>
-                            <img src={PP} alt="profil picture" className='w-[43%] h-[83%] rounded-full border-4 border-orange'/>
+                            <img src={PP} alt="profil picture" className='w-[50%] h-[100%] rounded-full border-4 border-orange'/>
                         </div>
-                        <div className='max-w-[50%] flex flex-col gap-4 border-4 border-orange rounded-xl p-2'>
-                            <h3>User ID: {userData.userId}</h3>
+                        <div className='max-w-[50%] flex flex-col gap-4 border-4 border-orange rounded-xl p-4'>
                             <h3>Name: {userData.username}</h3>
                             <h3>Email: {userData.email}</h3>
                             <h3>User Type: {userData.userType}</h3>

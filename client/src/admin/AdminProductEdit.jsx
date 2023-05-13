@@ -1,17 +1,27 @@
-import React, { useState } from 'react'
-import { Product } from '../utils/APIRoutes'
+import React, { useEffect, useState } from 'react'
+import { Product, Category } from '../utils/APIRoutes'
 import { Button } from "@material-tailwind/react";
 import axios from 'axios'
 import { toast } from 'react-toastify';
 
 const AdminProductEdit = ({ product }) => {
 
-    const [fileName, setFileName] = useState('')
+    const [image, setImage] = useState(null);
     const [title, setTitle] = useState(product.title);
     const [description, setDescription] = useState(product.description);
     const [color, setColor] = useState(product.color);
     const [price, setPrice] = useState(product.price);
+    const [size, setSize] = useState([product.size]);
+    const [category, setCategory] = useState([product.category]);
+    const [categories, setCategories] = useState([product.categories]);
     const [showModal, setShowModal] = useState(false);
+
+    useEffect(() => {
+        axios
+            .get(Category)
+            .then((response) => setCategory(response.data))
+            .catch((error) => console.error(error));
+    }, []);
 
     const handleSubmit = async (e) => {
         try {
@@ -20,6 +30,9 @@ const AdminProductEdit = ({ product }) => {
                 description,
                 color,
                 price,
+                size,
+                category,
+                categories,
             };
             if (window.confirm(`Are you sure you want to edit ${title}`)) {
                 await axios.put(`${Product}/${product._id}`, productData);
@@ -60,30 +73,30 @@ const AdminProductEdit = ({ product }) => {
                                                 <input
                                                     required
                                                     type="text"
+                                                    id="title"
                                                     placeholder="Title"
                                                     class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
                                                     value={title}
                                                     onChange={(e) => setTitle(e.target.value)}
                                                 />
                                             </div>
-                                            <div className='w-[50%] pl-2'>
-                                                <h3>Color</h3>
-                                                <select
+                                            <div className='w-[50%] pr-2'>
+                                                <h3>Price</h3>
+                                                <input
                                                     required
-                                                    className='px-3 py-3 w-full bg-white rounded shadow outline-none focus:outline-none focus:shadow-outline'
-                                                    value={color}
-                                                    onChange={(e) => setColor(Array.from(e.target.selectedOptions, option => option.value))}
-                                                >
-                                                    <option>Colors</option>
-                                                    <option value="red">Red</option>
-                                                    <option value="green">Green</option>
-                                                    <option value="blue">Blue</option>
-                                                </select>
+                                                    id="price"
+                                                    type="Number"
+                                                    placeholder="Price"
+                                                    class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
+                                                    value={price}
+                                                    onChange={(e) => setPrice(e.target.value)}
+                                                />
                                             </div>
                                         </label>
                                         <label className='mb-3'>
                                             <h3>Description</h3>
                                             <textarea
+                                                id="description"
                                                 required
                                                 type="text"
                                                 placeholder="Description"
@@ -93,26 +106,69 @@ const AdminProductEdit = ({ product }) => {
                                             />
                                         </label>
                                         <label className='mb-3 flex'>
-                                            <div className='w-[50%] pr-2'>
-                                                <h3>Price</h3>
-                                                <input
+                                            <div className='w-[30%] pl-2'>
+                                                <h3>Color</h3>
+                                                <select
+                                                    multiple
+                                                    id="color"
                                                     required
-                                                    type="number"
-                                                    placeholder="Price"
                                                     class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
-                                                    value={price}
-                                                    onChange={(e) => setPrice(e.target.value)}
-                                                />
+                                                    value={color}
+                                                    onChange={(e) => setColor([e.target.value])}
+                                                >
+                                                    <option value="">--Select a color--</option>
+                                                    <option value="Red">Red</option>
+                                                    <option value="Green">Green</option>
+                                                    <option value="Blue">Blue</option>
+                                                    <option value="White">White</option>
+                                                    <option value="Brown">Brown</option>
+                                                    <option value="Purple">Purple</option>
+                                                    <option value="Black">Black</option>
+                                                    <option value="White">White</option>
+                                                </select>
                                             </div>
-                                            <div className='w-[50%] pl-2'>
-                                                <h3>Category</h3>
-                                                <input
-                                                    required
-                                                    type="text"
-                                                    placeholder="Category"
-                                                    class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
 
-                                                />
+                                            <div className='w-[40%] pl-2'>
+                                                <h3>Category</h3>
+                                                {category.map((category) => (
+                                                    <div key={category._id}>
+                                                        <label>
+                                                            <input
+                                                                type="checkbox"
+                                                                value={category._id}
+                                                                className=' rounded-md mr-2 '
+                                                                checked={categories.includes(category._id)}
+                                                                onChange={(e) => {
+                                                                    if (e.target.checked) {
+                                                                        setCategories([...categories, e.target.value]);
+                                                                    } else {
+                                                                        setCategories(categories.filter((id) => id !== e.target.value));
+                                                                    }
+                                                                }}
+                                                            />
+                                                            {category.name}
+                                                        </label>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className='w-[30%] pl-2'>
+                                                <h3>Size</h3>
+                                                <select
+                                                    multiple
+                                                    id="size"
+                                                    required
+                                                    class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
+                                                    value={size}
+                                                    onChange={(e) => setSize([e.target.value])}
+                                                >
+                                                    <option value="">--Select a size--</option>
+                                                    <option value="XS">XS</option>
+                                                    <option value="S">S</option>
+                                                    <option value="M">M</option>
+                                                    <option value="L">L</option>
+                                                    <option value="XL">XL</option>
+                                                    <option value="XXL">XXL</option>
+                                                </select>
                                             </div>
                                         </label>
                                         <h3>Image</h3>
@@ -131,15 +187,14 @@ const AdminProductEdit = ({ product }) => {
                                                 </span>
                                             </span>
                                             <input
-                                                multiple
                                                 type="file"
-                                                /* accept='.png, .jpg, .jpeg' */
-                                                filename='image'
+                                                id='image'
                                                 className="hidden form-control-file"
+                                            /* onChange={handleImageChange} */
                                             />
                                         </label>
                                         <div className="flex items-center justify-end pt-3 border-t border-solid border-blueGray-200 rounded-b mt-4 jus">
-                                            <Button type="submit" >Edit Product</Button>
+                                            <Button type="submit" >Add Product</Button>
                                             <button
                                                 className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1  ease-linear transition-all duration-150"
                                                 type="button"

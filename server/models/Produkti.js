@@ -20,7 +20,16 @@ const productSchema = new Schema(
             type: [
                 {
                     type: String,
-                    enum: ["Red", "Green", "Blue", "White", "Brown", "Purple"], // example validation
+                    enum: ["Red", "Green", "Blue", "White", "Brown", "Purple", "Black", "White"],
+                },
+            ],
+            required: true,
+        },
+        size: {
+            type: [
+                {
+                    type: String,
+                    enum: ["XS", "S", "M", "L", "XL", "XXL"],
                 },
             ],
             required: true,
@@ -36,6 +45,10 @@ const productSchema = new Schema(
                 required: true
             }
         ],
+        discount: {
+            type: String,
+            ref: "Discount",
+        },
         created_at: {
             type: Date,
             default: Date.now,

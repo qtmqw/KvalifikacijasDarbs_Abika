@@ -17,15 +17,15 @@ const Footer = () => {
         <img src={Abika} className='w-[10%] h-[10%] flex self-center mr-5' />
         <div className="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
           <div>
-            <h2 className="mb-3 text-sm font-semibold text-black uppercase ">Izvēlne</h2>
+            <h2 className="mb-3 text-sm font-semibold text-black uppercase ">Menu</h2>
             <div className="text-gray-600 font-medium grid ">
-                <a href="/Par_mums" className='mb-2 no-underline text-black'>Par mums</a>
-                <a href="/Sortiments" className='mb-2 no-underline text-black'>Sortiments</a>
-                <a href="/Kontakti" className='mb-2 no-underline text-black'>Kontakti</a>
+                <a href="/Par_mums" className='mb-2 no-underline text-black'>About</a>
+                <a href="/Sortiments" className='mb-2 no-underline text-black'>Products</a>
+                <a href="/Kontakti" className='mb-2 no-underline text-black'>Contact</a>
             </div>
           </div>
           <div>
-            <h2 className="mb-3 text-sm font-semibold text-black uppercase ">Kontakti</h2>
+            <h2 className="mb-3 text-sm font-semibold text-black uppercase ">Contact</h2>
             <div className="text-gray-600 font-medium grid">
               <div className='flex clex-col mb-2'>
                 <FaEnvelope className='w-4 h-5 mr-1' /><a href="mailto:abika@inbox.lv" className='mb-2 no-underline text-black'>abika@inbox.lv</a>
@@ -39,7 +39,7 @@ const Footer = () => {
             </div>
           </div>
           <div>
-            <h2 className="mb-3 text-sm font-semibold text-black uppercase ">Mēs sociālos tīklos</h2>
+            <h2 className="mb-3 text-sm font-semibold text-black uppercase ">We in social networks</h2>
             <div className='flex justify-between md:w-[50%]'>
               <FaFacebookSquare size={30} />
               <FaInstagram size={30} />

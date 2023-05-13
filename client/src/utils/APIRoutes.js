@@ -8,3 +8,5 @@ export const deleteU = `${host}/deleteUser`;
 export const Product = `${host}/products`;
 export const Search = `${host}/products/search`;
 export const Category = `${host}/category/category`;
+export const CartR = `${host}/cart`;
+export const CartA = `${host}/cart/add`;

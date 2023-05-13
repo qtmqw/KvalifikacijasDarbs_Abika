@@ -30,14 +30,17 @@ const Sidebar = () => {
                     <CDBSidebarMenu>
                         <NavLink exact to="/AdminPage">
                             <CDBSidebarMenuItem icon="columns">
-                                Dashboard
+                                Infomācija
                             </CDBSidebarMenuItem>
                         </NavLink>
                         <NavLink exact to="/AdminUserBoard" activeClassName="activeClicked">
-                            <CDBSidebarMenuItem icon="table">Users</CDBSidebarMenuItem>
+                            <CDBSidebarMenuItem icon="table">Lietotāji</CDBSidebarMenuItem>
                         </NavLink>
                         <NavLink exact to="/AdminProducts" activeClassName="activeClicked">
-                            <CDBSidebarMenuItem icon="box-open">Products</CDBSidebarMenuItem>
+                            <CDBSidebarMenuItem icon="box-open">Produkti</CDBSidebarMenuItem>
+                        </NavLink>
+                        <NavLink exact to="/AdminFunctions" activeClassName="activeClicked">
+                            <CDBSidebarMenuItem icon="box-open">Funkcijas</CDBSidebarMenuItem>
                         </NavLink>
 
                         <CDBSidebarMenu className='border-t border-b'>

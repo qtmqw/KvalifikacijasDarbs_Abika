@@ -10,11 +10,11 @@ const AdminProductAdd = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [color, setColor] = useState([]);
-    const [price, setPrice] = useState(0);
+    const [size, setSize] = useState([]);
+    const [price, setPrice] = useState('');
     const [category, setCategory] = useState([]);
     const [categories, setCategories] = useState([]);
     const [image, setImage] = useState(null);
-    const [error, setError] = useState('');
     const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
@@ -30,6 +30,7 @@ const AdminProductAdd = () => {
         formData.append('title', title);
         formData.append('description', description);
         formData.append('color', color);
+        formData.append('size', size);
         formData.append('price', price);
         formData.append('categoryIds', categories.join(','));
         formData.append('image', image);
@@ -42,12 +43,12 @@ const AdminProductAdd = () => {
             setTitle('');
             setDescription('');
             setColor([]);
+            setSize([]);
             setPrice('');
             setCategories([]);
             setImage(null);
         } catch (err) {
             console.error(err);
-            setError(err.response.data.message);
         }
     };
 
@@ -91,23 +92,17 @@ const AdminProductAdd = () => {
                                                     onChange={(e) => setTitle(e.target.value)}
                                                 />
                                             </div>
-                                            <div className='w-[50%] pl-2'>
-                                                <h3>Color</h3>
-                                                <select
-                                                    id="color"
+                                            <div className='w-[50%] pr-2'>
+                                                <h3>Price</h3>
+                                                <input
                                                     required
+                                                    id="price"
+                                                    type="Number"
+                                                    placeholder="Price"
                                                     class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
-                                                    value={color}
-                                                    onChange={(e) => setColor([e.target.value])}
-                                                >
-                                                    <option value="">--Select a color--</option>
-                                                    <option value="Red">Red</option>
-                                                    <option value="Green">Green</option>
-                                                    <option value="Blue">Blue</option>
-                                                    <option value="White">White</option>
-                                                    <option value="Brown">Brown</option>
-                                                    <option value="Purple">Purple</option>
-                                                </select>
+                                                    value={price}
+                                                    onChange={(e) => setPrice(e.target.value)}
+                                                />
                                             </div>
                                         </label>
                                         <label className='mb-3'>
@@ -123,36 +118,69 @@ const AdminProductAdd = () => {
                                             />
                                         </label>
                                         <label className='mb-3 flex'>
-                                            <div className='w-[50%] pr-2'>
-                                                <h3>Price</h3>
-                                                <input
-                                                    required
-                                                    id="price"
-                                                    type="number"
-                                                    placeholder="Price"
-                                                    class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
-                                                    value={price}
-                                                    onChange={(e) => setPrice(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className='w-[50%] pl-2'>
-                                                <h3>Category</h3>
+                                            <div className='w-[30%] pl-2'>
+                                                <h3>Color</h3>
                                                 <select
-                                                    id="categories"
-                                                    value={categories}
-                                                    class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
-                                                    onChange={(e) =>
-                                                        setCategories(Array.from(e.target.selectedOptions, (option) => option.value))
-                                                    }
                                                     multiple
+                                                    id="color"
                                                     required
+                                                    class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
+                                                    value={color}
+                                                    onChange={(e) => setColor([e.target.value])}
                                                 >
-                                                    <option value="">--Select categories--</option>
-                                                    {category.map((category) => (
-                                                        <option key={category._id} value={category._id}>
+                                                    <option value="">--Select a color--</option>
+                                                    <option value="Red">Red</option>
+                                                    <option value="Green">Green</option>
+                                                    <option value="Blue">Blue</option>
+                                                    <option value="White">White</option>
+                                                    <option value="Brown">Brown</option>
+                                                    <option value="Purple">Purple</option>
+                                                    <option value="Black">Black</option>
+                                                    <option value="White">White</option>
+                                                </select>
+                                            </div>
+
+                                            <div className='w-[40%] pl-2'>
+                                                <h3>Category</h3>
+                                                {category.map((category) => (
+                                                    <div key={category._id}>
+                                                        <label>
+                                                            <input
+                                                                type="checkbox"
+                                                                value={category._id}
+                                                                className=' rounded-md mr-2 '
+                                                                checked={categories.includes(category._id)}
+                                                                onChange={(e) => {
+                                                                    if (e.target.checked) {
+                                                                        setCategories([...categories, e.target.value]);
+                                                                    } else {
+                                                                        setCategories(categories.filter((id) => id !== e.target.value));
+                                                                    }
+                                                                }}
+                                                            />
                                                             {category.name}
-                                                        </option>
-                                                    ))}
+                                                        </label>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            <div className='w-[30%] pl-2'>
+                                                <h3>Size</h3>
+                                                <select
+                                                    multiple
+                                                    id="size"
+                                                    required
+                                                    class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
+                                                    value={size}
+                                                    onChange={(e) => setSize([e.target.value])}
+                                                >
+                                                    <option value="">--Select a size--</option>
+                                                    <option value="XS">XS</option>
+                                                    <option value="S">S</option>
+                                                    <option value="M">M</option>
+                                                    <option value="L">L</option>
+                                                    <option value="XL">XL</option>
+                                                    <option value="XXL">XXL</option>
                                                 </select>
                                             </div>
                                         </label>
@@ -172,7 +200,7 @@ const AdminProductAdd = () => {
                                                 </span>
                                             </span>
                                             <input
-                                                type="file"                                                
+                                                type="file"
                                                 id='image'
                                                 className="hidden form-control-file"
                                                 onChange={handleImageChange}

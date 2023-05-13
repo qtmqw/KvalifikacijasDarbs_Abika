@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Cart = require("../models/Cart");
+const Cart = require("../models/Grozs");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -36,7 +36,6 @@ router.post("/add", async (req, res) => {
 
         res.status(200).json({ status: "OK", data: cartItem, userId: userId });
     } catch (error) {
-        console.error(error.message);
         res.status(500).json({ error: "Server Error" });
     }
 });
@@ -54,7 +53,6 @@ router.get("/:userId", async (req, res) => {
         const cart = await Cart.find({ user: ObjectId(userId) }).populate("product");
         res.status(200).json({ status: "OK", data: cart });
     } catch (error) {
-        console.error(error.message);
         res.status(500).json({ error: "Server Error" });
     }
 });
@@ -66,8 +64,27 @@ router.delete("/:cartItemId", async (req, res) => {
         const deletedCartItem = await Cart.findByIdAndDelete(cartItemId);
         res.status(200).json({ status: "OK", data: deletedCartItem });
     } catch (error) {
-        console.error(error.message);
         res.status(500).json({ error: "Server Error" });
+    }
+});
+
+router.put("/:cartItemId", async (req, res) => {
+    try {
+        const { quantity } = req.body;
+
+        if (quantity < 1 || quantity > 1000 || quantity % 1 !== 0) {
+            throw new Error("Invalid quantity value");
+        }
+
+        const editCart = await Cart.findByIdAndUpdate(
+            req.params.cartItemId,
+            { quantity },
+            { new: true }
+        );
+
+        res.json(editCart);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
     }
 });
 

@@ -2,8 +2,10 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer")
-const Product = require("../models/Products");
-const Category = require("../models/Category");
+const Product = require("../models/Produkti");
+const Category = require("../models/Kategorijas");
+const Discount = require("../models/Atlaide");
+
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -19,17 +21,25 @@ const upload = multer({ storage: storage })
 // get all products
 router.get("/", async (req, res) => {
     try {
-        const products = await Product.find().populate('category');
+        let products = await Product.find().populate('category').populate('discount');
+
+        // Check if color query parameter exists
+        if (req.query.color) {
+            const color = req.query.color; // convert color to lowercase
+            products = products.filter(product => product.color.some(c => c.toLowerCase() === color.toLowerCase()));
+        }
+
         res.json(products);
     } catch (err) {
         res.status(400).json(`Error: ${err}`);
     }
 });
 
+
 // add product
 router.post("/", upload.single("image"), async (req, res) => {
     try {
-        const { title, description, color, price, categoryIds } = req.body;
+        const { title, description, color, size, price, categoryIds , discount} = req.body;
 
         if (!req.file) { // check if req.file exists
             return res.status(400).json({ message: "Image file not provided" });
@@ -52,8 +62,10 @@ router.post("/", upload.single("image"), async (req, res) => {
             title,
             description,
             color,
+            size,
             price,
-            category: categories
+            category: categories,
+            discount
         });
         await product.save();
 

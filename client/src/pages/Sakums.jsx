@@ -15,55 +15,65 @@ const Saak = () => {
       <Carousel>
         <Carousel.Item >
           <img
-            className="d-block w-full 2xl:h-[1000px] xl:h-[600px] lg:h-[400px] md:h-[300px] sm:h-[180px]"
+            className="d-block w-full lg:h-[700px] sm:h-[150px]"
             src={Drebes4}
           />
         </Carousel.Item>
         <Carousel.Item >
           <img
-            className="d-block w-full 2xl:h-[1000px] xl:h-[600px] lg:h-[400px] md:h-[300px] sm:h-[180px]"
+            className="d-block w-full lg:h-[700px] sm:h-[150px]"
             src={Drebes3}
           />
         </Carousel.Item>
         <Carousel.Item >
           <img
-            className="d-block w-full 2xl:h-[1000px] xl:h-[600px] lg:h-[400px] md:h-[300px] sm:h-[180px]"
+            className="d-block w-full lg:h-[700px] sm:h-[150px]"
             src={Drebes5}
           />
         </Carousel.Item>
       </Carousel>
       <Container>
-        <div className='max-w-[100%] mx-auto flex pt-20'>
-          <div className='w-[50%] flex flex-col justify-center text-xs ml-5 mx-auto '>
-            <h1 className=' text-2xl font-bold py-2'>SIA Abika vairumtirdzniecības noliktava piedāvā sieviešu, vīriešu apģērbu un veļu!</h1>
-            <p className=' text-base'>
-              Mūsu klienti ir dažādi tir  dzniecības uzņēmumi, sākot no individuāliem komersantiem līdz veikalu tīkliem. Iepirkties SIA Abika ir izdevīgi, jo:
+        <div className="flex flex-wrap max-w-full lg:pt-20 sm:pt-10">
+          <div className="lg:w-1/2 md:w-full flex flex-col justify-center text-xs ml-5 mx-auto">
+            <h1 className="text-2xl font-bold py-2">
+              SIA Abika vairumtirdzniecības noliktava piedāvā sieviešu, vīriešu
+              apģērbu un veļu!
+            </h1>
+            <p className="text-base">
+              Mūsu klienti ir dažādi tir dzniecības uzņēmumi, sākot no individuāliem
+              komersantiem līdz veikalu tīkliem. Iepirkties SIA Abika ir izdevīgi,
+              jo:
             </p>
-            <p className='text-base'>
-              <h1 className='font-bold text-base'>1. Jūs ietaupāt laiku.</h1>Salīdzinot ar iepirkšanos ārvalstīs, kur gan ceļā gan iepērkoties jāpatērē ilgs laiks, SIA Abika papildināt preču krājumus var stundas vai dažu desmitu minūšu laikā.
-              <h1 className='font-bold text-base'>2. Prece atbilst LR likumdošanas prasībām.</h1>SIA Abika apģērbiem ir piestiprinātas uzlīmes latviešu valodā ar preces nosaukumu, ražotājvalsti un citu nepieciešamo informāciju.
-              <h1 className='font-bold text-base'>3. Jūs ietaupāt transporta izdevumus.</h1>Latvijas klientiem ceļš līdz Rīgai ir īsāks nekā līdz citu valstu galvaspilsētām un lielpilsētām.
-            </p>
+            <ul className="text-base list-disc mt-3">
+              <li>
+                <h1 className="font-bold text-base">Jūs ietaupāt laiku.</h1> Salīdzinot ar
+                iepirkšanos ārvalstīs, kur gan ceļā gan iepērkoties jāpatērē ilgs
+                laiks, SIA Abika papildināt preču krājumus var stundas vai dažu
+                desmitu minūšu laikā.
+              </li>
+              <li>
+                <h1 className="font-bold text-base">Prece atbilst LR likumdošanas prasībām.</h1>{" "}
+                SIA Abika apģērbiem ir piestiprinātas uzlīmes latviešu valodā ar
+                preces nosaukumu, ražotājvalsti un citu nepieciešamo informāciju.
+              </li>
+              <li>
+                <h1 className="font-bold text-base">Jūs ietaupāt transporta izdevumus.</h1>{" "}
+                Latvijas klientiem ceļš līdz Rīgai ir īsāks nekā līdz citu valstu
+                galvaspilsētām un lielpilsētām.
+              </li>
+            </ul>
           </div>
-          <img className='h-full w-[50%] rounded-lg' src={Drebes1} />
+          <img className="h-full lg:w-1/2 md:w-full rounded-lg" src={Drebes1} alt="Image" />
         </div>
 
-        {/* 
-Sieviešu apģērbi
-Vīriešu apģērbi
-Veļa
-Apavi
-Aksesuāri
-*/}
-
-        <div className='mt-5 mb-4 flex sm:flex-wrap lg:flex-nowrap md:w-[60%] sm:w-[60%] sm:mx-auto lg:w-full gap-4 justify-center'>
+        <div className='mt-5 mb-4 flex sm:flex-wrap lg:flex-nowrap md:w-[60%] sm:w-full sm:mx-auto lg:w-full gap-4 justify-center'>
           <div className='p-3 bg-[#fdedd5] rounded-xl shadow-md'>
-            <img src={Drebes2} alt="Sieviešu apģērbi" className='' />
-            <h1 className=' text-2xl text-center my-3'>
+            <img src={Drebes2} alt="Sieviešu apģērbi" className='w-full h-auto mx-auto' />
+            <h1 className='text-lg sm:text-2xl text-center my-3'>
               Sieviešu apģērbi
             </h1>
             <Link to="/Sortiments?category=642ab93c04519f8cce6470b7">
-              <Button className='w-full bg-[#FF7D1A] '>
+              <Button className='w-full bg-[#FF7D1A]'>
                 Apskatīt
               </Button>
             </Link>

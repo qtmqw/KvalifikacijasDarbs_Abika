@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
-import { Product, host } from '../utils/APIRoutes';
+import { Product, userR, CartA } from '../utils/APIRoutes';
 import { Container } from "react-bootstrap";
 import tee from '../assets/tee.jpg'
 import { BsCart2 } from 'react-icons/bs'
@@ -18,14 +18,16 @@ function Productshow() {
     useEffect(() => {
         axios
             .get(`${Product}/${id}`)
-            .then((res) => setProduct(res.data))
+            .then((res) => {
+                setProduct(res.data)
+            })
             .catch((err) => console.log(err));
     }, [id]);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
         axios
-            .post(`${host}/userData`, { token })
+            .post(userR, { token })
             .then((response) => {
                 setUserData(response.data.data);
             })
@@ -43,7 +45,7 @@ function Productshow() {
             return toast('You must be logged in');
         } else {
             try {
-                const response = await axios.post(`${host}/cart/add`, {
+                const response = await axios.post(CartA, {
                     userId,
                     productId,
                     quantity,
@@ -60,23 +62,13 @@ function Productshow() {
         const userId = userData?.userId;
         const productId = product._id;
         const cartItem = await addToCart(userId, productId, quantityq);
-
         if (cartItem) {
             setIsAddingToCart(true);
             toast("Product added to cart");
-            window.location.reload();
         } else {
             setIsAddingToCart(false);
             console.log("Failed to add product to cart.");
         }
-    };
-
-    const totalDiscount = () => {
-        return (50).toFixed(2);
-    };
-
-    const newPrice = () => {
-        return `${product.price}` - (`${product.price}` * totalDiscount() / 100);
     };
 
     return (
@@ -137,22 +129,28 @@ function Productshow() {
                         {product.title}
                     </h3>
                     <p className="text-[#76787F]">
-                        Product ID: {product._id}
+                        ID: {product._id}
                     </p>
                     <p className="pb-6 lg:py-6 lg:leading-6">
                         {product.description}
                     </p>
-                    <p className='md:text-xl sm:text-2xl pb-6 lg:pb-7 lg:leading-6'>Color: {product.color}</p>
+                    <p className='md:text-xl sm:text-2xl lg:leading-6'>Color: {product.color}</p>
+                    <p className='md:text-xl sm:text-2xl pb-6 lg:pb-7 lg:leading-6'>Size: {product.size}</p>
                     <div className="amount font-bold flex items-center justify-between lg:flex-col lg:items-start mb-6">
                         <div className="discount-price items-center flex">
-                            <div className="text-3xl">{newPrice()} €</div>
-                            <div className="discount text-[#FF7D1A] bg-[#FFEDE0] w-max px-2 rounded mx-5 h-6">
-                                50%
+                            <div className="text-3xl">  {product.price}  {product.discount?.title}€</div>
+                            
+                            {product.discount?.type > 0 && (
+                                <div className="discount text-[#FF7D1A] bg-[#FFEDE0] w-max px-2 rounded mx-5 h-6">
+                                    {product.discount?.type}%
+                                </div>
+                            )}
+                        </div>
+                        {product.discount?.type > 0 && (
+                            <div className="original-price text-[#76787F] line-through lg:mt-2">
+                                {product.price} €
                             </div>
-                        </div>
-                        <div className="original-price text-[#76787F] line-through lg:mt-2">
-                            {product.price} €
-                        </div>
+                        )}
                     </div>
                     <div className="sm:flex lg:mt-8 w-full">
                         <div className="quantity-container w-full bg-[#F7F8FD] rounded-lg h-14 mb-4 flex items-center justify-between px-6 lg:px-3 font-bold sm:mr-3 lg:mr-5 lg:w-1/3">
@@ -193,17 +191,18 @@ function Productshow() {
                             >
                                 +
                             </button>
-
                         </div>
                         <button className="cart w-full h-14 bg-[#FF7D1A] rounded-lg lg:rounded-xl mb-2 shadow-[#FFC799] shadow-2xl text-white flex items-center justify-center lg:w-3/5 hover:opacity-60"
-                            onClick={handleAddToCart} disabled={isAddingToCart}>
+                            onClick={handleAddToCart} disabled={isAddingToCart} disabled={!isLoggedIn}>
                             <i className='cursor-pointer text-white text-xl leading-0 pr-3 pb-1'>
                                 <BsCart2 name='cart-outline'></BsCart2>
                             </i>
                             {isAddingToCart ? "Adding..." : "Add to cart"}
                         </button>
                     </div>
-
+                    {!isLoggedIn && <div className="text-center">
+                        Lai ievietotu preci grozā nepieciešams pieslēgties
+                    </div>}
                 </div>
             </div>
 

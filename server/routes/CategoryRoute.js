@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const Category = require("../models/Category");
-const Product = require("../models/Products");
+const Category = require("../models/Kategorijas");
+const Product = require("../models/Produkti");
 
 router.get("/category", async (req, res) => {
     try {

@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 
 
 // require
-require("./models/UserSchema")
+require("./models/Lietotaji")
 require("dotenv").config();
 
 // app
@@ -27,12 +27,14 @@ const UserRoute = require('./routes/UserRoute');
 const ProductRoute = require('./routes/ProductRoute');
 const CategoryRoute = require('./routes/CategoryRoute');
 const CartRoute = require('./routes/CartRoute');
+const DiscountRoute = require('./routes/DiscountRoute');
 
 // user routes
 app.use('/', UserRoute);
 app.use('/products', ProductRoute);
 app.use('/category', CategoryRoute);
 app.use('/cart', CartRoute);
+app.use('/d', DiscountRoute);
 
 // port
 const port = process.env.PORT || 8080

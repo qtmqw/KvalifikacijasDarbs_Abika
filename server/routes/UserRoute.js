@@ -9,7 +9,7 @@ const validator = require('validator');
 const passwordValidator = require('password-validator');
 require('dotenv').config();
 // db
-require("../models/UserSchema")
+require("../models/Lietotaji")
 const User = mongoose.model("UserInfo")
 
 

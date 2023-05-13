@@ -27,7 +27,7 @@ const Pm = () => {
 
   return (
     <Container className='py-10 mx-auto'>
-      <h1 className='md:text-7xl sm:text-5xl text-3xl font-bold text-center my-3 '>Par mums</h1>
+      <h1 className='md:text-7xl sm:text-5xl text-3xl font-bold text-center my-3 '>About</h1>
       <div className=' lg:flex py-[30px] '>
         <div className='flex flex-col text-sm my-auto mr-2'>
           <h1 className='md:text-4xl sm:text-3xl text-3xl font-bold mb-4'></h1>
@@ -37,16 +37,16 @@ const Pm = () => {
           <h2 className='md:text-2xl sm:text-1xl text-1xl italic'> Privātpersonas neapkalpojam.</h2>
         </div>
         <div>
-          <img className='w-full h-auto mx-auto my-4 rounded-lg' src={Abika1} alt='/' />
+          <img className='w-full h-auto mx-auto lg:my-4 sm:mt-4 rounded-lg' src={Abika1} alt='/' />
         </div>
       </div>
-      <div className='w-full py-[2rem] '>
-        <div className=' mx-auto grid gap-4 grid-cols-4 grid-rows-1 '>
+      <div className='w-full lg:py-[2rem]  '>
+        <div className=' mx-auto grid lg:gap-4 sm:gap-2 grid-cols-4 grid-rows-1 '>
           {images.map((src, index) => (
             <img
               src={src}
               onClick={() => openImageViewer(index)}
-              className="w-full h-full rounded-lg"
+              className="w-full h-full rounded-lg cursor-pointer"
               key={index}
               style={{ margin: '2px' }}
               alt=""
