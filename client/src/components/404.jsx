@@ -4,10 +4,21 @@ import React from 'react'
 const NF = () => {
     return (
         <div className='text-center py-[10%]'>
-            <h1 className='font-bold text-[100px]'>404</h1>
-            <h2 className='font-bold text-[30px]'>Page not found</h2>
-            <a href="/" className='text-black'>Go back to home</a>
-        </div>
+            <h1 class="font-black text-gray-200 text-9xl">404</h1>
+
+            <p class="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                Uh-oh!
+            </p>
+
+            <p class="mt-4 text-gray-500">We can't find that page.</p>
+
+            <a
+                href="/"
+                class="inline-block no-underline px-5 py-3 mt-6 text-sm font-medium text-white bg-indigo-600 rounded hover:bg-indigo-700 focus:outline-none focus:ring"
+            >
+                Go Back Home
+            </a>
+        </div >
     )
 }
 

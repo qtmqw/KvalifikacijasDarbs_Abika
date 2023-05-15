@@ -193,7 +193,7 @@ function Productshow() {
                             </button>
                         </div>
                         <button className="cart w-full h-14 bg-[#FF7D1A] rounded-lg lg:rounded-xl mb-2 shadow-[#FFC799] shadow-2xl text-white flex items-center justify-center lg:w-3/5 hover:opacity-60"
-                            onClick={handleAddToCart} disabled={isAddingToCart} disabled={!isLoggedIn}>
+                            onClick={handleAddToCart} disabled={!isLoggedIn || isAddingToCart} >
                             <i className='cursor-pointer text-white text-xl leading-0 pr-3 pb-1'>
                                 <BsCart2 name='cart-outline'></BsCart2>
                             </i>

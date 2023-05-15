@@ -3,6 +3,7 @@ import { Product, Category } from '../utils/APIRoutes'
 import { Button } from "@material-tailwind/react";
 import axios from 'axios'
 import { toast } from 'react-toastify';
+import { MultiSelect, MultiSelectProps } from '@uc-react-ui/multiselect';
 
 const AdminProductAdd = () => {
 
@@ -150,6 +151,7 @@ const AdminProductAdd = () => {
                                                                 value={category._id}
                                                                 className=' rounded-md mr-2 '
                                                                 checked={categories.includes(category._id)}
+                                                                multiple
                                                                 onChange={(e) => {
                                                                     if (e.target.checked) {
                                                                         setCategories([...categories, e.target.value]);

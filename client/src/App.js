@@ -57,12 +57,12 @@ function App() {
           <Route path="/Pieslegties" element={loggedIn ? (<Sakums />) : (<Pieslegties />)} />
           <Route path="/ParolesMaina" element={loggedIn ? (<Sakums />) : (<ParolesMaina />)} />
           <Route path="/Profils" element={loggedIn ? (<Profils />) : (<Sakums />)} />
-          <Route path="/Grozs" element={<Grozs />} />
+          <Route path="/Grozs" element={loggedIn ? (<Grozs />) : (<Sakums />)} />
           <Route path="/UserDetails" element={loggedIn ? (<UserDetails />) : (<Sakums />)} />
-          <Route path="/AdminPage" element={isAdmin ? (<AdminPage />) : (<Sakums />)} />
-          <Route path="/AdminUserBoard" element={isAdmin ? (<AdminUserBoard />) : (<Sakums />)} />
-          <Route path="/AdminProducts" element={isAdmin ? (<AdminProducts />) : (<Sakums />)} />
-          <Route path="/AdminFunctions" element={isAdmin ? (<AdminFunctions />) : (<Sakums />)} />
+          <Route path="/AdminPage" element={isAdmin &&  <AdminPage />} />
+          <Route path="/AdminUserBoard" element={isAdmin && <AdminUserBoard />} />
+          <Route path="/AdminProducts" element={isAdmin &&  <AdminProducts />} />
+          <Route path="/AdminFunctions" element={isAdmin && <AdminFunctions />} />
 
           <Route path="/*" element={<NF />} />
 

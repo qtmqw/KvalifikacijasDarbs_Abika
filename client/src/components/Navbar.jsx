@@ -134,7 +134,7 @@ export default function Example() {
                             </NavDropdown.Item>
                         </NavDropdown>
                     }
-                    <Link to="/Grozs" className='p-2 lg:ml-2 mb-1'><BsCart2 className='w-7 h-7 text-black' /></Link>
+                    <Link to="/Grozs"  className='p-2 lg:ml-2 mb-1'><BsCart2 className='w-7 h-7 text-black' /></Link>
                 </div>
 
 

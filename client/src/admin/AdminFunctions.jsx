@@ -3,6 +3,7 @@ import { Container } from 'react-bootstrap';
 import { Button } from '@material-tailwind/react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { BsFillTrashFill } from 'react-icons/bs'
 
 const AdminFunctions = () => {
     const [title, setTitle] = useState('');
@@ -116,12 +117,17 @@ const AdminFunctions = () => {
                 </div>
             </div>
             <div className='flex justify-between w-full gap-4 mb-5'>
-                <div className="border-0 rounded-lg shadow-lg flex flex-col bg-white w-[32%]">
+                <div className=" border border-3 rounded-lg shadow-lg flex flex-col bg-white w-[32%]">
                     {discount.map(item => (
-                        <div className="relative p-2 flex-auto border-b border-solid border-blueGray-200">
-                            <p>Title: {item.title}</p>
-                            <p>Type: {item.type}</p>
-                            <p>Date: {item.validUntil}</p>
+                        <div className='flex'>
+                            <div className="relative p-2 flex-auto border-b border-solid border-blueGray-200">
+                                <p>Title: {item.title}</p>
+                                <p>Type: {item.type}</p>
+                                <p>Date: {item.validUntil}</p>
+                            </div>
+                            <div className='flex items-center mr-5'>
+                                <BsFillTrashFill  className='text-red-500 cursor-pointer'/>
+                            </div>
                         </div>
                     ))}
                 </div>

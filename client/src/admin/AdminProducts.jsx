@@ -46,7 +46,6 @@ const AdminProducts = () => {
                 await axios.delete(`${Product}/${productId}`);
                 setProducts(products.filter((product) => product._id !== productId));
                 toast("Product deleted")
-                window.location.reload();
 
             } catch (err) {
                 console.log(err);
@@ -119,6 +118,12 @@ const AdminProducts = () => {
                                         >
                                             Edit
                                         </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3 "
+                                        >
+                                            Discount
+                                        </th>
 
                                     </tr>
                                 </thead>
@@ -161,6 +166,13 @@ const AdminProducts = () => {
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap  text-sm font-medium">
                                                     <AdminProductEdit key={product._id} product={product} />
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <select name="" id="">
+                                                        <option value="">Procenti</option>
+                                                        <option value="">5</option>
+                                                        <option value="">10</option>
+                                                    </select>
                                                 </td>
                                             </tr>
                                         )))}

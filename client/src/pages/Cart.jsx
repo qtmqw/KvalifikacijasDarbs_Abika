@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { BsFillTrashFill } from 'react-icons/bs'
+import Checkout from '../components/Checkout';
 
 function Cart() {
 
@@ -137,7 +138,7 @@ function Cart() {
                   <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                   <polyline points="15 6 9 12 15 18" />
                 </svg>
-                <span className="text-sm pl-1 leading-none">Back</span>
+                <span className="text-lg pl-1 leading-none">Back</span>
               </Link>
               <p className="text-5xl font-black leading-10 text-gray-800 pt-3">Cart</p>
               {isLoading ? (
@@ -196,9 +197,7 @@ function Cart() {
                               +
                             </button>
                           </div>
-
                           <p className="text-base font-black leading-none text-gray-800">{item.product?.price} $</p>
-
                         </div>
                       </div>
                       <div className="w-[10%] flex justify-center">
@@ -239,11 +238,8 @@ function Cart() {
                   <div className="flex items-center pb-2 justify-between lg:pt-5 pt-20">
                     <p className="text-2xl leading-normal text-gray-800">Total</p>
                     <p className="text-2xl font-bold leading-normal text-right text-gray-800">{((totalPrice * 1.1) - totalDiscountedPrice).toFixed(2)}$</p>
-                    
                   </div>
-                  <Button className="text-base leading-none w-full py-4 bg-orange text-white">
-                    Checkout
-                  </Button>
+                  <Checkout />
                 </div>
               </div>
             </div>
