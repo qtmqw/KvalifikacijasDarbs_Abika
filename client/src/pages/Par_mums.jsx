@@ -26,10 +26,10 @@ const Pm = () => {
   };
 
   return (
-    <Container className='py-10 mx-auto'>
-      <h1 className='md:text-7xl sm:text-5xl text-3xl font-bold text-center my-3 '>About</h1>
+    <Container fluid='sm' className='py-10 mx-auto'>
+      <h1 className='md:text-7xl sm:text-5xl text-3xl font-bold text-center my-3 '>Par mums</h1>
       <div className=' lg:flex py-[30px] '>
-        <div className='flex flex-col text-sm my-auto mr-2'>
+        <div className='flex flex-col text-sm my-auto mr-2 sm:text-center tracking-wide'>
           <h1 className='md:text-4xl sm:text-3xl text-3xl font-bold mb-4'></h1>
           <h2 className='md:text-2xl sm:text-1xl text-1xl mb-4'> SIA Abika ir vairumtirdzniecības uzņēmums, kas darbojas no 2002. gada. </h2>
           <h2 className='md:text-2xl sm:text-1xl text-1xl mb-4'> <span className='font-bold'>Sortimentā</span> ir sieviešu un vīriešu apģērbs, veļa, apavi un aksesuāri.</h2>

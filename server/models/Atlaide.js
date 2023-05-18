@@ -11,7 +11,7 @@ const discountSchema = new Schema(
         type:
         {
             type: Number,
-            min: 5,
+            min: 0,
             max: 100,
         },
         validUntil: {

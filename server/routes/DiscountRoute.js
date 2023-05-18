@@ -28,4 +28,15 @@ router.post("/discount", async (req, res) => {
     }
 });
 
+router.delete("/:discountId", async (req, res) => {
+    const discountId = req.params.discountId;
+
+    try {
+        const deletedDiscount = await Discount.findByIdAndDelete(discountId);
+        res.status(200).json({ status: "OK", data: deletedDiscount });
+    } catch (error) {
+        res.status(500).json({ error: "Server Error" });
+    }
+});
+
 module.exports = router;

@@ -39,7 +39,7 @@ router.get("/", async (req, res) => {
 // add product
 router.post("/", upload.single("image"), async (req, res) => {
     try {
-        const { title, description, color, size, price, categoryIds , discount} = req.body;
+        const { title, description, color, size, price, categoryIds, discount } = req.body;
 
         if (!req.file) { // check if req.file exists
             return res.status(400).json({ message: "Image file not provided" });
@@ -78,7 +78,7 @@ router.post("/", upload.single("image"), async (req, res) => {
 // get product by id
 router.get("/:id", async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id);
+        const product = await Product.findById(req.params.id).populate('discount');
         res.json(product);
     } catch (err) {
         res.status(400).json(`Error: ${err}`);
@@ -93,6 +93,31 @@ router.put("/:id", async (req, res) => {
             req.body,
             { new: true }
         );
+        res.json(product);
+    } catch (err) {
+        res.status(400).json(`Error: ${err}`);
+    }
+});
+
+router.patch("/:id", async (req, res) => {
+    try {
+        const product = await Product.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        if (product.discount) {
+            const discount = await Discount.findById(product.discount);
+            if (discount.type !== 0) {
+                product.discountPrice = product.price * (1 - discount.type / 100);
+            } else {
+                product.discountPrice = 0;
+            }
+        } else {
+            product.discountPrice = 0;
+        }
+
+        await product.save();
         res.json(product);
     } catch (err) {
         res.status(400).json(`Error: ${err}`);
@@ -121,7 +146,5 @@ router.post("/search", async (req, res) => {
         res.status(400).json(`Error: ${err}`);
     }
 });
-
-
 
 module.exports = router;

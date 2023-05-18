@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const { Schema } = mongoose;
+const Discount = require("../models/Atlaide");
 
 const productSchema = new Schema(
     {
@@ -20,7 +21,7 @@ const productSchema = new Schema(
             type: [
                 {
                     type: String,
-                    enum: ["Red", "Green", "Blue", "White", "Brown", "Purple", "Black", "White"],
+                    enum: ["Red", "Green", "Blue", "Brown", "Purple", "Black", "White"],
                 },
             ],
             required: true,
@@ -46,8 +47,12 @@ const productSchema = new Schema(
             }
         ],
         discount: {
-            type: String,
+            type: Schema.Types.ObjectId,
             ref: "Discount",
+        },
+        discountPrice: {
+            type: Number,
+            default: 0,
         },
         created_at: {
             type: Date,
@@ -55,6 +60,28 @@ const productSchema = new Schema(
         },
     },
 );
+
+productSchema.pre("save", async function (next) {
+    try {
+        // Calculate the discount price if the discount is not 0
+        if (this.discount) {
+            const discount = await Discount.findById(this.discount);
+            if (discount && discount.type !== 0) {
+                const discountPrice = this.price * (1 - discount.type / 100);
+                this.discountPrice = discountPrice;
+                console.log(discountPrice)
+            } else {
+                this.discountPrice = 0;
+            }
+        } else {
+            this.discountPrice = 0;
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
 
 const Product = mongoose.model("Product", productSchema)
 

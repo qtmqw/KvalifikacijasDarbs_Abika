@@ -1,272 +1,212 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Link, useParams } from "react-router-dom";
+import { Product, userR, CartA } from '../utils/APIRoutes';
+import { Container } from "react-bootstrap";
+import tee from '../assets/tee.jpg'
+import { BsCart2 } from 'react-icons/bs'
+import "../product/styles.css"
+import { toast } from "react-toastify";
 
+function Productshow() {
+    const { id } = useParams();
+    const [product, setProduct] = useState(null);
+    const [userData, setUserData] = useState(null);
+    const [quantityq, setQuantity] = useState(1);
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
+    const isLoggedIn = window.localStorage.getItem("loggedIn")
+    useEffect(() => {
+        axios
+            .get(`${Product}/${id}`)
+            .then((res) => {
+                setProduct(res.data)
+            })
+            .catch((err) => console.log(err));
+    }, [id]);
 
-const add = () => {
-  return (
-    <div >
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        axios
+            .post(userR, { token })
+            .then((response) => {
+                setUserData(response.data.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }, []);
 
-      <section>
-        <div class="relative mx-auto max-w-screen-xl px-4 py-8">
-          <div class="grid grid-cols-1 items-start gap-8 md:grid-cols-2">
-            <div class="grid grid-cols-2 gap-4 md:grid-cols-1">
-              <img
-                alt="Les Paul"
-                src="https://images.unsplash.com/photo-1456948927036-ad533e53865c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-                class="aspect-square w-full rounded-xl object-cover"
-              />
+    if (!product) {
+        return <div>Loading...</div>;
+    }
 
-              
+    const addToCart = async (userId, productId, quantity) => {
+        if (!isLoggedIn) {
+            return toast('You must be logged in');
+        } else {
+            try {
+                const response = await axios.post(CartA, {
+                    userId,
+                    productId,
+                    quantity,
+                });
+                return response.data.data; // Return the added cart item
+            } catch (error) {
+                console.error(error);
+                return null; // Return null on error
+            }
+        }
+    };
+
+    const handleAddToCart = async () => {
+        const userId = userData?.userId;
+        const productId = product._id;
+        const cartItem = await addToCart(userId, productId, quantityq);
+        if (cartItem) {
+            setIsAddingToCart(true);
+            toast("Product added to cart");
+        } else {
+            setIsAddingToCart(false);
+            console.log("Failed to add product to cart.");
+        }
+    };
+
+    return (
+        <Container className="py-10">
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <Link to="/" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-black">
+                            <svg aria-hidden="true" class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+                            Sākums
+                        </Link>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <svg aria-hidden="true" class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                            <Link to="/Sortiments" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-black">Sortiments</Link>
+                        </div>
+                    </li>
+                    <li aria-current="page">
+                        <div class="flex items-center">
+                            <svg aria-hidden="true" class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 dark:text-gray-400">Product</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+
+            <div className="flex md:flex-wrap lg:flex-nowrap justify-between w-full">
+                <div className=" w-[50%]">
+                    <div className="w-[70%] border-8 border-[#FF7D1A] rounded-xl mx-auto mb-4">
+                        <img
+                            src={`/uploads/${product.image}`}
+                            /* alt={product.imageAlt} */
+                            className="w-full h-full rounded-2xl"
+                        />
+                    </div>
+                    <div className="flex gap-4 justify-center">
+                        <div className="w-[15%] border-4 border-[#FF7D1A] rounded-xl mt-1">
+                            <img src={tee} className="rounded-2xl" />
+                        </div>
+                        <div className="w-[15%] border-4 border-[#FF7D1A] rounded-xl mt-1">
+                            <img src={tee} className="rounded-2xl" />
+                        </div>
+                        <div className="w-[15%] border-4 border-[#FF7D1A] rounded-xl mt-1">
+                            <img src={tee} className="rounded-2xl" />
+                        </div>
+                        <div className="w-[15%] border-4 border-[#FF7D1A] rounded-xl mt-1">
+                            <img src={tee} className="rounded-2xl" />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="w-[40%]">
+                    <h2 className="company uppercase text-[#FF7D1A] font-bold text-sm sm:text-md tracking-wider pb-3 sm:pb-5">
+                        abika
+                    </h2>
+                    <h3 cclassName="font-bold text-3xl sm:text-4xl sm:leading-none pb-3">
+                        {product.title}
+                    </h3>
+                    <p className="text-[#76787F]">
+                        ID: {product._id}
+                    </p>
+                    <p className="pb-6 lg:py-6 lg:leading-6">
+                        {product.description}
+                    </p>
+                    <p className='md:text-xl sm:text-2xl lg:leading-6'>Color: {product.color}</p>
+                    <p className='md:text-xl sm:text-2xl pb-6 lg:pb-7 lg:leading-6'>Size: {product.size}</p>
+                    <div className="amount font-bold flex items-center justify-between lg:flex-col lg:items-start mb-6">
+                        <div className="discount-price items-center flex">
+                            <div className="text-3xl">  {product.price}  {product.discount?.title}€</div>
+                            
+                            {product.discount?.type > 0 && (
+                                <div className="discount text-[#FF7D1A] bg-[#FFEDE0] w-max px-2 rounded mx-5 h-6">
+                                    {product.discount?.type}%
+                                </div>
+                            )}
+                        </div>
+                        {product.discount?.type > 0 && (
+                            <div className="original-price text-[#76787F] line-through lg:mt-2">
+                                {product.price} €
+                            </div>
+                        )}
+                    </div>
+                    <div className="sm:flex lg:mt-8 w-full">
+                        <div className="quantity-container w-full bg-[#F7F8FD] rounded-lg h-14 mb-4 flex items-center justify-between px-6 lg:px-3 font-bold sm:mr-3 lg:mr-5 lg:w-1/3">
+                            <button
+                                className="text-[#FF7D1A] text-2xl leading-none font-bold mb-1 lg:text-3xl hover:opacity-60"
+                                onClick={() => {
+                                    if (quantityq > 1) {
+                                        setQuantity(quantityq - 1);
+                                    }
+                                }}
+                            >
+                                -
+                            </button>
+                            <input
+                                className="focus:outline-none bg-[#F7F8FD] font-bold flex text-center w-full border-0"
+                                type="number"
+                                defaultValue={1}
+                                min={1}
+                                max={100}
+                                value={quantityq}
+                                onChange={(event) => {
+                                    const value = parseInt(event.target.value);
+                                    if (isNaN(value) || value <= 0 || value % 1 !== 0) {
+                                        // If value is null, negative or zero, or a decimal
+                                        event.preventDefault();
+                                    } else {
+                                        setQuantity(value);
+                                    }
+                                }}
+                            />
+                            <button
+                                className="text-[#FF7D1A] text-2xl leading-none font-bold lg:text-3xl hover:opacity-60"
+                                onClick={() => {
+                                    if (quantityq < 100) {
+                                        setQuantity(quantityq + 1);
+                                    }
+                                }}
+                            >
+                                +
+                            </button>
+                        </div>
+                        <button className="cart w-full h-14 bg-[#FF7D1A] rounded-lg lg:rounded-xl mb-2 shadow-[#FFC799] shadow-2xl text-white flex items-center justify-center lg:w-3/5 hover:opacity-60"
+                            onClick={handleAddToCart} disabled={!isLoggedIn || isAddingToCart} >
+                            <i className='cursor-pointer text-white text-xl leading-0 pr-3 pb-1'>
+                                <BsCart2 name='cart-outline'></BsCart2>
+                            </i>
+                            {isAddingToCart ? "Adding..." : "Add to cart"}
+                        </button>
+                    </div>
+                    {!isLoggedIn && <div className="text-center">
+                        Lai ievietotu preci grozā nepieciešams pieslēgties
+                    </div>}
+                </div>
             </div>
-
-            <div class="sticky top-0">
-              <strong
-                class="rounded-full border border-blue-600 bg-gray-100 px-3 py-0.5 text-xs font-medium tracking-wide text-blue-600"
-              >
-                Pre Order
-              </strong>
-
-              <div class="mt-8 flex justify-between">
-                <div class="max-w-[35ch] space-y-2">
-                  <h1 class="text-xl font-bold sm:text-2xl">
-                    Fun Product That Does Something Cool
-                  </h1>
-
-                  <p class="text-sm">Highest Rated Product</p>
-
-                  <div class="-ms-0.5 flex">
-                    <svg
-                      class="h-5 w-5 text-yellow-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                      />
-                    </svg>
-
-                    <svg
-                      class="h-5 w-5 text-yellow-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                      />
-                    </svg>
-
-                    <svg
-                      class="h-5 w-5 text-yellow-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                      />
-                    </svg>
-
-                    <svg
-                      class="h-5 w-5 text-yellow-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                      />
-                    </svg>
-
-                    <svg
-                      class="h-5 w-5 text-gray-200"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-
-                <p class="text-lg font-bold">$119.99</p>
-              </div>
-
-              <div class="mt-4">
-                <div class="prose max-w-none">
-                  <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa
-                    veniam dicta beatae eos ex error culpa delectus rem tenetur,
-                    architecto quam nesciunt, dolor veritatis nisi minus inventore,
-                    rerum at recusandae?
-                  </p>
-                </div>
-
-                <button class="mt-2 text-sm font-medium underline">Read More</button>
-              </div>
-
-              <form class="mt-8">
-                <fieldset>
-                  <legend class="mb-1 text-sm font-medium">Color</legend>
-
-                  <div class="flex flex-wrap gap-1">
-                    <label for="color_tt" class="cursor-pointer">
-                      <input
-                        type="radio"
-                        name="color"
-                        id="color_tt"
-                        class="peer sr-only"
-                      />
-
-                      <span
-                        class="group inline-block rounded-full border px-3 py-1 text-xs font-medium peer-checked:bg-black peer-checked:text-white"
-                      >
-                        Texas Tea
-                      </span>
-                    </label>
-
-                    <label for="color_fr" class="cursor-pointer">
-                      <input
-                        type="radio"
-                        name="color"
-                        id="color_fr"
-                        class="peer sr-only"
-                      />
-
-                      <span
-                        class="group inline-block rounded-full border px-3 py-1 text-xs font-medium peer-checked:bg-black peer-checked:text-white"
-                      >
-                        Fiesta Red
-                      </span>
-                    </label>
-
-                    <label for="color_cb" class="cursor-pointer">
-                      <input
-                        type="radio"
-                        name="color"
-                        id="color_cb"
-                        class="peer sr-only"
-                      />
-
-                      <span
-                        class="group inline-block rounded-full border px-3 py-1 text-xs font-medium peer-checked:bg-black peer-checked:text-white"
-                      >
-                        Cobalt Blue
-                      </span>
-                    </label>
-                  </div>
-                </fieldset>
-
-                <fieldset class="mt-4">
-                  <legend class="mb-1 text-sm font-medium">Size</legend>
-
-                  <div class="flex flex-wrap gap-1">
-                    <label for="size_xs" class="cursor-pointer">
-                      <input
-                        type="radio"
-                        name="size"
-                        id="size_xs"
-                        class="peer sr-only"
-                      />
-
-                      <span
-                        class="group inline-flex h-8 w-8 items-center justify-center rounded-full border text-xs font-medium peer-checked:bg-black peer-checked:text-white"
-                      >
-                        XS
-                      </span>
-                    </label>
-
-                    <label for="size_s" class="cursor-pointer">
-                      <input
-                        type="radio"
-                        name="size"
-                        id="size_s"
-                        class="peer sr-only"
-                      />
-
-                      <span
-                        class="group inline-flex h-8 w-8 items-center justify-center rounded-full border text-xs font-medium peer-checked:bg-black peer-checked:text-white"
-                      >
-                        S
-                      </span>
-                    </label>
-
-                    <label for="size_m" class="cursor-pointer">
-                      <input
-                        type="radio"
-                        name="size"
-                        id="size_m"
-                        class="peer sr-only"
-                      />
-
-                      <span
-                        class="group inline-flex h-8 w-8 items-center justify-center rounded-full border text-xs font-medium peer-checked:bg-black peer-checked:text-white"
-                      >
-                        M
-                      </span>
-                    </label>
-
-                    <label for="size_l" class="cursor-pointer">
-                      <input
-                        type="radio"
-                        name="size"
-                        id="size_l"
-                        class="peer sr-only"
-                      />
-
-                      <span
-                        class="group inline-flex h-8 w-8 items-center justify-center rounded-full border text-xs font-medium peer-checked:bg-black peer-checked:text-white"
-                      >
-                        L
-                      </span>
-                    </label>
-
-                    <label for="size_xl" class="cursor-pointer">
-                      <input
-                        type="radio"
-                        name="size"
-                        id="size_xl"
-                        class="peer sr-only"
-                      />
-
-                      <span
-                        class="group inline-flex h-8 w-8 items-center justify-center rounded-full border text-xs font-medium peer-checked:bg-black peer-checked:text-white"
-                      >
-                        XL
-                      </span>
-                    </label>
-                  </div>
-                </fieldset>
-
-                <div class="mt-8 flex gap-4">
-                  <div>
-                    <label for="quantity" class="sr-only">Qty</label>
-
-                    <input
-                      type="number"
-                      id="quantity"
-                      min="1"
-                      value="1"
-                      class="w-12 rounded border-gray-200 py-3 text-center text-xs [-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    class="block rounded bg-green-600 px-5 py-3 text-xs font-medium text-white hover:bg-green-500"
-                  >
-                    Add to Cart
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  )
+        </Container>
+    );
 }
 
-export default add
+export default Productshow;

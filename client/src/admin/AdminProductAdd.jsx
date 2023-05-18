@@ -3,7 +3,6 @@ import { Product, Category } from '../utils/APIRoutes'
 import { Button } from "@material-tailwind/react";
 import axios from 'axios'
 import { toast } from 'react-toastify';
-import { MultiSelect, MultiSelectProps } from '@uc-react-ui/multiselect';
 
 const AdminProductAdd = () => {
 
@@ -17,11 +16,22 @@ const AdminProductAdd = () => {
     const [categories, setCategories] = useState([]);
     const [image, setImage] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [discount, setDiscount] = useState('');
+    const [discounts, setDiscounts] = useState([]);
+
+
 
     useEffect(() => {
         axios
             .get(Category)
             .then((response) => setCategory(response.data))
+            .catch((error) => console.error(error));
+    }, []);
+
+    useEffect(() => {
+        axios
+            .get('http://localhost:8080/d/discountAll') // Assuming you have a route for fetching discounts
+            .then((response) => setDiscounts(response.data))
             .catch((error) => console.error(error));
     }, []);
 
@@ -34,6 +44,7 @@ const AdminProductAdd = () => {
         formData.append('size', size);
         formData.append('price', price);
         formData.append('categoryIds', categories.join(','));
+        formData.append('discount', discount);
         formData.append('image', image);
         try {
             const res = await axios.post(`${Product}`, formData, {
@@ -47,6 +58,7 @@ const AdminProductAdd = () => {
             setSize([]);
             setPrice('');
             setCategories([]);
+            setDiscount('');
             setImage(null);
         } catch (err) {
             console.error(err);
@@ -65,7 +77,7 @@ const AdminProductAdd = () => {
                 type="button"
                 onClick={() => setShowModal(true)}
             >
-                Add</Button>
+                Pievienot preci</Button>
             {showModal ? (
                 <>
                     <div
@@ -75,31 +87,31 @@ const AdminProductAdd = () => {
                             <div className="border-0 rounded-lg shadow-lg relative flex flex-col  bg-white outline-none focus:outline-none w-[100%]">
                                 <div className="flex items-start justify-between p-4 border-b border-solid border-blueGray-200 rounded-t">
                                     <h3 className="text-3xl font-semibold">
-                                        Product ADD
+                                        Pievienot preci
                                     </h3>
                                 </div>
                                 <div className="relative p-6 flex-auto">
                                     <form onSubmit={handleSubmit} className="flex-col flex" encType='multipart/form-data'>
                                         <label className='mb-3 flex'>
                                             <div className='w-[50%] pr-2'>
-                                                <h3>Title</h3>
+                                                <h3>Nosaukums</h3>
                                                 <input
                                                     required
                                                     type="text"
                                                     id="title"
-                                                    placeholder="Title"
+                                                    placeholder="Nosaukums"
                                                     class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
                                                     value={title}
                                                     onChange={(e) => setTitle(e.target.value)}
                                                 />
                                             </div>
                                             <div className='w-[50%] pr-2'>
-                                                <h3>Price</h3>
+                                                <h3>Cena</h3>
                                                 <input
                                                     required
                                                     id="price"
                                                     type="Number"
-                                                    placeholder="Price"
+                                                    placeholder="Cena"
                                                     class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
                                                     value={price}
                                                     onChange={(e) => setPrice(e.target.value)}
@@ -107,12 +119,12 @@ const AdminProductAdd = () => {
                                             </div>
                                         </label>
                                         <label className='mb-3'>
-                                            <h3>Description</h3>
+                                            <h3>Apraksts</h3>
                                             <textarea
                                                 id="description"
                                                 required
                                                 type="text"
-                                                placeholder="Description"
+                                                placeholder="Apraksts"
                                                 class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
                                                 value={description}
                                                 onChange={(e) => setDescription(e.target.value)}
@@ -120,7 +132,7 @@ const AdminProductAdd = () => {
                                         </label>
                                         <label className='mb-3 flex'>
                                             <div className='w-[30%] pl-2'>
-                                                <h3>Color</h3>
+                                                <h3>Krāsa</h3>
                                                 <select
                                                     multiple
                                                     id="color"
@@ -130,19 +142,18 @@ const AdminProductAdd = () => {
                                                     onChange={(e) => setColor([e.target.value])}
                                                 >
                                                     <option value="">--Select a color--</option>
-                                                    <option value="Red">Red</option>
-                                                    <option value="Green">Green</option>
-                                                    <option value="Blue">Blue</option>
-                                                    <option value="White">White</option>
-                                                    <option value="Brown">Brown</option>
-                                                    <option value="Purple">Purple</option>
-                                                    <option value="Black">Black</option>
-                                                    <option value="White">White</option>
+                                                    <option value="Red">Sarkans</option>
+                                                    <option value="Green">Zaļš</option>
+                                                    <option value="Blue">Zils</option>
+                                                    <option value="White">Balts</option>
+                                                    <option value="Brown">Brūns</option>
+                                                    <option value="Purple">Violēts</option>
+                                                    <option value="Black">Melns</option>
                                                 </select>
                                             </div>
 
                                             <div className='w-[40%] pl-2'>
-                                                <h3>Category</h3>
+                                                <h3>Kategorijas</h3>
                                                 {category.map((category) => (
                                                     <div key={category._id}>
                                                         <label>
@@ -167,7 +178,7 @@ const AdminProductAdd = () => {
                                             </div>
 
                                             <div className='w-[30%] pl-2'>
-                                                <h3>Size</h3>
+                                                <h3>Izmērs</h3>
                                                 <select
                                                     multiple
                                                     id="size"
@@ -186,7 +197,23 @@ const AdminProductAdd = () => {
                                                 </select>
                                             </div>
                                         </label>
-                                        <h3>Image</h3>
+                                        <label className="mb-3">
+                                            <h3>Atlaide</h3>
+                                            <select
+                                                id="discount"
+                                                className="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
+                                                value={discount}
+                                                onChange={(e) => setDiscount(e.target.value)}
+                                            >
+                                                <option value="">-- Atlaides nav --</option>
+                                                {discounts.map(item => (
+                                                    <option key={item._id} value={item._id}>
+                                                        {item.title}, {item.type}%
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </label>
+                                        <h3>Attēls</h3>
                                         <label
                                             className="flex justify-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
 
@@ -209,13 +236,13 @@ const AdminProductAdd = () => {
                                             />
                                         </label>
                                         <div className="flex items-center justify-end pt-3 border-t border-solid border-blueGray-200 rounded-b mt-4 jus">
-                                            <Button type="submit" >Add Product</Button>
+                                            <Button type="submit" >Pievienot produktu</Button>
                                             <button
                                                 className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1  ease-linear transition-all duration-150"
                                                 type="button"
                                                 onClick={() => setShowModal(false)}
                                             >
-                                                Close
+                                                Aizvērt
                                             </button>
                                         </div>
                                     </form>

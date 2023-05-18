@@ -25,7 +25,7 @@ const Kont = () => {
     return (
         <Container className='py-10 mx-auto'>
 
-            <h1 className='md:text-7xl sm:text-5xl text-3xl font-bold text-center my-3 pb-5 '>Contact</h1>
+            <h1 className='md:text-7xl sm:text-5xl text-3xl font-bold text-center my-3 pb-5 '>Kontakti</h1>
 
             <div className='w-[100%] flex mb-5 justify-center'>
                 <div className='flex clex-col md:mx-auto xl:mx-0'>
@@ -39,7 +39,7 @@ const Kont = () => {
                 <iframe className='rounded-3xl' width="100%" height='500px' frameborder="0" scrolling="yes" src="https://maps.google.com/maps?width=683&amp;height=400&amp;hl=en&amp;q=Abika&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe>
             </div>
 
-            <div className='w-auto grid lg:grid-cols-2 md:grid-cols-1'>
+            <div className='w-auto flex flex-wrap justify-between'>
 
                 <div className='flex flex-col text-sm'>
                     <p><span className='font-bold'>SIA Abika adrese: </span>Vagonu iela 23, Rīga, LV-1009</p>
@@ -53,21 +53,21 @@ const Kont = () => {
                     <p>LV70HABA0551003890106</p>
                 </div>
 
-                <div class="w-full md:w-96 md:max-w-full mx-auto">
+                <div class="w-full md:w-96 md:max-w-full">
                     <div class="p-6 border border-gray-300 sm:rounded-md">
-                        <h1 className='text-xl mb-4'>Have any questions?</h1>
+                        <h1 className='text-xl mb-4'>Parādījās jautājumi?</h1>
                         <form ref={form} onSubmit={sendEmail}>
                             <label class="block mb-6">
                                 <FloatingLabel
                                     controlId="floatingInput"
-                                    label="First Name, Last Name"
+                                    label="Vārds Uzvārdse"
                                     className="mb-3 text-gray-400"
                                     name="user_name"
                                 >
                                     <Form.Control
                                         className="w-full mx-auto bg-white text-gray-700 border border-black rounded py-3 px-4 mb-3"
                                         type="text"
-                                        placeholder="First Name, Last Name"
+                                        placeholder="Vārds Uzvārds"
                                         name="user_name"
                                         required
                                     />
@@ -76,7 +76,7 @@ const Kont = () => {
                             <label class="block mb-6">
                                 <FloatingLabel
                                     controlId="floatingInput"
-                                    label="E-MAIL"
+                                    label="E-PASTS"
                                     className="mb-3 text-gray-400"
                                     name="user_email"
                                 >
@@ -93,7 +93,7 @@ const Kont = () => {
                                 <FloatingLabel
                                     controlId="floatingTextarea2"
                                     className='text-gray-400'
-                                    label="Question"
+                                    label="Jautājums"
                                     name="message"
                                 >
                                     <Form.Control

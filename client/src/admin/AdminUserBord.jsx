@@ -27,7 +27,7 @@ export default function AdminPage({ userData }) {
 
     return (
         <Container className="flex flex-col">
-            <h1 className='md:text-7xl sm:text-5xl text-3xl font-bold pt-[60px] text-center mx-auto mb-5'>Users</h1>
+            <h1 className='md:text-7xl sm:text-5xl text-3xl font-bold pt-[60px] text-center mx-auto mb-5'>Lietotāji</h1>
 
             <div className="flex flex-col my-10">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -40,25 +40,25 @@ export default function AdminPage({ userData }) {
                                             scope="col"
                                             className="px-6 py-3"
                                         >
-                                            Name
+                                            Vārds
                                         </th>
                                         <th
                                             scope="col"
                                             className="px-6 py-3"
                                         >
-                                            Email
+                                            E-pasts
                                         </th>
                                         <th
                                             scope="col"
                                             className="px-6 py-3"
                                         >
-                                            User Type
+                                            Admin/User
                                         </th>
                                         <th
                                             scope="col"
                                             className="px-6 py-3"
                                         >
-                                            Delete
+                                            Izdzēst
                                         </th>
                                     </tr>
                                 </thead>

@@ -10,13 +10,13 @@ const NF = () => {
                 Uh-oh!
             </p>
 
-            <p class="mt-4 text-gray-500">We can't find that page.</p>
+            <p class="mt-4 text-gray-500">Mēs nevaram atrast šo lapu.</p>
 
             <a
                 href="/"
-                class="inline-block no-underline px-5 py-3 mt-6 text-sm font-medium text-white bg-indigo-600 rounded hover:bg-indigo-700 focus:outline-none focus:ring"
+                class="inline-block no-underline px-5 py-3 mt-6 text-sm font-medium text-white bg-orange rounded"
             >
-                Go Back Home
+                Atpakaļ uz sākumu
             </a>
         </div >
     )

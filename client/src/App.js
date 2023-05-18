@@ -56,9 +56,8 @@ function App() {
           <Route path="/Registreties" element={loggedIn ? (<Sakums />) : (<Registreties />)} />
           <Route path="/Pieslegties" element={loggedIn ? (<Sakums />) : (<Pieslegties />)} />
           <Route path="/ParolesMaina" element={loggedIn ? (<Sakums />) : (<ParolesMaina />)} />
-          <Route path="/Profils" element={loggedIn ? (<Profils />) : (<Sakums />)} />
           <Route path="/Grozs" element={loggedIn ? (<Grozs />) : (<Sakums />)} />
-          <Route path="/UserDetails" element={loggedIn ? (<UserDetails />) : (<Sakums />)} />
+          <Route path="/Profils" element={loggedIn ? (<UserDetails />) : (<Sakums />)} />
           <Route path="/AdminPage" element={isAdmin &&  <AdminPage />} />
           <Route path="/AdminUserBoard" element={isAdmin && <AdminUserBoard />} />
           <Route path="/AdminProducts" element={isAdmin &&  <AdminProducts />} />

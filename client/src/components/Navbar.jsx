@@ -9,8 +9,6 @@ import { Link, useLocation } from "react-router-dom";
 import { AiOutlineUser } from 'react-icons/ai'
 import { NavDropdown } from 'react-bootstrap';
 import Abika from '../assets/abika.png'
-import axios from "axios";
-import { userR } from "../utils/APIRoutes"
 
 
 export default function Example() {
@@ -39,31 +37,31 @@ export default function Example() {
     const navList = (
         <ul className=" lg:flex my-auto gap-12">
             <Link to="/"
-                className={(url === "/" ? "  flex font-semibold uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-8 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-1  "
-                    : " flex font-semibold uppercase text-black no-underline mt-1 relative before:absolute before:-bottom-8 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}
+                className={(url === "/" ? "  flex font-semibold uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-[144%] before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-1  "
+                    : " flex font-semibold uppercase text-black no-underline mt-1 relative before:absolute before:-bottom-[144%] before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}
             >
-                Home
+                Sākums
             </Link>
 
             <Link to="/Par_mums"
-                className={(url === "/Par_mums" ? "  flex font-semibold uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-8 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-1  "
-                    : " flex font-semibold uppercase text-black no-underline mt-1 relative before:absolute before:-bottom-8 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}
+                className={(url === "/Par_mums" ? "  flex font-semibold uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-[144%] before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-1  "
+                    : " flex font-semibold uppercase text-black no-underline mt-1 relative before:absolute before:-bottom-[144%] before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}
             >
-                About
+                Par mums
             </Link>
 
             <Link to="/Sortiments"
-                className={(url === "/Sortiments" ? "  flex font-semibold uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-8 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-1  "
-                    : " flex font-semibold uppercase text-black no-underline mt-1 relative before:absolute before:-bottom-8 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}
+                className={(url === "/Sortiments" ? "  flex font-semibold uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-[144%] before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-1  "
+                    : " flex font-semibold uppercase text-black no-underline mt-1 relative before:absolute before:-bottom-[144%] before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}
             >
-                Products
+                Produkti
             </Link>
 
             <Link to="/Kontakti"
-                className={(url === "/Kontakti" ? "  flex font-semibold uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-8 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-1  "
-                    : " flex font-semibold uppercase text-black no-underline mt-1 relative before:absolute before:-bottom-8 before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}
+                className={(url === "/Kontakti" ? "  flex font-semibold uppercase relative before:absolute sm:before:-bottom-2 md:before:-bottom-2 lg:before:-bottom-[144%] before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-full items-center text-black no-underline mt-1  "
+                    : " flex font-semibold uppercase text-black no-underline mt-1 relative before:absolute before:-bottom-[144%] before:left-0 before:h-1 px-2 before:bg-[#FF7D1A] before:w-0 hover:before:w-full before:transition-all ")}
             >
-                Contact
+                Kontakti
             </Link>
         </ul>
     );
@@ -121,25 +119,14 @@ export default function Example() {
 
                     }
                     {isLoggedIn &&
-                        <NavDropdown
-                            id="nav-dropdown-dark-example"
-                            title='User'
-                            menuVariant="dark"
-                            className="text-white my-auto mr-3 bg-orange p-2 rounded-xl font-semibold"
-                        >
-                            <NavDropdown.Item href="/UserDetails">Profile</NavDropdown.Item>
-                            <NavDropdown.Divider />
-                            <NavDropdown.Item onClick={logOut}>
-                                Log out
-                            </NavDropdown.Item>
-                        </NavDropdown>
+                        <Link to="/Profils" className=" p-2 py-0 bg-orange rounded-xl" >
+                            <AiOutlineUser className='w-8 h-8 mx-auto my-auto text-white mt-2' />
+                        </Link>
+
                     }
-                    <Link to="/Grozs"  className='p-2 lg:ml-2 mb-1'><BsCart2 className='w-7 h-7 text-black' /></Link>
+                    <Link to="/Grozs" className='p-2 lg:ml-2 mb-1'><BsCart2 className='w-7 h-7 text-black' /></Link>
                 </div>
-
-
             </div>
-
             <MobileNav open={openNav}>
                 <div className="">
                     {navList}

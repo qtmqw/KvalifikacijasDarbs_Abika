@@ -13,19 +13,19 @@ import Abika from '../assets/abika.png'
 const Footer = () => {
   return (
     <div className='bg-[#fdedd5] shadow-lg p-4 mt-auto'>
-      <div className="flex justify-between   ">
-        <img src={Abika} className='w-[10%] h-[10%] flex self-center mr-5' />
-        <div className="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
+      <div className="flex lg:justify-between sm:flex-wrap">
+        <img src={Abika} className='lg:w-[10%] lg:h-[10%] sm:w-[40%] sm:h-[40%] flex self-center mr-5 sm:mb-5 lg:mb-0' />
+        <div className="lg:grid lg:gap-8 sm:gap-6 lg:grid-cols-3 sm:flex sm:flex-wrap">
           <div>
-            <h2 className="mb-3 text-sm font-semibold text-black uppercase ">Menu</h2>
+            <h2 className="mb-3 text-sm font-semibold text-black uppercase ">Izvēlne</h2>
             <div className="text-gray-600 font-medium grid ">
-                <a href="/Par_mums" className='mb-2 no-underline text-black'>About</a>
-                <a href="/Sortiments" className='mb-2 no-underline text-black'>Products</a>
-                <a href="/Kontakti" className='mb-2 no-underline text-black'>Contact</a>
+              <a href="/Par_mums" className='mb-2 no-underline text-black'>Par mums</a>
+              <a href="/Sortiments" className='mb-2 no-underline text-black'>Produkti</a>
+              <a href="/Kontakti" className='mb-2 no-underline text-black'>Kontakti</a>
             </div>
           </div>
           <div>
-            <h2 className="mb-3 text-sm font-semibold text-black uppercase ">Contact</h2>
+            <h2 className="mb-3 text-sm font-semibold text-black uppercase ">Kontakti</h2>
             <div className="text-gray-600 font-medium grid">
               <div className='flex clex-col mb-2'>
                 <FaEnvelope className='w-4 h-5 mr-1' /><a href="mailto:abika@inbox.lv" className='mb-2 no-underline text-black'>abika@inbox.lv</a>
@@ -38,8 +38,8 @@ const Footer = () => {
               </div>
             </div>
           </div>
-          <div>
-            <h2 className="mb-3 text-sm font-semibold text-black uppercase ">We in social networks</h2>
+          <div className='w-full'>
+            <h2 className="mb-3 text-sm font-semibold text-black uppercase lg:text-left sm:text-center ">Mēs sociālajos tīklos</h2>
             <div className='flex justify-between md:w-[50%]'>
               <FaFacebookSquare size={30} />
               <FaInstagram size={30} />

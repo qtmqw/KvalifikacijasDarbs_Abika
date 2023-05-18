@@ -155,7 +155,13 @@ const Sort = () => {
 
   // filter
   const filteredProducts = products.filter(product => {
-    const isPriceMatched = product.price >= value[0] && product.price <= value[1];
+    const isPriceMatched =
+      (product.discount && product.discount.type !== 0
+        ? product.discountPrice
+        : product.price) >= value[0] &&
+      (product.discount && product.discount.type !== 0
+        ? product.discountPrice
+        : product.price) <= value[1];
     const isSelectedCategory = selectedCategories.length === 0
       || selectedCategories.every(selectedCategory => product.category.some(cat => selectedCategory === cat._id));
     const isColorMatched = selectedColors.length === 0
@@ -165,16 +171,20 @@ const Sort = () => {
     return isPriceMatched && isSelectedCategory && isColorMatched && isSizeMatched;
   });
   const sortedProducts = filteredProducts.sort((a, b) => {
+    const priceA = a.discount && a.discount.type !== 0 ? a.discountPrice : a.price;
+    const priceB = b.discount && b.discount.type !== 0 ? b.discountPrice : b.price;
+
     if (sortOrder === "lowToHigh") {
-      return a.price - b.price;
+      return priceA - priceB;
     } else {
-      return b.price - a.price;
+      return priceB - priceA;
     }
   });
 
+
   const sortOptions = [
-    { name: 'Low to High', value: 'lowToHigh' },
-    { name: 'High to Low', value: 'highToLow' }
+    { name: 'Lētākie', value: 'lowToHigh' },
+    { name: 'Dārgākie', value: 'highToLow' }
   ];
 
   return (
@@ -247,7 +257,7 @@ const Sort = () => {
                           )}
                         </div>
                       </div>
-                      <h1 className='font-medium text-gray-900 text-2xl px-4'>Category</h1>
+                      <h1 className='font-medium text-gray-900 text-2xl px-4'>Kategorijas</h1>
                       <div className='flex flex-col space-y-4 border-b border-gray-200 text-sm font-medium text-gray-900 px-4 py-2'>
                         {categories.map(({ _id: id, name }) => (
                           <label key={id}>
@@ -265,10 +275,10 @@ const Sort = () => {
                             {name}
                           </label>
                         ))}
-                        <Button className="bg-orange p-2 w-[50%] mx-auto" onClick={clearCategories}>Clear All Categories</Button>
+                        <Button className="bg-orange p-2 w-[50%] mx-auto" onClick={clearCategories}>Noņemt kategorijas</Button>
                       </div>
                       <div className='px-4'>
-                        <span className="font-medium text-gray-900 text-2xl">Price</span> <br />
+                        <span className="font-medium text-gray-900 text-2xl">Cena</span> <br />
                         <div className=' flex justify-between mt-3'>
                           <input
                             type="number"
@@ -302,7 +312,7 @@ const Sort = () => {
                           <>
                             <h3 className="-mx-2 -my-3 flow-root">
                               <Disclosure.Button className="flex w-full items-center justify-between bg-white px-2 py-3 text-gray-400 hover:text-gray-500">
-                                <span className="font-medium text-gray-900">Color</span>
+                                <span className="font-medium text-gray-900">Krāsa</span>
                                 <span className="ml-6 flex items-center">
                                   {open ? (
                                     <MinusIcon className="h-5 w-5 text-orange" aria-hidden="true" />
@@ -336,7 +346,7 @@ const Sort = () => {
                           <>
                             <h3 className="-mx-2 -my-3 flow-root">
                               <Disclosure.Button className="flex w-full items-center justify-between bg-white px-2 py-3 text-gray-400 hover:text-gray-500">
-                                <span className="font-medium text-gray-900">Size</span>
+                                <span className="font-medium text-gray-900">Izmērs</span>
                                 <span className="ml-6 flex items-center">
                                   {open ? (
                                     <MinusIcon className="h-5 w-5 text-orange" aria-hidden="true" />
@@ -372,13 +382,13 @@ const Sort = () => {
             </Dialog>
           </Transition.Root>
           <main>
-            <div className="flex items-baseline justify-between border-b border-gray-200 bg-[#fdedd5] mt-20 pb-4 px-4 pt-4 rounded-xl shadow-md">
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900">Sotiments</h1>
+            <div className="flex items-baseline justify-between border-b border-gray-200 bg-[#fdedd5] lg:mt-20 sm:mt-5 pb-4 px-4 pt-4 rounded-xl shadow-md">
+              <h1 className="text-4xl font-bold tracking-tight text-gray-900">Produkti</h1>
               <div className="flex items-center">
                 <Menu as="div" className="relative inline-block text-left">
                   <div>
                     <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                      Sort
+                      Kārtot
                       <ChevronDownIcon
                         className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                         aria-hidden="true"
@@ -454,7 +464,7 @@ const Sort = () => {
                     </div>
                   </div>
                   {/*cetegory*/}
-                  <h1 className='font-bold text-2xl'>Category</h1>
+                  <h1 className='font-bold text-2xl'>Kategorijas</h1>
                   <div className='flex flex-col space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900 pl-5'>
                     {categories.map(({ _id: id, name }) => (
                       <label key={id}>
@@ -472,11 +482,11 @@ const Sort = () => {
                         {name}
                       </label>
                     ))}
-                    <Button className="bg-orange p-2 w-[50%] mx-auto" onClick={clearCategories}>Clear All Categories</Button>
+                    <Button className="bg-orange p-2 w-[50%] mx-auto" onClick={clearCategories}>Noņemt kategorijas</Button>
                   </div>
                   {/*price*/}
                   <div >
-                    <div className=' font-semibold text-lg pt-2'>Price</div>
+                    <div className=' font-semibold text-lg pt-2'>Cena</div>
                     <div className=' flex justify-between mt-3'>
                       <input
                         type="number"
@@ -511,7 +521,7 @@ const Sort = () => {
                       <>
                         <h3 className="-my-3 flow-root">
                           <Disclosure.Button className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                            <span className="font-semibold text-lg text-gray-900">Color</span>
+                            <span className="font-semibold text-lg text-gray-900">Krāsa</span>
                             <span className="ml-6 flex items-center">
                               {open ? (
                                 <MinusIcon className="h-5 w-5 text-orange" aria-hidden="true" />
@@ -546,7 +556,7 @@ const Sort = () => {
                       <>
                         <h3 className="-my-3 flow-root">
                           <Disclosure.Button className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                            <span className="font-semibold text-lg text-gray-900">Size</span>
+                            <span className="font-semibold text-lg text-gray-900">Izmērs</span>
                             <span className="ml-6 flex items-center">
                               {open ? (
                                 <MinusIcon className="h-5 w-5 text-orange" aria-hidden="true" />
@@ -577,8 +587,8 @@ const Sort = () => {
                   </Disclosure>
                 </form>
                 {/*product*/}
-                <div className="lg:w-[75%] lg:mx-auto md:w-full sm:mx-auto">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-4">
+                <div className="lg:w-[75%] sm:w-full md:w-full sm:mx-auto">
+                  <div className="grid sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-4 ">
                     {filteredProducts.map((product) => (
                       <div key={product._id} className="group relative shadow-sm rounded-md">
                         <div className="max-h-30 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-transparent group-hover:opacity-75 lg:aspect-none lg:h-60 shadow-md">
@@ -596,9 +606,23 @@ const Sort = () => {
                                 {product.title}
                               </Link>
                             </h3>
-                            <p className="mt-1 text-xs text-gray-500">Colors: {product.color}</p>
+                            <p className="mt-1 text-xs text-gray-500">Krāsas: {product.color}</p>
                           </div>
-                          <p className="text-xs font-medium text-gray-900">{product.price} €</p>
+                          <div className='flex'>
+                            {product.discount ?
+                              product.discount.type > 0 && (
+                                <div className="text-[#76787F] line-through text-xs font-medium mr-2">
+                                  {product.price} €
+                                </div>
+                              )
+                              : " "
+                            }
+                            <p className="text-xs font-medium text-gray-900">
+                              {product.discount && product.discount.type !== 0
+                                ? `${product.discountPrice.toFixed(2)} €`
+                                : `${product.price} €`}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     ))}

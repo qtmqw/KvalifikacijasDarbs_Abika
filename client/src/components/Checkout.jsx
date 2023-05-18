@@ -100,10 +100,12 @@ const Checkout = () => {
                                                                     <p className="text-xs text-gray-600 ">Color: {item.product?.color}</p>
                                                                 </div>
                                                             </div>
-                                                            <div className='flex flex-col justify-center'>
+                                                            <div className='flex flex-col justify-center mr-[5%] text-right'>
                                                                 <p className='text-xl'>Total</p>
                                                                 <p className="text-base font-black text-gray-800">
-                                                                    {item.product?.price * item.quantity} €
+                                                                    {item.product.discount && item.product.discountPrice !== 0
+                                                                        ? item.product.discountPrice.toFixed(2) * item.quantity
+                                                                        : item.product.price * item.quantity}
                                                                 </p>
                                                             </div>
                                                         </div>

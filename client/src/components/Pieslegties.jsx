@@ -17,15 +17,15 @@ const Prof = () => {
     }
 
     return (
-        <Container className='py-20' >
-            <div className='md:flex'>
+        <Container fluid='sm' className='flex justify-center my-[5%]' >
+            <div className='md:flex md:flex-col lg:flex-row'>
                 <div className='bg-[#fcedda] p-6 rounded-lg shadow-lg w-full'>
                     <h1 className='font-bold md:text-4xl sm:text-3xl text-3xl py-2 mb-3 mt-3'>
                         Pieslēgties
                     </h1>
                     <form onSubmit={handleSubmit}>
                         <div className="mb-6">
-                            <div className="px-3 mb-6 md:mb-0">
+                            <div className="md:px-3 sm:px-0 mb-6 md:mb-0">
                                 <label className="block uppercase tracking-wide text-gray-700 text-md">
                                     <FloatingLabel
                                         controlId="floatingInput"
@@ -43,8 +43,8 @@ const Prof = () => {
                                 </label>
                             </div>
                         </div>
-                        <div className="flex flex-wrap mb-6">
-                            <div className="w-full  px-3 mb-6 md:mb-0">
+                        <div className="flex flex-wrap">
+                            <div className="w-full  md:px-3 sm:px-0 md:mb-6 sm:mb-0">
                                 <label className="block uppercase tracking-wide text-gray-700 text-md mb-2">
                                     <FloatingLabel
                                         controlId="floatingInput"
@@ -62,10 +62,12 @@ const Prof = () => {
                                 </label>
                             </div>
                         </div>
-                        <Button type="submit" className='bg-[#FF7D1A] font-bold text-white w-auto rounded-xl ml-4 px-10 py-3'>
-                            Pieslēgties
-                        </Button>
-                        <Link to="/ParolesMaina" className="text-black ml-5">Aizmirsāt paroli?</Link>
+                        <div className="flex md:flex-row sm:flex-col">
+                            <Button type="submit" className='bg-[#FF7D1A] font-bold text-white w-auto rounded-xl md:ml-4 sm:ml-0 px-10 py-3'>
+                                Pieslēgties
+                            </Button>
+                            <Link to="/ParolesMaina" className="text-black md:mx-0 md:ml-5 md:pt-0 my-auto sm:mx-auto sm:pt-4">Aizmirsāt paroli?</Link>
+                        </div>
                     </form>
                 </div>
                 <div className='w-full p-10'>

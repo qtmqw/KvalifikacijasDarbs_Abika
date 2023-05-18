@@ -20,8 +20,8 @@ const Reg = () => {
 
   function handleSubmit(e) {
     e.preventDefault();
-      const res = Register({ username, email, password, userType });
-      console.log(res);
+    const res = Register({ username, email, password, userType });
+    console.log(res);
   };
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
@@ -72,17 +72,17 @@ const Reg = () => {
   };
 
   return (
-    <Container className='py-10 mx-auto'>
+    <Container fluid='sm' className='flex justify-center my-[5%]]'>
 
-      <div className='lg:w-[40%] md:w-[80%] sm:w-full my-4 bg-[#fcedda] p-10 rounded-lg relative mx-auto shadow-lg'>
+      <div className='lg:w-[40%] md:w-[80%] sm:w-full my-4 bg-[#fcedda] md:p-10 sm:p-5 rounded-lg relative mx-auto shadow-lg'>
         <h1 className='font-bold mx-auto md:text-4xl sm:text-3xl text-3xl py-2 mb-3'>
           Reģistrēties
         </h1>
 
         <form onSubmit={handleSubmit}>
-          
+
           <div className="mb-6">
-            <div className="px-3 mb-6 md:mb-0">
+            <div className="md:px-3 sm:px-0 mb-6 md:mb-0">
               <label className="block uppercase tracking-wide text-gray-700 text-md">
                 <FloatingLabel
                   controlId="floatingInput"
@@ -100,9 +100,8 @@ const Reg = () => {
               </label>
             </div>
           </div>
-
           <div className="mb-6">
-            <div className="px-3 mb-6 md:mb-0">
+            <div className="md:px-3 sm:px-0 mb-6 md:mb-0">
               <FloatingLabel
                 controlId="floatingInput"
                 label="E-MAIL"
@@ -120,7 +119,7 @@ const Reg = () => {
           </div>
 
           <div className="flex flex-wrap  ">
-            <div className="w-full px-3 md:mb-0">
+            <div className="w-full md:px-3 sm:px-0 md:mb-0">
               <label className="block uppercase tracking-wide text-gray-700 text-md ">
                 <FloatingLabel
                   controlId="floatingInput"
@@ -143,7 +142,7 @@ const Reg = () => {
           </div>
 
           <div className="flex flex-wrap mb-6 ">
-            <div className="w-full  px-3 mb-6 md:mb-0">
+            <div className="w-full  md:px-3 sm:px-0 mb-6 md:mb-0">
               <label className="block uppercase tracking-wide text-gray-700 text-md mb-2 ">
                 <FloatingLabel
                   controlId="floatingInput"
@@ -180,10 +179,12 @@ const Reg = () => {
               </label>
             </div>
           </div>
-          <Button type="submit" className=' bg-[#FF7D1A] text-white w-auto rounded-xl font-bold my-2 mx-auto px-10 py-3'>
-            Reģistrēties
-          </Button>
-          <Link to='/Pieslegties' className="ml-5 text-black underline">Jums jau ir konts?</Link>
+          <div className="flex md:flex-row sm:flex-col">
+            <Button type="submit" className=' bg-[#FF7D1A] font-bold text-white w-auto rounded-xl md:ml-4 sm:ml-0 px-10 py-3'>
+              Reģistrēties
+            </Button>
+            <Link to='/Pieslegties' className="text-black md:mx-0 md:ml-5 md:pt-0 my-auto sm:mx-auto sm:pt-4">Jums jau ir konts?</Link>
+          </div>
         </form>
       </div>
     </Container>
