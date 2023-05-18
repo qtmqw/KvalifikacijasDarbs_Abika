@@ -3,14 +3,12 @@ import { Container } from 'react-bootstrap';
 import PP from '../assets/pp.png'
 import { Switch, Button } from "@material-tailwind/react";
 import axios from 'axios';
-import { host } from '../utils/APIRoutes';
-import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai'
+import { host } from '../utils/APIRoutes'
 
 export default function Profils({ userData }) {
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
 
     if (!userData) {
         return <div>Loading...</div>;
@@ -21,8 +19,6 @@ export default function Profils({ userData }) {
         window.location.href = "./"
     }
 
-    const togglePasswordVisibility = () => setShowPassword(!showPassword);
-
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         console.log('Form submitted');
@@ -32,12 +28,8 @@ export default function Profils({ userData }) {
                 email,
             });
             console.log(response.data);
-
-            // Handle the response or any necessary actions after updating the data
-
         } catch (err) {
             console.error(err);
-            // Handle the error
         }
     };
 
@@ -55,7 +47,7 @@ export default function Profils({ userData }) {
                                 <Button className='w-[50%] mx-auto bg-orange' onClick={logOut}>Izrakstīties</Button>
                             </div>
                         </div>
-                        <div className=' flex flex-col gap-4 border-4 border-orange rounded-xl p-4 justify-center'>
+                        <div className=' flex flex-col gap-4 border-4 border-orange rounded-xl p-4 justify-center '>
                             <h3>Vārds: {userData.username}</h3>
                             <h3>E-pasts: {userData.email}</h3>
                             <h3>Status: {userData.userType}</h3>

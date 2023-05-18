@@ -1,52 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from "@material-tailwind/react";
-import { toast } from 'react-toastify';
-import axios from "axios";
-import { userR, CartR } from "../utils/APIRoutes";
-
+import { useUserData, useCartData } from '../API/CartAPI'
+import PDF from './Pasutijums'
 const Checkout = () => {
 
     const [showModal, setShowModal] = useState(false);
-    const [userData, setUserData] = useState(null);
-    const [cart, setCart] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        axios
-            .post(userR, { token })
-            .then((response) => {
-                setUserData(response.data.data);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    }, []);
-
-    const getUserCart = async (userId) => {
-        try {
-            const response = await axios.get(`${CartR}/${userId}`);
-            return response.data;
-        } catch (error) {
-            console.error(error);
-            return { error: "Server Error" };
-        }
-    };
-
-    useEffect(() => {
-        const fetchCart = async () => {
-            if (userData && userData.userId) {
-                const result = await getUserCart(userData.userId);
-                if (result.data) {
-                    setCart(result.data);
-                    setIsLoading(false);
-                } else {
-                    console.error(result.error);
-                }
-            }
-        };
-        fetchCart();
-    }, [userData]);
+    const userData = useUserData();
+    const { cart, isLoading, total } = useCartData(userData);
 
     return (
         <>
@@ -86,35 +46,41 @@ const Checkout = () => {
                                                 </>
                                             ) : (
                                                 cart.map((item) => (
-                                                    <label className='flex'>
-                                                        <div className="w-[20%]">
-                                                            <img src={`/uploads/${item.product?.image}`} alt className="w-full h-full object-center object-cover" />
-                                                        </div>
-                                                        <div className='w-full flex justify-between'>
-                                                            <div className='flex flex-col justify-center ml-6'>
-                                                                <div className="flex">
-                                                                    <p className="text-base font-black text-gray-800">{item.product?.title}</p>
-                                                                </div>
-                                                                <div className='flex gap-3 '>
-                                                                    <p className="text-xs text-gray-600">Size: {item.product?.size}</p>
-                                                                    <p className="text-xs text-gray-600 ">Color: {item.product?.color}</p>
-                                                                </div>
+                                                    <label >
+                                                        <div className='flex'>
+                                                            <div className="w-[20%]">
+                                                                <img src={`/uploads/${item.product?.image}`} alt className="w-full h-full object-center object-cover" />
                                                             </div>
-                                                            <div className='flex flex-col justify-center mr-[5%] text-right'>
-                                                                <p className='text-xl'>Total</p>
-                                                                <p className="text-base font-black text-gray-800">
-                                                                    {item.product.discount && item.product.discountPrice !== 0
-                                                                        ? item.product.discountPrice.toFixed(2) * item.quantity
-                                                                        : item.product.price * item.quantity}
-                                                                </p>
+                                                            <div className='w-full flex justify-between'>
+                                                                <div className='flex flex-col justify-center ml-6'>
+                                                                    <div className="flex">
+                                                                        <p className="text-base font-black text-gray-800">{item.product?.title}</p>
+                                                                    </div>
+                                                                    <div className='flex gap-3 '>
+                                                                        <p className="text-xs text-gray-600">Size: {item.product?.size}</p>
+                                                                        <p className="text-xs text-gray-600 ">Color: {item.product?.color}</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className='flex flex-col justify-center mr-[5%] text-right'>
+                                                                    <p className='text-lg font-semibold'>Daudzums</p>
+                                                                    <p className="text-base font-black text-gray-800">
+                                                                        {item.quantity}
+                                                                    </p>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </label>
                                                 ))))}
-                                        <div className="flex items-center justify-end pt-3 border-t border-solid border-blueGray-200 rounded-b mt-4 ">
-                                            <Button type="submit" >apstiprinu</Button>
+                                        <div className='flex justify-between mt-5 border-b-2 border-solid border-black'>
+                                            <p className=' font-semibold'>Kopsumma</p>
+                                            <div className='text-base font-black text-gray-800'>
+                                                {total.toFixed(2)} €
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-end pt-3 rounded-b  ">
+                                            <PDF/>
                                             <Button
-                                                className="ml-5  "
+                                                className="ml-5 bg-gray-300 leading-none text-red-600 text-sm"
                                                 type="button"
                                                 onClick={() => setShowModal(false)}
                                             >

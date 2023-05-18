@@ -1,58 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from '@material-tailwind/react';
+import React from 'react';
 import { toast } from 'react-toastify';
 import axios from "axios";
 import EEC from "../assets/EEC.gif"
-import { userR, CartR } from "../utils/APIRoutes";
+import { CartR } from "../utils/APIRoutes";
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { BsFillTrashFill } from 'react-icons/bs'
 import Checkout from '../components/Checkout';
 
-function Cart() {
+import { useUserData, useCartData, useUpdateCartItemQuantity } from '../API/CartAPI'
 
-  const [userData, setUserData] = useState(null);
-  const [cart, setCart] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+const Cart = () => {
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    axios
-      .post(userR, { token })
-      .then((response) => {
-        setUserData(response.data.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
-
-  const getUserCart = async (userId) => {
-    try {
-      const response = await axios.get(`${CartR}/${userId}`);
-      return response.data;
-    } catch (error) {
-      console.error(error);
-      return { error: "Server Error" };
-    }
-  };
-
-  useEffect(() => {
-    const fetchCart = async () => {
-      if (userData && userData.userId) {
-        const result = await getUserCart(userData.userId);
-        if (result.data) {
-          setCart(result.data);
-          setIsLoading(false);
-          console.log(result.data)
-        } else {
-          console.error(result.error);
-        }
-      }
-    };
-    fetchCart();
-  }, [userData]);
+  const userData = useUserData();
+  const { cart, setCart, isLoading, subtotal, tax, discount, total } = useCartData(userData);
+  const updateCartItemQuantity = useUpdateCartItemQuantity();
 
   const MySwal = withReactContent(Swal);
 
@@ -100,41 +63,6 @@ function Cart() {
     setCart(updatedCart);
   };
 
-  const updateCartItemQuantity = async (itemId, quantity) => {
-    try {
-      await axios.put(`${CartR}/${itemId}`, { quantity });
-      toast.success("Quantity updated successfully");
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to update quantity");
-    }
-  };
-
-  const totalPrice = cart.reduce((accumulator, item) => {
-    if (item.quantity > 15) {
-      const discountedPrice =
-        item.product.discount && item.product.discount.type !== 0
-          ? item.product.discountPrice * item.quantity * 0.95
-          : item.product.price * item.quantity * 0.95;
-      return accumulator + discountedPrice;
-    }
-    return accumulator +
-      item.product.discount && item.product.discount.type !== 0
-      ? item.product.discountPrice * item.quantity
-      : item.product.price * item.quantity;
-  }, 0);
-
-  const totalDiscountedPrice = cart.reduce((accumulator, item) => {
-    if (item.quantity > 14) {
-      const discountedPrice =
-        item.product.discount && item.product.discount.type !== 0
-          ? item.product.discountPrice * item.quantity * 0.05
-          : item.product.price * item.quantity * 0.05;
-      return accumulator + discountedPrice;
-    }
-    return accumulator;
-  }, 0)
-
   return (
     <>
 
@@ -168,10 +96,10 @@ function Cart() {
                     <>
                       <div className="lg:block sm:hidden flex items-center mt-4 pt-8 border-t border-gray-200 w-full relative" key={item._id}>
                         <div className='flex items-center'>
-                          <div className="xl:w-[15%] lg:w-[20%] ">
+                          <div className="xl:w-[10%] lg:w-[20%] ">
                             <img src={`/uploads/${item.product?.image}`} alt />
                           </div>
-                          <div className="pl-3 w-[65%] flex justify-between">
+                          <div className="pl-3 lg:w-[65%] xl:w-full flex justify-between">
                             <div className='w-[30%]'>
                               <p className="text-xs text-gray-800 md:pt-0 ">{item.product?._id}</p>
                               <p className="text-base font-black text-gray-800">{item.product?.title}</p>
@@ -303,23 +231,21 @@ function Cart() {
                   <p className="text-4xl font-black leading-9 text-gray-800">Kopsavilkums</p>
                   <div className="flex items-center justify-between pt-16 border-b-4">
                     <p className="text-base leading-none text-gray-800">Bez PVN</p>
-                    <p className="text-base leading-none text-gray-800">{totalPrice.toFixed(2)} €</p>
+                    <p className="text-base leading-none text-gray-800">{subtotal.toFixed(2)} €</p>
                   </div>
                   <div className="flex items-center justify-between pt-5 border-b-4">
                     <p className="text-base leading-none text-gray-800">PVN (10%)</p>
-                    <p className="text-base leading-none text-gray-800">{(totalPrice * 0.1).toFixed(2)} €</p>
+                    <p className="text-base leading-none text-gray-800">{tax.toFixed(2)} €</p>
                   </div>
                   <div className="flex items-center justify-between pt-5 border-b-4">
                     <p className="text-base leading-none text-gray-800">Atlaide</p>
-                    {totalDiscountedPrice > 0 && (
-                      <p className="text-base leading-none text-gray-800">{totalDiscountedPrice.toFixed(2)} €</p>
-                    )}
+                    <p className="text-base leading-none text-gray-800">{discount.toFixed(2)} €</p>
                   </div>
                 </div>
                 <div>
                   <div className="flex items-center pb-2 justify-between lg:pt-5 pt-20">
                     <p className="text-2xl leading-normal text-gray-800">Kopsumma</p>
-                    <p className="text-2xl font-bold leading-normal text-right text-gray-800">{((totalPrice * 1.1) - totalDiscountedPrice).toFixed(2)} €</p>
+                    <p className="text-2xl font-bold leading-normal text-right text-gray-800">{total.toFixed(2)} €</p>
                   </div>
                   <Checkout />
                 </div>

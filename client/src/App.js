@@ -27,7 +27,6 @@ import NF from './components/404';
 
 
 import PD from './product/prod'
-import Add from './product/add'
 function App() {
 
   const [loggedIn, setLoggedIn] = useState(false);
@@ -68,7 +67,6 @@ function App() {
           <Route path="*" element={<Navigate to="/" />} />
 
           <Route path="/PD" element={<PD />} />
-          <Route path="/Add" element={<Add />} />
         </Routes>
       </div>
 
