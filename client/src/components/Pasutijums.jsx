@@ -1,98 +1,114 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, PDFViewer, PDFDownloadLink, Font } from '@react-pdf/renderer';
 import { Button } from "@material-tailwind/react";
-const styles = StyleSheet.create({
-    page: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        padding: 10,
-    },
-    section: {
-        margin: 10,
-        padding: 10,
-        flexGrow: 1
-    },
-    heading: {
-        fontSize: 20,
-        marginBottom: 10,
-        fontWeight: 'bold'
-    },
-    paragraph: {
-        fontSize: 12,
-        marginBottom: 8
-    },
-    listItem: {
-        flexDirection: 'row',
-        marginBottom: 5
-    },
-    bulletPoint: {
-        width: 10,
-        fontSize: 12
-    },
-    listItemContent: {
-        fontSize: 12,
-        marginLeft: 5
-    }
+import axios from 'axios';
+import { OrderP } from "../utils/APIRoutes";
+
+import { useUserData, useCartData } from '../API/CartAPI'
+
+Font.register({
+    family: "Roboto",
+    src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-light-webfont.ttf"
 });
 
-const generateRandomInfo = () => {
-    const infoList = [
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        'Sed at orci nisl.',
-        'Pellentesque sit amet dapibus metus.',
-        'Vestibulum ac nunc ac justo accumsan tristique id eu neque.',
-        'Nullam eu consequat tellus, eget commodo massa.',
-        'Maecenas sem ex, rutrum sed dolor sit amet, viverra tincidunt sapien.',
-        'Etiam eleifend odio sed magna scelerisque, in viverra lectus vestibulum.',
-        'Duis sit amet enim elementum, fringilla tortor sed, vulputate felis.',
-        'Curabitur pulvinar ipsum sed orci sagittis, non dapibus arcu dapibus.',
-        'Donec tincidunt neque id nibh fermentum, non fringilla nisl efficitur.',
-    ];
-    const randomIndex = Math.floor(Math.random() * infoList.length);
-    return infoList[randomIndex];
-};
+const styles = StyleSheet.create({
+    page: {
+        fontFamily: "Roboto"
+    },
+    text: {
+        textAlign: 'center',
+        marginTop: 20,
+    },
+    info: {
+        padding: 20,
+    },
+});
 
 const MyDocument = () => (
     <Document>
-        <Page style={styles.page}>
-            <View style={styles.section}>
-                <Text style={styles.heading}>React PDF Example</Text>
-                <Text style={styles.paragraph}>This is a sample PDF generated with @react-pdf/renderer.</Text>
-                <Text style={styles.heading}>Random Information:</Text>
-                <View style={styles.listItem}>
-                    <Text style={styles.bulletPoint}>•</Text>
-                    <Text style={styles.listItemContent}>{generateRandomInfo()}</Text>
-                </View>
-                <View style={styles.listItem}>
-                    <Text style={styles.bulletPoint}>•</Text>
-                    <Text style={styles.listItemContent}>{generateRandomInfo()}</Text>
-                </View>
-                <View style={styles.listItem}>
-                    <Text style={styles.bulletPoint}>•</Text>
-                    <Text style={styles.listItemContent}>{generateRandomInfo()}</Text>
-                </View>
+        <Page size="A4" style={styles.page} >
+            <View>
+                <Text style={styles.text}>Rezervācija</Text>
+                <Text style={styles.info}>Paldies par Jūs rezervāciju mēs sagatavosim Jūs preces 5 darba dienu laikā un gaidīsim Jūs mūsu veikalā.</Text>
             </View>
         </Page>
     </Document>
 );
-const DownloadPDFButton = () => (
-    <PDFDownloadLink document={<MyDocument />} fileName="Pasūtījums.pdf">
-        {({ blob, url, loading, error }) => (
-            <div>
-                <Button className="bg-orange leading-none  text-sm" disabled={loading}>
-                    {loading ? 'Izveido PDF...' : 'apstiprinu'}
-                </Button>
-            </div>
-        )}
-    </PDFDownloadLink>
-);
 
-const add = () => {
+const DownloadPDFButton = () => {
+    const userData = useUserData();
+    const { cart, total } = useCartData(userData);
+    const placeOrder = async () => {
+        try {
+            const cartId = cart[0]._id;
+            // Create an array of items with their respective quantity
+            const items = cart.map((item) => ({
+                product: item.product._id,
+                quantity: item.quantity,
+            }));
+
+            // Data to send in the request body
+            const data = {
+                userId: userData?.userId,
+                cartId: cartId,
+                items: items,
+                total: total, // Total amount of the order
+                readyDate: getNextWorkDays(5), // Set readyDate to the next 5 work days
+            };
+            console.log(data);
+            const response = await axios.post(OrderP, data, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            const result = response.data;
+            console.log("Order placed successfully", result.order);
+        } catch (error) {
+            console.error("Failed to communicate with the server", error);
+        }
+    };
+
+    const getNextWorkDays = (numDays) => {
+        // Helper function to calculate the next work days
+        const today = new Date();
+        let count = 0;
+
+        while (count < numDays) {
+            today.setDate(today.getDate() + 1); // Move to the next day
+
+            // Check if it's a work day (Monday to Friday)
+            if (today.getDay() !== 0 && today.getDay() !== 6) {
+                count++;
+            }
+        }
+
+        // Format the date as "YYYY-MM-DD"
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    };
+
+    return (
+        <PDFDownloadLink document={<MyDocument />} fileName="Pasūtījums.pdf">
+            {({ blob, url, loading, error }) => (
+                <div>
+                    <Button className="bg-orange leading-none  text-sm" disabled={loading} onClick={placeOrder}>
+                        {loading ? 'Izveido PDF...' : 'Rezervēt'}
+                    </Button>
+                </div>
+            )}
+        </PDFDownloadLink>
+    );
+};
+
+const Add = () => {
     return (
         <div>
             <DownloadPDFButton />
         </div>
-    )
-}
+    );
+};
 
-export default add
+export default Add;

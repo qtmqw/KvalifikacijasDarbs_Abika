@@ -28,6 +28,7 @@ const ProductRoute = require('./routes/ProductRoute');
 const CategoryRoute = require('./routes/CategoryRoute');
 const CartRoute = require('./routes/CartRoute');
 const DiscountRoute = require('./routes/DiscountRoute');
+const OrderRoute = require('./routes/OrderRoute');
 
 // user routes
 app.use('/', UserRoute);
@@ -35,6 +36,7 @@ app.use('/products', ProductRoute);
 app.use('/category', CategoryRoute);
 app.use('/cart', CartRoute);
 app.use('/d', DiscountRoute);
+app.use('/order', OrderRoute);
 
 // port
 const port = process.env.PORT || 8080

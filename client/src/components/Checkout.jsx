@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from "@material-tailwind/react";
 import { useUserData, useCartData } from '../API/CartAPI'
 import PDF from './Pasutijums'
@@ -13,7 +13,7 @@ const Checkout = () => {
             <Button className="text-base leading-none w-full py-4 bg-orange text-white"
                 type="button"
                 onClick={() => setShowModal(true)}>
-                Checkout
+                Rezervēt
             </Button>
             {showModal ? (
                 <>
@@ -21,12 +21,12 @@ const Checkout = () => {
                         <div className="relative  my-6 mx-auto max-w-3xl w-[100%]">
                             <div className="border-0 rounded-lg shadow-lg relative flex flex-col  bg-white outline-none focus:outline-none w-[100%]">
                                 <div className="flex items-start justify-between p-4 border-b border-solid border-blueGray-200 rounded-t">
-                                    <h3 className="text-3xl font-semibold">Checkout</h3>
+                                    <h3 className="text-3xl font-semibold">Rezervācija</h3>
                                 </div>
                                 <div className="relative p-6 flex-auto">
                                     <label className='mb-3 flex'>
                                         <div className='w-full text-center'>
-                                            <h3>Jūs apstiprinat, ka vēlaties pasūtīt šis preces?</h3>
+                                            <h3>Jūs apstiprinat, ka vēlaties rezervēt šis preces?</h3>
                                         </div>
                                     </label>
                                     <form
@@ -78,13 +78,13 @@ const Checkout = () => {
                                             </div>
                                         </div>
                                         <div className="flex items-center justify-end pt-3 rounded-b  ">
-                                            <PDF/>
+                                            <PDF />
                                             <Button
                                                 className="ml-5 bg-gray-300 leading-none text-red-600 text-sm"
                                                 type="button"
                                                 onClick={() => setShowModal(false)}
                                             >
-                                                neapstiprinu
+                                                Atpakaļ
                                             </Button>
                                         </div>
 

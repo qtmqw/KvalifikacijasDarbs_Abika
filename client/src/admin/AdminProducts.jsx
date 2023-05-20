@@ -132,6 +132,9 @@ const AdminProducts = () => {
                                         <th scope="col" className="px-6 py-3">
                                             Atlaide
                                         </th>
+                                        <th scope="col" className="px-6 py-3">
+                                            Atlaides cena
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
@@ -198,6 +201,8 @@ const AdminProducts = () => {
                                                             </option>
                                                         ))}
                                                     </select>
+                                                </td>
+                                                <td className="text-center">
                                                     {product.discountPrice && product.discountPrice.toFixed(2)}
                                                 </td>
                                             </tr>

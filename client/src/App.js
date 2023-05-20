@@ -21,9 +21,11 @@ import AdminPage from '../src/admin/AdminPage';
 import AdminUserBoard from '../src/admin/AdminUserBord';
 import AdminProducts from '../src/admin/AdminProducts'
 import AdminFunctions from '../src/admin/AdminFunctions'
+import AdminOrderPage from '../src/admin/AdminOrderPage'
 import Footer from './components/Footer';
 import Product from './pages/Product';
 import NF from './components/404';
+import Add from './components/Pasutijums';
 
 
 import PD from './product/prod'
@@ -61,11 +63,13 @@ function App() {
           <Route path="/AdminUserBoard" element={isAdmin && <AdminUserBoard />} />
           <Route path="/AdminProducts" element={isAdmin &&  <AdminProducts />} />
           <Route path="/AdminFunctions" element={isAdmin && <AdminFunctions />} />
+          <Route path="/AdminOrderPage" element={isAdmin && <AdminOrderPage />} />
 
           <Route path="/*" element={<NF />} />
 
           <Route path="*" element={<Navigate to="/" />} />
 
+          <Route path="/Add" element={<Add />} />
           <Route path="/PD" element={<PD />} />
         </Routes>
       </div>

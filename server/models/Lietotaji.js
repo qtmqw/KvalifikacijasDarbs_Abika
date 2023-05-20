@@ -32,4 +32,10 @@ const UserSchemaDetails = new mongoose.Schema(
     }
 )
 
-mongoose.model("UserInfo", UserSchemaDetails)
+UserSchemaDetails.statics.findById = function (userId) {
+    return this.findOne({ _id: userId });
+};
+
+const User = mongoose.model("UserInfo", UserSchemaDetails);
+
+module.exports = User;

@@ -13,3 +13,5 @@ export const CartR = `${host}/cart`;
 export const CartA = `${host}/cart/add`;
 export const DiscountA = `${host}/d/discountAll`;
 export const DiscountAdd = `${host}/d/discount`;
+export const OrderP = `${host}/order/order`;
+export const OrderG = `${host}/order`;

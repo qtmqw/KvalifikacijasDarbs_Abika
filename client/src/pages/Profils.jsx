@@ -1,14 +1,25 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Container } from 'react-bootstrap';
 import PP from '../assets/pp.png'
 import { Switch, Button } from "@material-tailwind/react";
 import axios from 'axios';
 import { host } from '../utils/APIRoutes'
+import { OrderG } from "../utils/APIRoutes";
 
 export default function Profils({ userData }) {
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
+    const [orders, setOrders] = useState([]);
+
+    useEffect(() => {
+        axios
+            .get(`${OrderG}?userId=${userData}`)
+            .then((res) => {
+                setOrders(res.data.orders);
+            })
+            .catch((err) => console.log(err));
+    }, [userData]);
 
     if (!userData) {
         return <div>Loading...</div>;
@@ -23,11 +34,12 @@ export default function Profils({ userData }) {
         e.preventDefault();
         console.log('Form submitted');
         try {
-            const response = await axios.patch(`${host}/6465fdbfbf7b32ae21baa27d`, {
+            const response = await axios.patch(`${host}/${userData._id}`, {
                 username,
                 email,
             });
             console.log(response.data);
+            window.location.reload();
         } catch (err) {
             console.error(err);
         }
@@ -76,7 +88,7 @@ export default function Profils({ userData }) {
                                                                 scope="col"
                                                                 className="px-6 py-3 "
                                                             >
-                                                                Pasūtīšanas datums
+                                                                Saņemšanas datums
                                                             </th>
                                                             <th
                                                                 scope="col"
@@ -87,17 +99,19 @@ export default function Profils({ userData }) {
                                                         </tr>
                                                     </thead>
                                                     <tbody className="bg-white divide-y divide-gray-200">
-                                                        <tr>
-                                                            <td className="px-6 py-4 whitespace-wrap">
-                                                                <div className="text-sm text-gray-900 ">sdf</div>
-                                                            </td>
-                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                <div className="text-sm text-gray-900">sdf</div>
-                                                            </td>
-                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                <div className="text-sm text-gray-900">sdf</div>
-                                                            </td>
-                                                        </tr>
+                                                        {orders.map((order) => (
+                                                            <tr key={order._id}>
+                                                                <td className="px-6 py-4 whitespace-wrap">
+                                                                    <div className="text-sm text-gray-900 ">{order._id}</div>
+                                                                </td>
+                                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                                    <div className="text-sm text-gray-900">{new Date(order.readyDate).toLocaleDateString()}</div>
+                                                                </td>
+                                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                                    <div className="text-sm text-gray-900">{order.status}</div>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
                                                     </tbody>
                                                 </table>
                                             </div>

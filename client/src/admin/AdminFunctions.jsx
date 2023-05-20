@@ -94,7 +94,7 @@ const AdminFunctions = () => {
         });
     };
 
-    const handleRemoveDisc= async (itemId) => {
+    const handleRemoveDisc = async (itemId) => {
         MySwal.fire({
             title: <p>Are you sure?</p>,
             text: "You won't be able to revert this!",
@@ -190,7 +190,7 @@ const AdminFunctions = () => {
                         </h3>
                     </div>
                     <div className="relative p-6 flex-auto">
-                        <form onSubmit={handleSubmitCat} className="flex-col flex" encType='multipart/form-data'>
+                        <form onSubmit={handleSubmitCat} className="flex-col flex">
                             <label className='mb-3 flex'>
                                 <div className='w-[100%]'>
                                     <h3>Nosaukums</h3>
@@ -205,7 +205,7 @@ const AdminFunctions = () => {
                                     />
                                 </div>
                             </label>
-                            <Button type="submit" className='bg-orange'>
+                            <Button type="submit" className='bg-orange mt-[30%]'>
                                 Izveidot
                             </Button>
                         </form>

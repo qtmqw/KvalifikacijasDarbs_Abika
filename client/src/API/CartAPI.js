@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { userR, CartR } from "../utils/APIRoutes";
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 import { toast } from 'react-toastify';
 
 export const useUserData = () => {
