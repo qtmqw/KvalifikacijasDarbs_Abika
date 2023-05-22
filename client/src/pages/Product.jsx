@@ -15,6 +15,20 @@ function Productshow() {
     const [quantityq, setQuantity] = useState(1);
     const [isAddingToCart, setIsAddingToCart] = useState(false);
     const isLoggedIn = window.localStorage.getItem("loggedIn")
+    const [averageRating, setAverageRating] = useState(0);
+    const [rating, setRating] = useState(0);
+    const [isRatingSubmitted, setIsRatingSubmitted] = useState(false);
+
+
+
+    const fetchAverageRating = async (productId) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/rating/rating/${productId}`);
+            setAverageRating(response.data.averageRating);
+        } catch (error) {
+            console.error(error);
+        }
+    };
     useEffect(() => {
         axios
             .get(`${Product}/${id}`)
@@ -23,6 +37,7 @@ function Productshow() {
                 console.log(res.data)
             })
             .catch((err) => console.log(err));
+        fetchAverageRating(id);
     }, [id]);
 
     useEffect(() => {
@@ -69,6 +84,52 @@ function Productshow() {
         } else {
             setIsAddingToCart(false);
             console.log("Failed to add product to cart.");
+        }
+    };
+
+    const renderStars = (value) => {
+        const starCount = 5;
+        const filledStars = Math.floor(value);
+        const hasHalfStar = value - filledStars >= 0.5;
+
+        const stars = [];
+
+        for (let i = 1; i <= starCount; i++) {
+            if (i <= filledStars) {
+                stars.push(<span key={i} style={{ color: 'gold' }}>&#9733;</span>);
+            } else if (i === filledStars + 1 && hasHalfStar) {
+                stars.push(
+                    <span key={i} style={{ color: 'gold' }}>
+                        &#9733;
+                    </span>
+                );
+            } else {
+                stars.push(<span key={i} style={{ color: 'gray' }}>&#9733;</span>);
+            }
+        }
+
+        return stars;
+    };
+
+    const handleRatingChange = (value) => {
+        setRating(value);
+    };
+
+    const handleRatingSubmit = async () => {
+        try {
+            const response = await axios.post(`http://localhost:8080/rating/rating`, {
+                value: rating,
+                user: userData?._id,
+                product: id,
+            });
+
+            console.log(response.data);
+            setRating(0);
+            setIsRatingSubmitted(true);
+            fetchAverageRating(id);
+        } catch (error) {
+            console.error(error);
+            toast('Failed to submit rating');
         }
     };
 
@@ -144,64 +205,33 @@ function Productshow() {
                                     </div>
                                 </div>
                                 <p class="text-sm">ID: {product._id}</p>
-                                <p class="text-sm">Highest Rated Product</p>
-
-                                <div class="-ms-0.5 flex">
-                                    <svg
-                                        class="h-5 w-5 text-yellow-400"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                        />
-                                    </svg>
-
-                                    <svg
-                                        class="h-5 w-5 text-yellow-400"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                        />
-                                    </svg>
-
-                                    <svg
-                                        class="h-5 w-5 text-yellow-400"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                        />
-                                    </svg>
-
-                                    <svg
-                                        class="h-5 w-5 text-yellow-400"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                        />
-                                    </svg>
-
-                                    <svg
-                                        class="h-5 w-5 text-gray-200"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                        />
-                                    </svg>
+                                <p class="text-md">Produkta reitings</p>
+                                <div className='flex'>
+                                    <div className='text-2xl'>{renderStars(averageRating)}</div><div className='my-auto ml-3'>{averageRating} no 5</div>
                                 </div>
+                                {isRatingSubmitted ? (
+                                    <div>
+                                        <p>Reitings tika saglabāts</p>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <div>
+                                            {[1, 2, 3, 4, 5].map((value) => (
+                                                <span
+                                                    key={value}
+                                                    onClick={() => handleRatingChange(value)}
+                                                    style={{
+                                                        cursor: 'pointer',
+                                                        color: rating >= value ? 'gold' : 'gray',
+                                                    }}
+                                                >
+                                                    &#9733;
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <button onClick={handleRatingSubmit}>Submit Rating</button>
+                                    </div>
+                                )}
                             </div>
 
                             <div class="mt-4">

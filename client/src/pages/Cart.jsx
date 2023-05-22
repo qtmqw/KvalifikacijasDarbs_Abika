@@ -21,14 +21,13 @@ const Cart = () => {
 
   const handleRemoveFromCart = async (itemId) => {
     MySwal.fire({
-      title: <p>Are you sure?</p>,
-      text: "You won't be able to revert this!",
+      title: 'Vēlaties izdzēst?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
       confirmButtonColor: '#FF7D1A',
-      cancelButtonText: 'No, cancel',
-      reverseButtons: true,
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Jā, izdzēst!',
+      cancelButtonText: 'Atcelt'
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {

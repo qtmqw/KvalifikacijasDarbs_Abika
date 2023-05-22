@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const { Schema } = mongoose;
 
-const orderSchema = new Schema(
+const ratingSchema = new Schema(
     {
         user: {
             type: Schema.Types.ObjectId,
@@ -26,6 +26,6 @@ const orderSchema = new Schema(
     },
 );
 
-const Orders = mongoose.model("Orders", orderSchema)
+const Rating = mongoose.model("Rating", ratingSchema)
 
-module.exports = Orders 
+module.exports = Rating 

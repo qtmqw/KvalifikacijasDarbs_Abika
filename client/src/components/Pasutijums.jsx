@@ -1,8 +1,9 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, PDFViewer, PDFDownloadLink, Font } from '@react-pdf/renderer';
+import { Link } from "react-router-dom";
 import { Button } from "@material-tailwind/react";
 import axios from 'axios';
-import { OrderP } from "../utils/APIRoutes";
+import { OrderP, CartR } from "../utils/APIRoutes";
 
 import { useUserData, useCartData } from '../API/CartAPI'
 
@@ -37,7 +38,7 @@ const MyDocument = () => (
 
 const DownloadPDFButton = () => {
     const userData = useUserData();
-    const { cart, total } = useCartData(userData);
+    const { cart, total, setCart } = useCartData(userData);
     const placeOrder = async () => {
         try {
             const cartId = cart[0]._id;
@@ -90,14 +91,34 @@ const DownloadPDFButton = () => {
         return `${year}-${month}-${day}`;
     };
 
+    const deleteCartItems = async (userId) => {
+        try {
+            const response = await axios.delete(`${CartR}/${userId}/delete`);
+            return response.data;
+        } catch (error) {
+            throw new Error('Failed to delete cart items');
+        }
+    };
+
+    const handleDeleteCart = () => {
+        deleteCartItems(userData._id)
+            .then(() => {
+                setCart([]);
+                window.location.reload(); // Clear the cart state
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
     return (
         <PDFDownloadLink document={<MyDocument />} fileName="Pasūtījums.pdf">
             {({ blob, url, loading, error }) => (
-                <div>
-                    <Button className="bg-orange leading-none  text-sm" disabled={loading} onClick={placeOrder}>
+                <Link to='/'>
+                    <Button className="bg-orange leading-none  text-sm" disabled={loading} onClick={() => { placeOrder(); handleDeleteCart(); }}>
                         {loading ? 'Izveido PDF...' : 'Rezervēt'}
                     </Button>
-                </div>
+                </Link>
             )}
         </PDFDownloadLink>
     );

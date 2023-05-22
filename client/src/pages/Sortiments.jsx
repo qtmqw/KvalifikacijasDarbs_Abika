@@ -588,7 +588,7 @@ const Sort = () => {
                 </form>
                 {/*product*/}
                 <div className="lg:w-[75%] sm:w-full md:w-full sm:mx-auto">
-                  <div className="grid sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5  gap-4 ">
+                  <div className="grid sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 ">
                     {filteredProducts.map((product) => (
                       <div key={product._id} className="group relative shadow-sm rounded-md">
                         <div className="max-h-30 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-transparent group-hover:opacity-75 lg:aspect-none lg:h-60 shadow-md">

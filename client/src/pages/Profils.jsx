@@ -11,15 +11,17 @@ export default function Profils({ userData }) {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [orders, setOrders] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         axios
-            .get(`${OrderG}?userId=${userData}`)
+            .get(`${OrderG}/${userData._id}`)
             .then((res) => {
                 setOrders(res.data.orders);
             })
             .catch((err) => console.log(err));
     }, [userData]);
+
 
     if (!userData) {
         return <div>Loading...</div>;
@@ -45,6 +47,20 @@ export default function Profils({ userData }) {
         }
     };
 
+    const handleCancelOrder = async (orderId) => {
+        try {
+            const response = await axios.patch(`${OrderG}/${orderId}/status`, {
+                status: 'Atcelts',
+            });
+            window.location.reload();
+            console.log(response.data);
+            // Refresh the orders list or update the specific order in the state
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+
     return (
         <Container fluid='sm'>
             <div className="auth-wrapper">
@@ -66,7 +82,7 @@ export default function Profils({ userData }) {
                         </div>
                     </div>
                     <div className='flex flex-wrap justify-between'>
-                        <div className='mb-5 lg:w-[45%] sm:w-full'>
+                        <div className='mb-5 lg:w-[60%] sm:w-full'>
                             <div className='border-b-2 border-orange'>
                                 <h2 className='mt-5'>Letotāja pasūtījumi</h2>
                             </div>
@@ -82,7 +98,7 @@ export default function Profils({ userData }) {
                                                                 scope="col"
                                                                 className="px-6 py-3 "
                                                             >
-                                                                Pasūtījuma ID
+                                                                Rezervācijas ID
                                                             </th>
                                                             <th
                                                                 scope="col"
@@ -96,22 +112,47 @@ export default function Profils({ userData }) {
                                                             >
                                                                 Status
                                                             </th>
+                                                            <th
+                                                                scope="col"
+                                                                className="px-6 py-3 "
+                                                            >
+                                                                Atcelt rezervāciju
+                                                            </th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody className="bg-white divide-y divide-gray-200">
-                                                        {orders.map((order) => (
-                                                            <tr key={order._id}>
-                                                                <td className="px-6 py-4 whitespace-wrap">
-                                                                    <div className="text-sm text-gray-900 ">{order._id}</div>
-                                                                </td>
-                                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900">{new Date(order.readyDate).toLocaleDateString()}</div>
-                                                                </td>
-                                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900">{order.status}</div>
-                                                                </td>
-                                                            </tr>
-                                                        ))}
+                                                    <tbody className="bg-white divide-y divide-gray-200 ">
+                                                        {!orders.length ? (
+                                                            <p className=' mx-3 font-bold text-lg my-3 justify-center'>
+                                                                Jums nav rezervāciju
+                                                            </p>
+                                                        ) : (
+                                                            orders.map((order) => (
+                                                                <tr key={order._id}>
+                                                                    <td className="px-6 py-4 whitespace-wrap">
+                                                                        <div className="text-sm text-gray-900 ">{order._id}</div>
+                                                                    </td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                                        <div className="text-sm text-gray-900">{new Date(order.readyDate).toLocaleDateString()}</div>
+                                                                    </td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                                        <div className={`status ${order.status.includes('Gatavs') ? 'text-green-500' : order.status.includes('Atcelts') ? 'text-red-500' : 'text-blue-500'}`}>
+                                                                            {order.status}
+                                                                        </div>
+                                                                    </td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                                        {order.status.includes('Apstrādā') ? (
+                                                                            <Button
+                                                                                className="bg-red-400"
+                                                                                onClick={() => handleCancelOrder(order._id)}
+                                                                            >
+                                                                                Atcelt
+                                                                            </Button>
+                                                                        ) : (
+                                                                            <></>
+                                                                        )}
+                                                                    </td>
+                                                                </tr>
+                                                            )))}
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -120,12 +161,12 @@ export default function Profils({ userData }) {
                                 </div>
                             </div>
                         </div>
-                        <div className='lg:w-[50%] sm:w-full mb-5'>
+                        <div className='lg:w-[35%] sm:w-full mb-5'>
                             <div className='border-b-2 border-orange mb-3'>
-                                <h2 className='mt-5'>Profila iestatījumi</h2>
+                                <h2 className='mt-5'>Profila Vārda/Epasta maiņa</h2>
                             </div>
                             <div className='w-full flex lg:flex-row sm:flex-col'>
-                                <div className='lg:w-[50%] sm:w-full flex justify-between my-3 mr-auto'>
+                                <div className='w-full flex justify-center my-3 '>
                                     <form onSubmit={handleFormSubmit} className=' flex flex-col gap-3'>
                                         <div className='text-xl'>
                                             Vārda maiņa
@@ -147,14 +188,8 @@ export default function Profils({ userData }) {
                                                 className="w-[90%] px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow-md outline-none focus:outline-none focus:shadow-outline"
                                             />
                                         </div>
-                                        <Button type="submit" className='w-[90%] bg-orange'>Submit</Button>
+                                        <Button type="submit" className='w-[90%] bg-orange'>Mainīt</Button>
                                     </form>
-                                </div>
-                                <div className=' lg:w-[45%] sm:w-full  flex justify-between my-3'>
-                                    <div className='text-xl'>
-                                        Dark mode <br />
-                                        <Switch />
-                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -1,41 +1,122 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Button } from 'react-bootstrap';
-import { host } from '../utils/APIRoutes';
-const OrderForm = () => {
-  const [user, setUser] = useState('');
-  const [cart, setCart] = useState([]);
-  const [total, setTotal] = useState(0);
+import { Container } from 'react-bootstrap';
 
-  const handleOrder = async () => {
+const RatingPage = () => {
+  const [rating, setRating] = useState(0);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [ratings, setRatings] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
+
+  const handleRatingChange = (value) => {
+    setRating(value);
+  };
+
+  const handleRatingSubmit = async () => {
     try {
-      // Send the order data to the backend
-      const response = await axios.post(`${host}/ord/order`, { user, cart, total });
+      const response = await axios.post(`http://localhost:8080/rating/rating`, {
+        value: rating,
+        user: '6468ab7c5f8239b55f5a95f0',
+        product: '6465e9dc5deccd380c508fbc',
+      });
 
-      // Handle the response
-      if (response.data.success) {
-        // Order created successfully
-        console.log('Order placed:', response.data.order);
-        // Reset the form or show a success message
-      } else {
-        // Order creation failed
-        console.error('Failed to create order:', response.data.error);
-        // Show an error message to the user
-      }
+      console.log(response.data);
+      setRating(0);
+      setErrorMessage('');
+      fetchAverageRating('6465e9dc5deccd380c508fbc');
     } catch (error) {
-      console.error('Error creating order:', error);
-      // Show an error message to the user
+      console.error(error);
+      if (error.response && error.response.data && error.response.data.error) {
+        setErrorMessage(error.response.data.error);
+      } else {
+        setErrorMessage('Failed to submit rating');
+      }
     }
   };
 
+  const fetchRatings = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/rating/ratings');
+      setRatings(response.data.ratings);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchAverageRating = async (productId) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/rating/rating/${productId}`);
+      setAverageRating(response.data.averageRating);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRatings();
+    fetchAverageRating('6465e9dc5deccd380c508fbc');
+  }, []);
+
+  const renderStars = (value) => {
+    const starCount = 5;
+    const filledStars = Math.floor(value);
+    const hasHalfStar = value - filledStars >= 0.5;
+
+    const stars = [];
+
+    for (let i = 1; i <= starCount; i++) {
+      if (i <= filledStars) {
+        stars.push(<span key={i} style={{ color: 'gold' }}>&#9733;</span>);
+      } else if (i === filledStars + 1 && hasHalfStar) {
+        stars.push(
+          <span key={i} style={{ color: 'gold' }}>
+            &#9733;
+          </span>
+        );
+      } else {
+        stars.push(<span key={i} style={{ color: 'gray' }}>&#9733;</span>);
+      }
+    }
+
+    return stars;
+  };
+
   return (
-    <div>
-      {/* Form fields for user, cart, and total */}
-      <input type="text" value={user} onChange={(e) => setUser(e.target.value)} />
-      {/* Other form fields for cart and total */}
-      <Button onClick={handleOrder}>Place Order</Button>
-    </div>
+    <Container>
+      <h2>Rate the Product</h2>
+      {errorMessage}
+      <div>
+        {[1, 2, 3, 4, 5].map((value) => (
+          <span
+            key={value}
+            onClick={() => handleRatingChange(value)}
+            style={{
+              cursor: 'pointer',
+              color: rating >= value ? 'gold' : 'gray',
+            }}
+          >
+            &#9733;
+          </span>
+        ))}
+      </div>
+      <button onClick={handleRatingSubmit}>Submit Rating</button>
+
+      <h2>All Ratings</h2>
+      <ul>
+        {ratings.map((rating) => (
+          <li key={rating._id}>
+            User: {rating.user}, Product: {rating.product}, Value: {rating.value}
+          </li>
+        ))}
+      </ul>
+
+      <h2>Average Rating</h2>
+      <div className='flex'>
+        <div className='text-2xl'>{renderStars(averageRating)}</div><div className='my-auto ml-3'>{averageRating} out of 5</div> 
+      </div>
+
+    </Container>
   );
 };
 
-export default OrderForm;
+export default RatingPage;

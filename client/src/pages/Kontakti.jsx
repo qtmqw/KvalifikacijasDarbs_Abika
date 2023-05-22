@@ -60,7 +60,7 @@ const Kont = () => {
                             <label class="block mb-6">
                                 <FloatingLabel
                                     controlId="floatingInput"
-                                    label="Vārds Uzvārdse"
+                                    label="Vārds Uzvārds"
                                     className="mb-3 text-gray-400"
                                     name="user_name"
                                 >

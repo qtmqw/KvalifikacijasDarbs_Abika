@@ -4,6 +4,9 @@ import { Button } from "@material-tailwind/react";
 import axios from 'axios';
 import { OrderG } from "../utils/APIRoutes";
 import { toast } from 'react-toastify';
+import { BsFillTrashFill } from 'react-icons/bs'
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 
 const AdminOrderPage = () => {
@@ -28,6 +31,37 @@ const AdminOrderPage = () => {
             })
             .catch((err) => console.log(err));
     }, []);
+
+    const MySwal = withReactContent(Swal);
+
+    const deleteOrder = (orderId) => {
+        axios
+            .delete(`${OrderG}/${orderId}`)
+            .then((res) => {
+                const updatedOrders = orders.filter((order) => order._id !== orderId);
+                setOrder(updatedOrders);
+                toast.success("Order deleted successfully");
+            })
+            .catch((err) => {
+                toast.error("Failed to delete order");
+            });
+    };
+
+    const handleDeleteOrder = (orderId) => {
+        MySwal.fire({
+            title: 'Vēlaties izdzēst?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#FF7D1A',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Jā, izdzēst!',
+            cancelButtonText: 'Atcelt'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteOrder(orderId);
+            }
+        });
+    };
 
 
     return (
@@ -56,6 +90,9 @@ const AdminOrderPage = () => {
                                         </th>
                                         <th scope="col" className="px-6 py-3">
                                             Status
+                                        </th>
+                                        <th>
+                                            Dzēst
                                         </th>
                                     </tr>
                                 </thead>
@@ -97,6 +134,22 @@ const AdminOrderPage = () => {
                                                     <option value="Atcelts">Atcelts</option>
                                                 </select>
                                             </td>
+                                            <td>
+                                                {order.status.includes('Gatavs') || order.status.includes('Atcelts') ? (
+                                                    <BsFillTrashFill
+                                                        className="cursor-pointer text-2xl"
+                                                        color="red"
+                                                        buttonType="filled"
+                                                        rounded={false}
+                                                        block={false}
+                                                        iconOnly={false}
+                                                        ripple="light"
+                                                        onClick={() => handleDeleteOrder(order._id)}
+                                                    />
+                                                ) : (
+                                                    <></>
+                                                )}
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -123,10 +176,7 @@ const AdminOrderPage = () => {
                 </div>
             </div>
         </Container>
-
     );
 };
-
-
 
 export default AdminOrderPage;

@@ -60,6 +60,25 @@ router.get("/", async (req, res) => {
     }
 });
 
+router.get("/:userId", async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Fetch orders for the specific user and populate the associated user and cart details
+        const orders = await Orders.find({ user: userId })
+            .populate("user", "username email")
+            .populate({
+                path: "items.product",
+                select: "title price",
+            });
+
+        res.json({ orders });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to fetch orders" });
+    }
+});
+
 router.patch("/:id/status", async (req, res) => {
     try {
         const { id } = req.params;
@@ -82,5 +101,27 @@ router.patch("/:id/status", async (req, res) => {
         res.status(500).json({ error: "Failed to update the order status" });
     }
 });
+
+router.delete("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Find the order by ID
+        const order = await Orders.findById(id);
+
+        if (!order) {
+            return res.status(404).json({ error: "Order not found" });
+        }
+
+        // Delete the order
+        await order.remove();
+
+        res.json({ message: "Order deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to delete the order" });
+    }
+});
+
 
 module.exports = router;

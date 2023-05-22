@@ -15,20 +15,29 @@ const AdminFunctions = () => {
     const [name, setName] = useState('');
     const [discount, setDiscount] = useState([]);
     const [category, setCategory] = useState([]);
+    const [ratings, setRatings] = useState([]);
 
+
+    const fetchRatings = async () => {
+        try {
+            // Replace the URL with your ratings route endpoint
+            const response = await axios.get('http://localhost:8080/rating/ratings');
+            setRatings(response.data.ratings);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     useEffect(() => {
         axios
             .get(DiscountA)
             .then((response) => setDiscount(response.data))
             .catch((error) => console.error(error));
-    }, []);
-
-    useEffect(() => {
         axios
             .get(Category)
             .then((response) => setCategory(response.data))
             .catch((error) => console.error(error));
+        fetchRatings();
     }, []);
 
     const handleSubmit = async (e) => {
@@ -214,8 +223,23 @@ const AdminFunctions = () => {
                 <div className="border-0 rounded-lg shadow-lg  flex flex-col mx-auto  bg-white w-[33%]">
                     <div className="flex items-start justify-between p-4 border-b border-solid border-blueGray-200 rounded-t">
                         <h3 className="text-3xl font-semibold">
-                            Something
+                            Produktu reitingi
                         </h3>
+                    </div>
+                    <div>
+                        {ratings.map((rating) => (
+                            <div key={rating._id} className="p-2 flex-col border-b-2 border-solid border-blueGray-200">
+                                <p>
+                                    User: {rating.user}
+                                </p>
+                                <p>
+                                    Product: {rating.product}
+                                </p>
+                                <p>
+                                    Reitings: {rating.value}
+                                </p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>

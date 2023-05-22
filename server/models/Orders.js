@@ -29,7 +29,7 @@ const orderSchema = new Schema({
         type: [
             {
                 type: String,
-                enum: ["Gatavs", "Atcelts"],
+                enum: ["Gatavs", "Atcelts", "Apstrādā"],
             },
         ],
         required: true,
