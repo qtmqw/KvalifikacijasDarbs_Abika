@@ -207,9 +207,11 @@ function Productshow() {
                                 <p class="text-sm">ID: {product._id}</p>
                                 <p class="text-md">Produkta reitings</p>
                                 <div className='flex'>
-                                    <div className='text-2xl'>{renderStars(averageRating)}</div><div className='my-auto ml-3'>{averageRating} no 5</div>
+                                    <div className='text-2xl'>{renderStars(averageRating)}</div><div className='my-auto ml-3'>{averageRating.toFixed(2)} no 5</div>
                                 </div>
-                                {isRatingSubmitted ? (
+                                {!isLoggedIn ? (
+                                    <div>Lai novērtēt produktu nepieciešams pieslēgties.</div>
+                                ) : (isRatingSubmitted ? (
                                     <div>
                                         <p>Reitings tika saglabāts</p>
                                     </div>
@@ -231,7 +233,7 @@ function Productshow() {
                                         </div>
                                         <button onClick={handleRatingSubmit}>Submit Rating</button>
                                     </div>
-                                )}
+                                ))}
                             </div>
 
                             <div class="mt-4">
@@ -330,7 +332,7 @@ function Productshow() {
                                         <i className='cursor-pointer text-white text-xl leading-0 pr-3 pb-1'>
                                             <BsCart2 name='cart-outline'></BsCart2>
                                         </i>
-                                        {isAddingToCart ? "Adding..." : "Add to cart"}
+                                        {isAddingToCart ? "Produkts tika pievienots" : "Ielikt grozā"}
                                     </button>
                                 </div>
                                 {!isLoggedIn && <div className="text-center">
