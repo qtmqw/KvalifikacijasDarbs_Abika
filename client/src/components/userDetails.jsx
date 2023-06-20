@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Profils from '../pages/Profils'
-import AdminPage from '../admin/AdminPage'
+import AdminUserBoard from '../admin/AdminUserBord'
 import { UserData } from '../API/Users'
 
 export default function UserDetails() {
@@ -12,5 +12,5 @@ export default function UserDetails() {
         console.log(res);
     }, []);
 
-    return admin ? <AdminPage /> : <Profils userData={userData} />;
+    return admin ? <AdminUserBoard /> : <Profils userData={userData} />;
 }

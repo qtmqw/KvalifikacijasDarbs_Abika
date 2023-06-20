@@ -7,14 +7,10 @@ const Product = require("../models/Produkti");
 
 router.post("/order", async (req, res) => {
     try {
-        // Extract data from the request body
         const { userId, cartId, items, total, readyDate } = req.body;
-
-        // Find the user and cart based on the provided IDs
         const user = await User.findById(userId);
         const cart = await Cart.findById(cartId).populate("product");
 
-        // Create a new order
         const order = new Orders({
             user: user._id,
             items: items,
@@ -23,29 +19,26 @@ router.post("/order", async (req, res) => {
             status: "Apstrādā",
         });
 
-        // Save the order
         await order.save();
 
-        // Update the cart status and reduce the product quantities
-        for (const item of cart) {
-            const product = await Product.findById(item.product._id);
+        for (const item of cart.items) {
+            const product = await Product.findById(item.product);
             product.quantity -= item.quantity;
             await product.save();
         }
 
-        // Update the cart status
         cart.status = "completed";
         await cart.save();
 
         res.status(201).json({ message: "Order placed successfully", order });
     } catch (error) {
         console.error(error);
+        res.status(500).json({ error: "Failed to place the order" });
     }
 });
 
 router.get("/", async (req, res) => {
     try {
-        // Fetch all orders and populate the associated user and cart details
         const orders = await Orders.find()
             .populate("user", "username email")
             .populate({
@@ -64,7 +57,6 @@ router.get("/:userId", async (req, res) => {
     try {
         const { userId } = req.params;
 
-        // Fetch orders for the specific user and populate the associated user and cart details
         const orders = await Orders.find({ user: userId })
             .populate("user", "username email")
             .populate({
@@ -84,7 +76,6 @@ router.patch("/:id/status", async (req, res) => {
         const { id } = req.params;
         const { status } = req.body;
 
-        // Find the order by ID and update the status
         const order = await Orders.findByIdAndUpdate(
             id,
             { status },
@@ -106,14 +97,12 @@ router.delete("/:id", async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Find the order by ID
         const order = await Orders.findById(id);
 
         if (!order) {
             return res.status(404).json({ error: "Order not found" });
         }
 
-        // Delete the order
         await order.remove();
 
         res.json({ message: "Order deleted successfully" });

@@ -1,27 +1,47 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react';
 import emailjs from '@emailjs/browser';
-import {
-    FaEnvelope,
-    FaMobile,
-    FaMapMarked
-} from 'react-icons/fa'
-import { FloatingLabel, Form, Container } from 'react-bootstrap'
-import { toast } from "react-toastify";
+import { FaEnvelope, FaMobile, FaMapMarked } from 'react-icons/fa';
+import { FloatingLabel, Form, Container } from 'react-bootstrap';
+import { toast } from 'react-toastify';
+import { Button } from '@material-tailwind/react';
+
 const Kont = () => {
-    const form = useRef()
+    const form = useRef();
+
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [message, setMessage] = useState('');
+    const [isFormValid, setIsFormValid] = useState(false);
 
     const sendEmail = (e) => {
         e.preventDefault();
 
-        emailjs.sendForm('service_a0x9ncm', 'template_lo7n8le', form.current, 'Oa7iM7Kjfxirv1Zmz')
-            .then((result) => {
-                toast('Email sent to Admin');
+        emailjs.sendForm('service_a0x9ncm', 'template_lo7n8le', form.current, 'Oa7iM7Kjfxirv1Zmz').then(
+            (result) => {
+                toast.success('E-pasts veiksmīgi nosūtīts');
                 console.log(result.text);
-            }, (error) => {
+            },
+            (error) => {
                 console.log(error.text);
-            });
-            e.target.reset()
+            }
+        );
+        e.target.reset();
     };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+
+        if (name === 'user_name') {
+            setName(value);
+        } else if (name === 'user_email') {
+            setEmail(value);
+        } else if (name === 'message') {
+            setMessage(value);
+        }
+
+        setIsFormValid(name && email && message);
+    };
+
     return (
         <Container className='py-10 mx-auto'>
 
@@ -31,7 +51,7 @@ const Kont = () => {
                 <div className='flex clex-col md:mx-auto xl:mx-0'>
                     <FaMobile className='xl:w-4 xl:h-9 mx-1' /><p className='md:text-md sm:text-sm xl:text-2xl xl:mr-10 lg:mr-10 md:mr-10 mt-[2px]'>67382030, 20005038, 29462665</p>
                     <FaEnvelope className='xl:w-6 xl:h-10 mx-1' /><a href="mailto:abika@inbox.lv" className='md:text-md sm:text-sm xl:text-2xl xl:mr-10 lg:mr-10 md:mr-10 sm:mr-3 no-underline text-black'><p>abika@inbox.lv</p></a>
-                    <FaMapMarked className='xl:w-6 xl:h-9 mx-1' /><p className='md:text-md sm:text-sm xl:text-2xl no-underline text-black'>Vagonu iela 23, Rīga</p>
+                    <FaMapMarked className='xl:w-6 xl:h-9 mx-1' /><a href="https://goo.gl/maps/KGR9PbkcxnyssUnp7" className='md:text-md sm:text-sm xl:text-2xl no-underline text-black'>Vagonu iela 23, Rīga</a>
                 </div>
             </div>
 
@@ -69,45 +89,55 @@ const Kont = () => {
                                         type="text"
                                         placeholder="Vārds Uzvārds"
                                         name="user_name"
+                                        value={name}
+                                        onChange={handleInputChange}
                                         required
                                     />
                                 </FloatingLabel>
                             </label>
-                            <label class="block mb-6">
+                            <label className='block mb-6'>
                                 <FloatingLabel
-                                    controlId="floatingInput"
-                                    label="E-PASTS"
-                                    className="mb-3 text-gray-400"
-                                    name="user_email"
+                                    controlId='floatingInput'
+                                    label='E-PASTS'
+                                    className='mb-3 text-gray-400'
+                                    name='user_email'
                                 >
                                     <Form.Control
-                                        className="w-full mx-auto bg-white text-gray-700 border border-black rounded py-3 px-4 mb-3"
-                                        type="email"
-                                        placeholder="name@example.com"
-                                        name="user_email"
+                                        className='w-full mx-auto bg-white text-gray-700 border border-black rounded py-3 px-4 mb-3'
+                                        type='email'
+                                        placeholder='name@example.com'
+                                        name='user_email'
+                                        value={email}
+                                        onChange={handleInputChange}
                                         required
                                     />
                                 </FloatingLabel>
                             </label>
-                            <label class="block mb-6">
+                            <label className='block mb-6'>
                                 <FloatingLabel
-                                    controlId="floatingTextarea2"
+                                    controlId='floatingTextarea2'
                                     className='text-gray-400'
-                                    label="Jautājums"
-                                    name="message"
+                                    label='Jautājums'
+                                    name='message'
                                 >
                                     <Form.Control
-                                        as="textarea"
-                                        placeholder="Question"
+                                        as='textarea'
+                                        placeholder='Question'
                                         style={{ height: '100px' }}
-                                        name="message"
+                                        name='message'
+                                        value={message}
+                                        onChange={handleInputChange}
                                         required
                                     />
                                 </FloatingLabel>
                             </label>
-                            <button type="submit" className="h-10 px-5 text-white bg-[#FF7D1A] rounded-lg">
+                            <Button
+                                type='submit'
+                                className='px-5 text-white bg-[#FF7D1A] rounded-lg'
+                                disabled={!isFormValid}
+                            >
                                 Nosūtīt
-                            </button>
+                            </Button>
                         </form>
                     </div>
                 </div>

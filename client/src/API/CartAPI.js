@@ -74,7 +74,7 @@ export const useCartData = (userData) => {
             updatedDiscount = updatedSubtotal * 0.05;
         }
 
-        const updatedTax = updatedSubtotal * 0.1;
+        const updatedTax = updatedSubtotal * 0.21;
         const updatedTotal = updatedSubtotal - updatedDiscount + updatedTax;
 
         setSubtotal(updatedSubtotal);

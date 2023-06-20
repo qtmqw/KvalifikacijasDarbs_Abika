@@ -4,19 +4,16 @@ const Cart = require("../models/Grozs");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
-// Add a product to the user's cart
 router.post("/add", async (req, res) => {
     const { userId, productId, quantity } = req.body;
 
     try {
-        // Check if the product already exists in the cart
         let cartItem = await Cart.findOne({
             user: ObjectId(userId),
             product: ObjectId(productId),
         });
 
         if (cartItem) {
-            // If it does, update the quantity of that cart item
             const totalQuantity = cartItem.quantity + quantity;
             cartItem.quantity = totalQuantity;
 
@@ -25,7 +22,6 @@ router.post("/add", async (req, res) => {
             console.log(JSON.stringify(totalQuantity));
             await cartItem.save();
         } else {
-            // If it doesn't, create a new cart item
             cartItem = new Cart({
                 user: ObjectId(userId),
                 product: ObjectId(productId),
@@ -43,7 +39,6 @@ router.post("/add", async (req, res) => {
 router.get("/:userId", async (req, res) => {
     const userId = req.params.userId;
 
-    // Check if userId is a valid ObjectId
     if (!ObjectId.isValid(userId)) {
         res.status(400).json({ error: "Invalid userId" });
         return;
@@ -92,7 +87,6 @@ router.delete("/:userId/delete", async (req, res) => {
     const { userId } = req.params;
 
     try {
-        // Find and delete all cart items for the user
         const deletedCartItems = await Cart.deleteMany({ user: ObjectId(userId) });
 
         res.status(200).json({ status: "OK", data: deletedCartItems });

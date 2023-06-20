@@ -19,8 +19,7 @@ import {
   MinusIcon,
   PlusIcon,
 } from '@heroicons/react/20/solid'
-
-import "../product/styles.css"
+import "./styles.css"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -28,7 +27,7 @@ function classNames(...classes) {
 
 const useStyles = makeStyles({
   root: {
-    color: 'orange', // change color here
+    color: 'orange',
   },
 });
 
@@ -51,7 +50,6 @@ const Sort = () => {
     axios.get(Product, { params: { color: selectedColors.join(",") } })
       .then(response => {
         setProducts(response.data);
-        // Extract available colors from products
         const colors = [...new Set(response.data.flatMap(product => product.color))];
         setAvailableColors(colors);
         const sizes = [...new Set(response.data.flatMap(product => product.size))];
@@ -168,16 +166,24 @@ const Sort = () => {
       || selectedColors.some((color) => product.color.includes(color));
     const isSizeMatched = selectedSizes.length === 0
       || selectedSizes.some((size) => product.size.includes(size));
-    return isPriceMatched && isSelectedCategory && isColorMatched && isSizeMatched;
+    const isTitleMatched = searchTerm === ""
+      || product.title.toLowerCase().startsWith(searchTerm.toLowerCase());
+    return isPriceMatched && isSelectedCategory && isColorMatched && isSizeMatched && isTitleMatched;
   });
   const sortedProducts = filteredProducts.sort((a, b) => {
-    const priceA = a.discount && a.discount.type !== 0 ? a.discountPrice : a.price;
-    const priceB = b.discount && b.discount.type !== 0 ? b.discountPrice : b.price;
-
-    if (sortOrder === "lowToHigh") {
-      return priceA - priceB;
+    if (a.quantity === 0 && b.quantity !== 0) {
+      return 1;
+    } else if (a.quantity !== 0 && b.quantity === 0) {
+      return -1;
     } else {
-      return priceB - priceA;
+      const priceA = a.discount && a.discount.type !== 0 ? a.discountPrice : a.price;
+      const priceB = b.discount && b.discount.type !== 0 ? b.discountPrice : b.price;
+
+      if (sortOrder === "lowToHigh") {
+        return priceA - priceB;
+      } else {
+        return priceB - priceA;
+      }
     }
   });
 
@@ -237,25 +243,6 @@ const Sort = () => {
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <div className="relative">
-                          {searchResults.length > 0 && (
-                            <div className="bg-[#fdedd5] p-1 rounded-lg absolute top-full left-0 right-0 z-10">
-                              {searchResults.map((product) => (
-                                <div key={product._id}>
-                                  <Link to={`/products/${product._id}`} className="text-black no-underline">
-                                    <div className="mt-1 bg-white rounded-lg shadow-sm cursor-pointer flex">
-                                      <img className="rounded-lg md:max-w-14 max-h-14 ml-1 p-1" src={`/uploads/${product.image}`} />
-                                      <div className="my-auto w-full ml-4 uppercase font-bold">
-                                        <div>{product.title}</div>
-                                        <div className=' font-semibold text-gray-400'>price: {product.price} €,  Color: {product.color}</div>
-                                      </div>
-                                    </div>
-                                  </Link>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
                       </div>
                       <h1 className='font-medium text-gray-900 text-2xl px-4'>Kategorijas</h1>
                       <div className='flex flex-col space-y-4 border-b border-gray-200 text-sm font-medium text-gray-900 px-4 py-2'>
@@ -443,25 +430,6 @@ const Sort = () => {
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <div className="relative">
-                      {searchResults.length > 0 && (
-                        <div className="bg-[#fdedd5] p-1 rounded-lg absolute top-full left-0 right-0 z-10">
-                          {searchResults.map((product) => (
-                            <div key={product._id}>
-                              <Link to={`/products/${product._id}`} className="text-black no-underline">
-                                <div className="mt-1 bg-white rounded-lg shadow-sm cursor-pointer flex">
-                                  <img className="rounded-lg md:max-w-14 max-h-14 ml-1 p-1" src={`/uploads/${product.image}`} />
-                                  <div className="my-auto w-full ml-4 uppercase font-bold">
-                                    <div>{product.title}</div>
-                                    <div className=' font-semibold text-gray-400'>price: {product.price} €,  Color: {product.color}</div>
-                                  </div>
-                                </div>
-                              </Link>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
                   </div>
                   {/*cetegory*/}
                   <h1 className='font-bold text-2xl'>Kategorijas</h1>
@@ -591,32 +559,46 @@ const Sort = () => {
                   <div className="grid sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 ">
                     {filteredProducts.map((product) => (
                       <div key={product._id} className="group relative shadow-sm rounded-md">
-                        <div className="max-h-30 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md bg-transparent group-hover:opacity-75 lg:aspect-none lg:h-60 shadow-md">
-                          <img
-                            src={`/uploads/${product.image}`}
-                            alt="..."
-                            className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-                          />
-                        </div>
+                        {product.quantity === 0 ? (
+                          <div className="max-h-30 aspect-w-1 aspect-h-1 w-full rounded-md bg-transparent opacity-30 lg:h-60 shadow-md">
+                            <img
+                              src={product.image}
+                              alt="..."
+                              className="h-full w-full object-cover object-center lg:h-full lg:w-full"
+                            />
+                          </div>
+                        ) : (
+                          <div className="max-h-30 aspect-w-1 aspect-h-1 w-full rounded-md bg-transparent group-hover:opacity-75 lg:h-60 shadow-md">
+                            <img
+                              src={product.image}
+                              alt="..."
+                              className="h-full w-full object-cover object-center lg:h-full lg:w-full"
+                            />
+                          </div>
+                        )}
                         <div className="mt-2 flex justify-between mx-2">
                           <div>
                             <h3 className="text-xs text-gray-700">
-                              <Link to={`/products/${product._id}`} className="text-black no-underline">
-                                <span aria-hidden="true" className="absolute inset-0" />
-                                {product.title}
-                              </Link>
+                              {product.quantity === 0 ? (
+                                <span className="text-black">
+                                  {product.title}
+                                </span>
+                              ) : (
+                                <Link to={`/products/${product._id}`} className="text-black no-underline">
+                                  <span aria-hidden="true" className="absolute inset-0" />
+                                  {product.title}
+                                </Link>
+                              )}
                             </h3>
-                            <p className="mt-1 text-xs text-gray-500">Krāsas: {product.color}</p>
+                            <p className="mt-1 mb-0 text-xs text-gray-500">Krāsas: {product.color}</p>
+                            <p className="mt-1 mb-2 text-xs text-gray-500">Daudzums: {product.quantity}</p>
                           </div>
                           <div className='flex'>
-                            {product.discount ?
-                              product.discount.type > 0 && (
-                                <div className="text-[#76787F] line-through text-xs font-medium mr-2">
-                                  {product.price} €
-                                </div>
-                              )
-                              : " "
-                            }
+                            {product.discount && product.discount.type > 0 && (
+                              <div className="text-[#76787F] line-through text-xs font-medium mr-2">
+                                {product.price} €
+                              </div>
+                            )}
                             <p className="text-xs font-medium text-gray-900">
                               {product.discount && product.discount.type !== 0
                                 ? `${product.discountPrice.toFixed(2)} €`

@@ -40,13 +40,31 @@ export default function AdminPage({ userData }) {
                                             scope="col"
                                             className="px-6 py-3"
                                         >
+                                            Lietotājvārds
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3"
+                                        >
                                             Vārds
                                         </th>
                                         <th
                                             scope="col"
                                             className="px-6 py-3"
                                         >
+                                            Uzvārds
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3"
+                                        >
                                             E-pasts
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-6 py-3"
+                                        >
+                                            Uzņēmums
                                         </th>
                                         <th
                                             scope="col"
@@ -72,7 +90,16 @@ export default function AdminPage({ userData }) {
                                                     <div className="text-sm text-gray-900">{i.username}</div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-900">{i.name}</div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-900">{i.lastname}</div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-900">{i.email}</div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="text-sm text-gray-900">{i.company}</div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="text-sm text-gray-900">{i.userType}</div>

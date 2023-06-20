@@ -1,6 +1,5 @@
 const mongoose = require("mongoose")
 const { Schema } = mongoose;
-const Discount = require("../models/Atlaide");
 
 const productSchema = new Schema(
     {
@@ -21,7 +20,7 @@ const productSchema = new Schema(
             type: [
                 {
                     type: String,
-                    enum: ["Red", "Green", "Blue", "Brown", "Purple", "Black", "White"],
+                    enum: ["Sarkans", "Zaļš", "Zils", "Brūns", "Violēts", "Melns", "Balts", "Rozs", "Dzeltens", "Orandž", "Pelēks"],
                 },
             ],
             required: true,
@@ -30,7 +29,7 @@ const productSchema = new Schema(
             type: [
                 {
                     type: String,
-                    enum: ["XS", "S", "M", "L", "XL", "XXL"],
+                    enum: ["XS", "S", "M", "L", "XL", "XXL", "30", "30.5", "31", "32", "32.5", "33", "33.5", "34.5", "35", "35.5", "36", "37", "37.5", "38", "39", "40", "41", "41.5", "42", "43"]
                 },
             ],
             required: true,
@@ -54,6 +53,16 @@ const productSchema = new Schema(
             type: Number,
             default: 0,
         },
+        quantity: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 1000,
+            validate: {
+                validator: Number.isInteger,
+                message: "Quantity must be an integer value",
+            },
+        },
         created_at: {
             type: Date,
             default: Date.now,
@@ -61,28 +70,6 @@ const productSchema = new Schema(
     },
 );
 
-productSchema.pre("save", async function (next) {
-    try {
-        // Calculate the discount price if the discount is not 0
-        if (this.discount) {
-            const discount = await Discount.findById(this.discount);
-            if (discount && discount.type !== 0) {
-                const discountPrice = this.price * (1 - discount.type / 100);
-                this.discountPrice = discountPrice;
-                console.log(discountPrice)
-            } else {
-                this.discountPrice = 0;
-            }
-        } else {
-            this.discountPrice = 0;
-        }
-
-        next();
-    } catch (error) {
-        next(error);
-    }
-});
-
 const Product = mongoose.model("Product", productSchema)
 
-module.exports = Product 
+module.exports = Product

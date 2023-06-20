@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { Container } from 'react-bootstrap';
-import PP from '../assets/pp.png'
-import { Switch, Button } from "@material-tailwind/react";
+import PP from '../assets/user.png'
+import { Button } from "@material-tailwind/react";
 import axios from 'axios';
-import { host } from '../utils/APIRoutes'
-import { OrderG } from "../utils/APIRoutes";
+import { host, Product, OrderG } from "../utils/APIRoutes";
 
 export default function Profils({ userData }) {
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [orders, setOrders] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         axios
@@ -47,14 +45,27 @@ export default function Profils({ userData }) {
         }
     };
 
+    const isFormValid = () => {
+        return username.length >= 6 && username.length <= 20;
+    };
+
     const handleCancelOrder = async (orderId) => {
         try {
             const response = await axios.patch(`${OrderG}/${orderId}/status`, {
                 status: 'Atcelts',
             });
+            const order = orders.find((order) => order._id === orderId);
+            if (order) {
+                const productId = order.items[0].product._id;
+                const productResponse = await axios.get(`${Product}/${productId}`);
+                const product = productResponse.data;
+                const updatedQuantity = product.quantity + order.items[0].quantity;
+                await axios.patch(`${Product}/q/${productId}`, {
+                    quantity: updatedQuantity,
+                });
+            }
             window.location.reload();
             console.log(response.data);
-            // Refresh the orders list or update the specific order in the state
         } catch (err) {
             console.error(err);
         }
@@ -66,19 +77,20 @@ export default function Profils({ userData }) {
             <div className="auth-wrapper">
                 <div className="auth-inner">
                     <div>
-                        <h2 className=' text-center pt-5 pb-3'>Lietotāja profils</h2>
+                        <h2 className=' md:text-7xl sm:text-5xl text-3xl font-bold text-center my-5'>Lietotāja profils</h2>
                     </div>
-                    <div className='max-w-[100%] flex flex-wrap justify-between'>
-                        <div className='mb-3'>
-                            <div className=' flex flex-col justify-center'>
-                                <img src={PP} alt="profil picture" className='w-[50%] h-[100%] mx-auto rounded-full border-4 border-orange mb-3' />
-                                <Button className='w-[50%] mx-auto bg-orange' onClick={logOut}>Izrakstīties</Button>
+                    <div className='max-w-[100%] flex justify-between'>
+                        <div className='mb-3 lg:w-[50%]'>
+                            <div className='lg:w-[50%] flex flex-col mx-auto'>
+                                <img src={PP} alt="profil picture" className='w-[70%] h-[100%] mx-auto rounded-full border-4 border-orange mb-3' />
+                                <Button className='w-[100%] mx-auto bg-orange' onClick={logOut}>Izrakstīties</Button>
                             </div>
                         </div>
-                        <div className=' flex flex-col gap-4 border-4 border-orange rounded-xl p-4 justify-center '>
-                            <h3>Vārds: {userData.username}</h3>
+                        <div className=' lg:w-[50%] sm:w-full flex flex-col gap-4 border-4 border-orange rounded-xl p-4 justify-center '>
+                            <h3>Lietotājvārds: {userData.username}</h3>
+                            <h3>Vārds Uzvārds: {userData.name} {userData.lastname}</h3>
                             <h3>E-pasts: {userData.email}</h3>
-                            <h3>Status: {userData.userType}</h3>
+                            <h3>Uzņēmums: {userData.company}</h3>
                         </div>
                     </div>
                     <div className='flex flex-wrap justify-between'>
@@ -169,7 +181,7 @@ export default function Profils({ userData }) {
                                 <div className='w-full flex justify-center my-3 '>
                                     <form onSubmit={handleFormSubmit} className=' flex flex-col gap-3'>
                                         <div className='text-xl'>
-                                            Vārda maiņa
+                                            Lietotājvārda maiņa
                                             <input
                                                 type="text"
                                                 placeholder={userData.username}
@@ -188,7 +200,9 @@ export default function Profils({ userData }) {
                                                 className="w-[90%] px-3 py-2 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow-md outline-none focus:outline-none focus:shadow-outline"
                                             />
                                         </div>
-                                        <Button type="submit" className='w-[90%] bg-orange'>Mainīt</Button>
+                                        <Button type="submit" className='w-[90%] bg-orange' disabled={!isFormValid()}>
+                                            Mainīt
+                                        </Button>
                                     </form>
                                 </div>
                             </div>

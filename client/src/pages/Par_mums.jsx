@@ -1,5 +1,9 @@
 import React, { useCallback, useState } from 'react'
-import Abika1 from '../assets/abika1.png';
+import Abika from '../assets/abika.JPG';
+import PM1 from '../assets/PM1.JPG';
+import PM2 from '../assets/PM2.JPG';
+import PM3 from '../assets/PM3.JPG';
+import PM4 from '../assets/PM4.JPG';
 import { Container } from 'react-bootstrap'
 import ImageViewer from 'react-simple-image-viewer';
 
@@ -8,12 +12,7 @@ const Pm = () => {
 
   const [currentImage, setCurrentImage] = useState(0);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
-  const images = [
-    `https://abika.lv/content/data/gallery/par-mums/1489559519-3893.jpeg`,
-    `https://abika.lv/content/data/gallery/par-mums/1489559520-0764.jpeg`,
-    `https://abika.lv/content/data/gallery/par-mums/1489559521-4285.jpeg`,
-    `https://abika.lv/content/data/gallery/par-mums/1489559520-7414.jpeg`
-  ];
+  const images = [PM4, PM3, PM2, PM1];
 
   const openImageViewer = useCallback((index) => {
     setCurrentImage(index);
@@ -28,16 +27,16 @@ const Pm = () => {
   return (
     <Container fluid='sm' className='py-10 mx-auto'>
       <h1 className='md:text-7xl sm:text-5xl text-3xl font-bold text-center my-3 '>Par mums</h1>
-      <div className=' lg:flex py-[30px] '>
-        <div className='flex flex-col text-sm my-auto mr-2 sm:text-center tracking-wide'>
+      <div className=' lg:flex py-[30px] w-[100%]'>
+        <div className='flex flex-col text-sm my-auto mr-2 lg:text-left sm:text-center tracking-wide w-[50%]'>
           <h1 className='md:text-4xl sm:text-3xl text-3xl font-bold mb-4'></h1>
           <h2 className='md:text-2xl sm:text-1xl text-1xl mb-4'> SIA Abika ir vairumtirdzniecības uzņēmums, kas darbojas no 2002. gada. </h2>
           <h2 className='md:text-2xl sm:text-1xl text-1xl mb-4'> <span className='font-bold'>Sortimentā</span> ir sieviešu un vīriešu apģērbs, veļa, apavi un aksesuāri.</h2>
           <h2 className='md:text-2xl sm:text-1xl text-1xl mb-4'> Mūsu misija ir apģērbu tirgotājiem preču sagādi padarīt vieglāku, ērtāku un ātrāku. Tāpēc regulāri veicam uzlabojumus uzņēmuma darbā.</h2>
           <h2 className='md:text-2xl sm:text-1xl text-1xl italic'> Privātpersonas neapkalpojam.</h2>
         </div>
-        <div>
-          <img className='w-full h-auto mx-auto lg:my-4 sm:mt-4 rounded-lg' src={Abika1} alt='/' />
+        <div className='w-[50%]'>
+          <img className='w-full h-full mx-auto lg:my-4 sm:mt-4 rounded-lg' src={Abika} alt='/' />
         </div>
       </div>
       <div className='w-full lg:py-[2rem]  '>

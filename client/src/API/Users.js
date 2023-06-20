@@ -1,10 +1,10 @@
 import { loginR, registerR, userR, forgotP, gallU, deleteU } from '../utils/APIRoutes'
 import { toast } from 'react-toastify';
 
-export const Register = async ({ username, email, password, userType } = {}) => {
-    const user = { username, email, password, userType }
+export const Register = async ({ username, name, lastname, email, company, password, userType } = {}) => {
+    const user = { username, name, lastname, email, company, password, userType }
 
-    console.log(username, email, password, userType);
+    console.log(username, name, lastname, email, company, password, userType);
     const res = await fetch(`${registerR}`, {
         method: "POST",
         crossDomain: true,
@@ -19,11 +19,11 @@ export const Register = async ({ username, email, password, userType } = {}) => 
         .then((data) => {
             console.log(data, "userRegister");
             if (data.status === "OK") {
-                toast("Registration Successful");
+                toast.success("Reģistrācija veiksmīga");
                 window.location.href = "/Pieslegties";
 
             } else {
-                toast("Something went wrong");
+                toast.error("Kaut kur ir kļūda");
             }
         });
 }
@@ -42,16 +42,16 @@ export const Login = async ({ email, password } = {}) => {
         });
         const data = await res.json();
         if (data.status === "OK") {
-            toast("Login successful");
+            toast.success("Autorizācija veiksmīga");
             localStorage.setItem("token", data.data);
             localStorage.setItem("loggedIn", true);
-            window.location.href = "./Profils";
+            window.location.href = "./userData";
         } else {
             toast(data.error);
         }
     } catch (error) {
         console.error(error);
-        toast("An error occurred. Please try again.");
+        toast.error("Nepareizi ievadīti dati. Mēģiniet vēlreiz.");
     }
 }
 
@@ -78,7 +78,7 @@ export const UserData = async ({ setAdmin, setUserData }) => {
             setUserData(data.data);
 
             if (data.data === "token expired") {
-                toast("Token expired login again");
+                toast.error("Token expired login again");
                 window.localStorage.clear();
                 window.location.href = "./";
             }

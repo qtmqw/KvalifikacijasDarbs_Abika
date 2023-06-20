@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 import { Button } from "@material-tailwind/react";
 import { useUserData, useCartData } from '../API/CartAPI'
+import { Link } from 'react-router-dom';
 import PDF from './Pasutijums'
 const Checkout = () => {
 
     const [showModal, setShowModal] = useState(false);
     const userData = useUserData();
     const { cart, isLoading, total } = useCartData(userData);
+    const isCartEmpty = cart.length === 0;
 
     return (
         <>
             <Button className="text-base leading-none w-full py-4 bg-orange text-white"
                 type="button"
-                onClick={() => setShowModal(true)}>
+                onClick={() => setShowModal(true)}
+                disabled={isCartEmpty}
+            >
                 Rezervēt
             </Button>
             {showModal ? (
@@ -49,7 +53,7 @@ const Checkout = () => {
                                                     <label >
                                                         <div className='flex'>
                                                             <div className="w-[20%]">
-                                                                <img src={`/uploads/${item.product?.image}`} alt className="w-full h-full object-center object-cover" />
+                                                                <img src={item.product?.image} alt className="w-full h-full object-center object-cover" />
                                                             </div>
                                                             <div className='w-full flex justify-between'>
                                                                 <div className='flex flex-col justify-center ml-6'>
@@ -79,13 +83,15 @@ const Checkout = () => {
                                         </div>
                                         <div className="flex items-center justify-end pt-3 rounded-b  ">
                                             <PDF />
-                                            <Button
-                                                className="ml-5 bg-gray-300 leading-none text-red-600 text-sm"
-                                                type="button"
-                                                onClick={() => setShowModal(false)}
-                                            >
-                                                Atpakaļ
-                                            </Button>
+                                            <Link to='/Sortiments'>
+                                                <Button
+                                                    className="ml-5 bg-gray-300 leading-none text-red-600 text-sm"
+                                                    type="button"
+                                                    onClick={() => setShowModal(false)}
+                                                >
+                                                    Atpakaļ
+                                                </Button>
+                                            </Link>
                                         </div>
 
                                     </form>

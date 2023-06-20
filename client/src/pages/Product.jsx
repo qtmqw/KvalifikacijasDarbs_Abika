@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useParams } from "react-router-dom";
-import { Product, userR, CartA } from '../utils/APIRoutes';
+import { Product, userR, CartA, RatingP } from '../utils/APIRoutes';
 import { Container } from "react-bootstrap";
 import { BsCart2 } from 'react-icons/bs'
-import "../product/styles.css"
+import "./styles.css"
 import { toast } from "react-toastify";
 
 
@@ -17,13 +17,13 @@ function Productshow() {
     const isLoggedIn = window.localStorage.getItem("loggedIn")
     const [averageRating, setAverageRating] = useState(0);
     const [rating, setRating] = useState(0);
-    const [isRatingSubmitted, setIsRatingSubmitted] = useState(false);
+    const [userHasRated, setUserHasRated] = useState(false);
 
 
 
     const fetchAverageRating = async (productId) => {
         try {
-            const response = await axios.get(`http://localhost:8080/rating/rating/${productId}`);
+            const response = await axios.get(`${RatingP}/${productId}`);
             setAverageRating(response.data.averageRating);
         } catch (error) {
             console.error(error);
@@ -52,13 +52,30 @@ function Productshow() {
             });
     }, []);
 
+    useEffect(() => {
+        const checkUserRating = async () => {
+            try {
+                const response = await axios.get(
+                    `${RatingP}/user/${userData?._id}/product/${id}`
+                );
+                setUserHasRated(response.data.exists);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        if (userData?._id) {
+            checkUserRating();
+        }
+    }, [userData, id]);
+
     if (!product) {
         return <div>Loading...</div>;
     }
 
     const addToCart = async (userId, productId, quantity) => {
         if (!isLoggedIn) {
-            return toast('You must be logged in');
+            return toast.error('You must be logged in');
         } else {
             try {
                 const response = await axios.post(CartA, {
@@ -66,24 +83,27 @@ function Productshow() {
                     productId,
                     quantity,
                 });
-                return response.data.data; // Return the added cart item
+                return response.data.data;
             } catch (error) {
                 console.error(error);
-                return null; // Return null on error
+                return null;
             }
         }
     };
 
     const handleAddToCart = async () => {
+        if (quantityq > product.quantity) {
+            return toast.error("Pārsniedz produktu daudzumu");
+        }
         const userId = userData?.userId;
         const productId = product._id;
         const cartItem = await addToCart(userId, productId, quantityq);
         if (cartItem) {
             setIsAddingToCart(true);
-            toast("Product added to cart");
+            toast.success("Produkts pievienots grozam");
         } else {
             setIsAddingToCart(false);
-            console.log("Failed to add product to cart.");
+            console.log("Kļūda ar produktu pieviekošanu grozam");
         }
     };
 
@@ -117,19 +137,17 @@ function Productshow() {
 
     const handleRatingSubmit = async () => {
         try {
-            const response = await axios.post(`http://localhost:8080/rating/rating`, {
+            const response = await axios.post(RatingP, {
                 value: rating,
                 user: userData?._id,
                 product: id,
             });
-
             console.log(response.data);
             setRating(0);
-            setIsRatingSubmitted(true);
             fetchAverageRating(id);
         } catch (error) {
             console.error(error);
-            toast('Failed to submit rating');
+            toast('Failed to save rating');
         }
     };
 
@@ -163,8 +181,7 @@ function Productshow() {
                     <div class="grid grid-cols-1 items-start lg:gap-8 sm:gap-2 lg:grid-cols-2">
                         <div class=" lg:border-r-2 border-solid border-orange ">
                             <img
-                                src={`/uploads/${product.image}`}
-                                /* alt={product.imageAlt} */
+                                src={product.image}
                                 className="aspect-square w-full rounded-xl object-cover"
                             />
 
@@ -205,17 +222,10 @@ function Productshow() {
                                     </div>
                                 </div>
                                 <p class="text-sm">ID: {product._id}</p>
-                                <p class="text-md">Produkta reitings</p>
                                 <div className='flex'>
                                     <div className='text-2xl'>{renderStars(averageRating)}</div><div className='my-auto ml-3'>{averageRating.toFixed(2)} no 5</div>
                                 </div>
-                                {!isLoggedIn ? (
-                                    <div>Lai novērtēt produktu nepieciešams pieslēgties.</div>
-                                ) : (isRatingSubmitted ? (
-                                    <div>
-                                        <p>Reitings tika saglabāts</p>
-                                    </div>
-                                ) : (
+                                {!userHasRated && isLoggedIn && (
                                     <div>
                                         <div>
                                             {[1, 2, 3, 4, 5].map((value) => (
@@ -230,10 +240,10 @@ function Productshow() {
                                                     &#9733;
                                                 </span>
                                             ))}
+                                            <button onClick={handleRatingSubmit}>Novērtēt produktu</button>
                                         </div>
-                                        <button onClick={handleRatingSubmit}>Submit Rating</button>
                                     </div>
-                                ))}
+                                )}
                             </div>
 
                             <div class="mt-4">
@@ -245,32 +255,25 @@ function Productshow() {
                             </div>
 
                             <div class="mt-8">
-                                <fieldset>
-                                    <legend class="mb-1 text-sm font-medium">Color</legend>
+                                <div>
+                                    <legend class="mb-1 text-sm font-semibold">Krāsa</legend>
 
                                     <div class="flex flex-wrap gap-1">
-                                        <label for="color_tt" class="cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                name="color"
-                                                id="color_tt"
-                                                class="peer sr-only"
-                                            />
-
+                                        <label for="color_tt">
                                             <span
-                                                class="group inline-block rounded-full border px-3 py-1 text-xs font-medium peer-checked:bg-black peer-checked:text-white"
+                                                class="group inline-block rounded-full border px-3 py-1 text-xs font-medium"
                                             >
                                                 {product.color}
                                             </span>
                                         </label>
                                     </div>
-                                </fieldset>
+                                </div>
 
-                                <fieldset class="mt-4">
-                                    <legend class="mb-1 text-sm font-medium">Size</legend>
+                                <div class="mt-4">
+                                    <legend class="mb-1 text-sm font-semibold">Izmērs</legend>
 
                                     <div class="flex flex-wrap gap-1">
-                                        <label for="size_xs" class="cursor-pointer">
+                                        <label for="size_xs">
                                             <input
                                                 type="radio"
                                                 name="size"
@@ -279,18 +282,20 @@ function Productshow() {
                                             />
 
                                             <span
-                                                class="group inline-flex h-8 w-8 items-center justify-center rounded-full border text-xs font-medium peer-checked:bg-black peer-checked:text-white"
+                                                class="group inline-flex h-8 w-8 items-center justify-center rounded-full border text-xs font-medium"
                                             >
                                                 {product.size}
                                             </span>
                                         </label>
                                     </div>
-                                </fieldset>
-
+                                </div>
+                                <div>
+                                    <legend class="my-1 text-sm font-semibold">Pieejamais produktu daudzums ~ ( {product.quantity} )</legend>
+                                </div>
                                 <div class="mt-8 flex lg:gap-4 sm:gap-0">
-                                    <div className="quantity-container w-full bg-[#F7F8FD] rounded-lg h-14 mb-4 flex items-center justify-between px-6 lg:px-3 font-bold sm:mr-3 lg:mr-5 lg:w-1/3">
+                                    <div className="quantity-container w-full bg-[#e7e7ee] rounded-lg h-14 mb-4 flex items-center justify-between px-6 lg:px-3 font-bold sm:mr-3 lg:mr-5 lg:w-1/3">
                                         <button
-                                            className="text-[#FF7D1A] text-2xl leading-none font-bold mb-1 lg:text-3xl hover:opacity-60"
+                                            className="text-[#FF7D1A] text-2xl leading-none font-bold mb-1 lg:text-3xl hover:opacity-60 pr-3"
                                             onClick={() => {
                                                 if (quantityq > 1) {
                                                     setQuantity(quantityq - 1);
@@ -309,7 +314,6 @@ function Productshow() {
                                             onChange={(event) => {
                                                 const value = parseInt(event.target.value);
                                                 if (isNaN(value) || value <= 0 || value % 1 !== 0) {
-                                                    // If value is null, negative or zero, or a decimal
                                                     event.preventDefault();
                                                 } else {
                                                     setQuantity(value);
@@ -317,7 +321,7 @@ function Productshow() {
                                             }}
                                         />
                                         <button
-                                            className="text-[#FF7D1A] text-2xl leading-none font-bold lg:text-3xl hover:opacity-60"
+                                            className="text-[#FF7D1A] text-2xl leading-none font-bold lg:text-3xl hover:opacity-60 pl-3"
                                             onClick={() => {
                                                 if (quantityq < 100) {
                                                     setQuantity(quantityq + 1);

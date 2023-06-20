@@ -7,7 +7,6 @@ import {
 import { BsCart2 } from 'react-icons/bs'
 import { Link, useLocation } from "react-router-dom";
 import { AiOutlineUser } from 'react-icons/ai'
-import { NavDropdown } from 'react-bootstrap';
 import Abika from '../assets/abika.png'
 
 
@@ -119,7 +118,7 @@ export default function Example() {
 
                     }
                     {isLoggedIn &&
-                        <Link to="/Profils" className=" p-2 py-0 bg-orange rounded-xl" >
+                        <Link to="/userData" className=" p-2 py-0 bg-orange rounded-xl" >
                             <AiOutlineUser className='w-8 h-8 mx-auto my-auto text-white mt-2' />
                         </Link>
 

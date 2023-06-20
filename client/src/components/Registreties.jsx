@@ -10,7 +10,10 @@ import { AiFillEye, AiFillEyeInvisible, AiOutlineWarning } from 'react-icons/ai'
 const Reg = () => {
 
   const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
+  const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [userType, setUserType] = useState("User")
@@ -20,7 +23,7 @@ const Reg = () => {
 
   function handleSubmit(e) {
     e.preventDefault();
-    const res = Register({ username, email, password, userType });
+    const res = Register({ username, name, lastname, email, company, password, userType });
     console.log(res);
   };
 
@@ -29,25 +32,22 @@ const Reg = () => {
   const validatePassword = (password) => {
     const errors = [];
     if (!/(?=.*[A-Z])/.test(password)) {
-      errors.push('Password must contain at least one uppercase letter');
+      errors.push('Parolē jābūt vismaz viens lielais burts');
     }
     if (!/(?=.*[a-z])/.test(password)) {
-      errors.push('Password must contain at least one lowercase letter');
+      errors.push('Parolē jābūt vismaz viens mazais burts');
     }
     if (!/(?=.*[0-9])/.test(password)) {
-      errors.push('Password must contain at least one digit');
+      errors.push('Parolē jābūt vismaz viens cipars');
     }
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      errors.push('Password must contain at least one special character');
+      errors.push('Parolē jābūt vismaz viens speciāls simbols');
     }
     if (/\s/.test(password)) {
-      errors.push('Password must not contain spaces');
+      errors.push('Parolē nevar būt atstarpju');
     }
     if (password.length < 8) {
-      errors.push('Password must be at least 8 characters long');
-    }
-    if (password.length > 100) {
-      errors.push('Password must be less 100 characters long');
+      errors.push('Parolei vajag būt vismaz 8 simbolus garai');
     }
     setPasswordErrors(errors);
   };
@@ -86,7 +86,7 @@ const Reg = () => {
               <label className="block uppercase tracking-wide text-gray-700 text-md">
                 <FloatingLabel
                   controlId="floatingInput"
-                  label="username"
+                  label="lietotājvārds"
                   className="mb-3"
                 >
                   <Form.Control
@@ -102,9 +102,47 @@ const Reg = () => {
           </div>
           <div className="mb-6">
             <div className="md:px-3 sm:px-0 mb-6 md:mb-0">
+              <label className="block uppercase tracking-wide text-gray-700 text-md">
+                <FloatingLabel
+                  controlId="floatingInput"
+                  label="Vārds"
+                  className="mb-3"
+                >
+                  <Form.Control
+                    className="w-full mx-auto bg-white text-gray-700 border border-black rounded py-3 px-4 mb-3"
+                    type="text"
+                    placeholder="Vārds"
+                    required
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </FloatingLabel>
+              </label>
+            </div>
+          </div>
+          <div className="mb-6">
+            <div className="md:px-3 sm:px-0 mb-6 md:mb-0">
+              <label className="block uppercase tracking-wide text-gray-700 text-md">
+                <FloatingLabel
+                  controlId="floatingInput"
+                  label="Uzvārds"
+                  className="mb-3"
+                >
+                  <Form.Control
+                    className="w-full mx-auto bg-white text-gray-700 border border-black rounded py-3 px-4 mb-3"
+                    type="text"
+                    placeholder="Uzvārds"
+                    required
+                    onChange={(e) => setLastname(e.target.value)}
+                  />
+                </FloatingLabel>
+              </label>
+            </div>
+          </div>
+          <div className="mb-6">
+            <div className="md:px-3 sm:px-0 mb-6 md:mb-0">
               <FloatingLabel
                 controlId="floatingInput"
-                label="E-MAIL"
+                label="E-pasts"
                 className="mb-3"
               >
                 <Form.Control
@@ -117,24 +155,42 @@ const Reg = () => {
               </FloatingLabel>
             </div>
           </div>
-
+          <div className="mb-6">
+            <div className="md:px-3 sm:px-0 mb-6 md:mb-0">
+              <label className="block uppercase tracking-wide text-gray-700 text-md">
+                <FloatingLabel
+                  controlId="floatingInput"
+                  label="Uzņēmums"
+                  className="mb-3"
+                >
+                  <Form.Control
+                    className="w-full mx-auto bg-white text-gray-700 border border-black rounded py-3 px-4 mb-3"
+                    type="text"
+                    placeholder="Uzņēmums"
+                    required
+                    onChange={(e) => setCompany(e.target.value)}
+                  />
+                </FloatingLabel>
+              </label>
+            </div>
+          </div>
           <div className="flex flex-wrap  ">
             <div className="w-full md:px-3 sm:px-0 md:mb-0">
               <label className="block uppercase tracking-wide text-gray-700 text-md ">
                 <FloatingLabel
                   controlId="floatingInput"
-                  label="password"
+                  label="Parole"
                   className="mb-3 static"
                 >
                   <Form.Control
                     className="w-full mx-auto bg-white text-gray-700 border border-black rounded py-3 px-4"
                     type={showPassword ? "text" : "password"}
-                    placeholder="password"
+                    placeholder="Parole"
                     required
                     onChange={handlePasswordChange}
                   />
                   <checkbox onClick={togglePasswordVisibility} className="absolute bottom-0 right-0 text-2xl pb-3 pr-3 ">
-                    {showPassword ? <AiFillEye /> : <AiFillEyeInvisible />}
+                    {showPassword ? <AiFillEyeInvisible /> : <AiFillEye /> }
                   </checkbox>
                 </FloatingLabel>
               </label>
@@ -146,13 +202,13 @@ const Reg = () => {
               <label className="block uppercase tracking-wide text-gray-700 text-md mb-2 ">
                 <FloatingLabel
                   controlId="floatingInput"
-                  label="confirm password"
+                  label="Paroles apstiprināšana"
                   className="mb-3 static"
                 >
                   <Form.Control
                     className="w-full mx-auto bg-white text-gray-700 border border-black rounded py-3 px-4"
                     type={showPassword ? "text" : "password"}
-                    placeholder="password"
+                    placeholder="Paroles apstiprināšana"
                     required
                     onChange={handleConfirmPasswordChange}
                   />
@@ -160,11 +216,11 @@ const Reg = () => {
                 {passwordMatchError && (
                   <div className="text-red-500 text-xs mb-2">
                     <AiOutlineWarning className="inline-block mr-1" />
-                    Passwords do not match.
+                    Paroles nesakrīt.
                   </div>
                 )}
                 <span className=" text-xs font-bold text-gray-500">
-                  Password requirements:
+                  Paroles prasības:
                 </span><br />
                 {passwordErrors.length > 0 && (
                   <div className="flex flex-wrap text-red-500 text-xs">

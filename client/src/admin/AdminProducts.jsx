@@ -12,6 +12,7 @@ const AdminProducts = () => {
     const [products, setProducts] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [discounts, setDiscounts] = useState([]);
+    const [quantity, setQuantity] = useState(0);
 
     useEffect(() => {
         axios
@@ -32,25 +33,20 @@ const AdminProducts = () => {
             .patch(`${Product}/${productId}`, { discount: discountId })
             .then((response) => {
                 const updatedProduct = response.data;
-
-                // Calculate the new discount price based on the updated discount
                 const discount = discounts.find((item) => item._id === discountId);
                 const newDiscountPrice =
                     discount && discount.type !== 0
                         ? updatedProduct.price * (1 - discount.type / 100)
                         : 0;
-
-                // Update the discountPrice property in the updatedProduct object
                 updatedProduct.discountPrice = newDiscountPrice;
-
                 const updatedProducts = products.map((product) => {
                     if (product._id === updatedProduct._id) {
                         return updatedProduct;
                     }
                     return product;
                 });
-
                 setProducts(updatedProducts);
+                window.location.reload();
             })
             .catch((error) => console.error(error));
     };
@@ -76,15 +72,28 @@ const AdminProducts = () => {
     const handleDelete = async () => {
         for (const productId of selectedProducts) {
             try {
-                /* if (window.confirm(`Are you sure you want to delete ${productId}`)) {} */
                 await axios.delete(`${Product}/${productId}`);
                 setProducts(products.filter((product) => product._id !== productId));
                 toast('Product deleted');
+                window.location.reload();
             } catch (err) {
                 console.log(err);
             }
         }
         setSelectedProducts([]);
+    };
+
+    const updateProductQuantity = async (productId, quantity) => {
+        if (quantity > 1000 || !Number.isInteger(quantity)) {
+            return;
+        }
+        try {
+            const response = await axios.patch(`${Product}/q/${productId}`, { quantity });
+            const updatedProduct = response.data;
+        } catch (error) {
+            console.error(error);
+        }
+        setQuantity(quantity);
     };
 
     return (
@@ -115,7 +124,7 @@ const AdminProducts = () => {
                                             Nosaukums
                                         </th>
                                         <th scope="col" className="px-6 py-3">
-                                            Apraksts
+                                            ID
                                         </th>
                                         <th scope="col" className="px-6 py-3">
                                             Krāsa
@@ -134,6 +143,9 @@ const AdminProducts = () => {
                                         </th>
                                         <th scope="col" className="px-6 py-3">
                                             Atlaides cena
+                                        </th>
+                                        <th scope="col" className="px-6 py-3">
+                                            Daudzums
                                         </th>
                                     </tr>
                                 </thead>
@@ -157,7 +169,7 @@ const AdminProducts = () => {
                                                         <div className="flex-shrink-0 h-10 w-10">
                                                             <img
                                                                 className="h-10 w-10 rounded-xl"
-                                                                src={`/uploads/${product.image}`}
+                                                                src={product.image}
                                                                 alt=""
                                                             />
                                                         </div>
@@ -170,7 +182,7 @@ const AdminProducts = () => {
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-wrap">
                                                     <div className="text-sm text-gray-900 ">
-                                                        {product.description}
+                                                        {product._id}
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -205,6 +217,31 @@ const AdminProducts = () => {
                                                 <td className="text-center">
                                                     {product.discountPrice && product.discountPrice.toFixed(2)}
                                                 </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="flex">
+                                                        <input
+                                                            type="text"
+                                                            className="placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-auto relative my-auto"
+                                                            value={product.quantity}
+                                                            onChange={(e) => {
+                                                                const value = e.target.value;
+                                                                const updatedQuantity = value === '' ? 0 : parseInt(value);
+                                                                const updatedProduct = { ...product, quantity: updatedQuantity };
+                                                                const updatedProducts = products.map((p) => (p._id === product._id ? updatedProduct : p));
+                                                                setProducts(updatedProducts);
+                                                            }}
+                                                        />
+                                                        <Button
+                                                            onClick={() => {
+                                                                // Save the updated quantity
+                                                                updateProductQuantity(product._id, product.quantity);
+                                                            }}
+                                                            className="ml-2"
+                                                        >
+                                                            Save
+                                                        </Button>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         ))
                                     )}
@@ -214,7 +251,7 @@ const AdminProducts = () => {
                     </div>
                 </div>
             </div>
-        </Container>
+        </Container >
     );
 };
 

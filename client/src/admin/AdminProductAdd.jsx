@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import { Product, Category } from '../utils/APIRoutes'
+import React, { useEffect, useState } from 'react';
+import { Product, Category } from '../utils/APIRoutes';
 import { Button } from "@material-tailwind/react";
-import axios from 'axios'
-import { toast } from 'react-toastify';
+import axios from 'axios';
+import { PickerOverlay } from 'filestack-react';
 
 const AdminProductAdd = () => {
-
-
+    const [image, setImage] = useState('');
+    const [isPickers, setIsPickers] = useState(false);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [color, setColor] = useState([]);
@@ -14,12 +14,7 @@ const AdminProductAdd = () => {
     const [price, setPrice] = useState('');
     const [category, setCategory] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [image, setImage] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    const [discount, setDiscount] = useState('');
-    const [discounts, setDiscounts] = useState([]);
-
-
 
     useEffect(() => {
         axios
@@ -28,45 +23,13 @@ const AdminProductAdd = () => {
             .catch((error) => console.error(error));
     }, []);
 
-    useEffect(() => {
-        axios
-            .get('http://localhost:8080/d/discountAll') // Assuming you have a route for fetching discounts
-            .then((response) => setDiscounts(response.data))
-            .catch((error) => console.error(error));
-    }, []);
-
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('color', color);
-        formData.append('size', size);
-        formData.append('price', price);
-        formData.append('categoryIds', categories.join(','));
-        formData.append('discount', discount);
-        formData.append('image', image);
         try {
-            const res = await axios.post(`${Product}`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
+            const datas = { image: image.filesUploaded[0].url, title, description, color, size, price, categoryIds: categories.join(',') };
+            let res = await axios.post(Product, datas);
             console.log(res.data);
-            // clear form data
-            setTitle('');
-            setDescription('');
-            setColor([]);
-            setSize([]);
-            setPrice('');
-            setCategories([]);
-            setDiscount('');
-            setImage(null);
-        } catch (err) {
-            console.error(err);
+        } catch (error) {
         }
-    };
-
-    const handleImageChange = (e) => {
-        setImage(e.target.files[0]);
     };
 
 
@@ -91,7 +54,7 @@ const AdminProductAdd = () => {
                                     </h3>
                                 </div>
                                 <div className="relative p-6 flex-auto">
-                                    <form onSubmit={handleSubmit} className="flex-col flex" encType='multipart/form-data'>
+                                    <form onSubmit={handleSubmit} encType='multipart/form-data'>
                                         <label className='mb-3 flex'>
                                             <div className='w-[50%] pr-2'>
                                                 <h3>Nosaukums</h3>
@@ -118,7 +81,7 @@ const AdminProductAdd = () => {
                                                 />
                                             </div>
                                         </label>
-                                        <label className='mb-3'>
+                                        <label className='mb-3 w-full'>
                                             <h3>Apraksts</h3>
                                             <textarea
                                                 id="description"
@@ -130,29 +93,33 @@ const AdminProductAdd = () => {
                                                 onChange={(e) => setDescription(e.target.value)}
                                             />
                                         </label>
-                                        <label className='mb-3 flex'>
-                                            <div className='w-[30%] pl-2'>
+                                        <label className='mb-3 flex pb-10 justify-between'>
+                                            <div className=' w-[30%] pl-2'>
                                                 <h3>Krāsa</h3>
                                                 <select
                                                     multiple
                                                     id="color"
                                                     required
-                                                    class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
+                                                    class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full h-full"
                                                     value={color}
                                                     onChange={(e) => setColor([e.target.value])}
                                                 >
-                                                    <option value="">--Select a color--</option>
-                                                    <option value="Red">Sarkans</option>
-                                                    <option value="Green">Zaļš</option>
-                                                    <option value="Blue">Zils</option>
-                                                    <option value="White">Balts</option>
-                                                    <option value="Brown">Brūns</option>
-                                                    <option value="Purple">Violēts</option>
-                                                    <option value="Black">Melns</option>
+                                                    <option value="">--Krāsas izvēle--</option>
+                                                    <option value="Sarkans">Sarkans</option>
+                                                    <option value="Zaļš">Zaļš</option>
+                                                    <option value="Zils">Zils</option>
+                                                    <option value="Brūns">Brūns</option>
+                                                    <option value="Violēts">Violēts</option>
+                                                    <option value="Melns">Melns</option>
+                                                    <option value="Balts">Balts</option>
+                                                    <option value="Rozs">Rozs</option>
+                                                    <option value="Dzeltens">Dzeltens</option>
+                                                    <option value="Orandž">Orandž</option>
+                                                    <option value="Pelēks">Pelēks</option>
                                                 </select>
                                             </div>
 
-                                            <div className='w-[40%] pl-2'>
+                                            <div className='w-auto pl-2'>
                                                 <h3>Kategorijas</h3>
                                                 {category.map((category) => (
                                                     <div key={category._id}>
@@ -183,60 +150,81 @@ const AdminProductAdd = () => {
                                                     multiple
                                                     id="size"
                                                     required
-                                                    class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
+                                                    class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full h-full"
                                                     value={size}
                                                     onChange={(e) => setSize([e.target.value])}
                                                 >
-                                                    <option value="">--Select a size--</option>
+                                                    <option value="">--Izmēra izvēle--</option>
                                                     <option value="XS">XS</option>
                                                     <option value="S">S</option>
                                                     <option value="M">M</option>
                                                     <option value="L">L</option>
                                                     <option value="XL">XL</option>
                                                     <option value="XXL">XXL</option>
+                                                    <option value="30">30</option>
+                                                    <option value="30.5">30.5</option>
+                                                    <option value="31">31</option>
+                                                    <option value="32">32</option>
+                                                    <option value="32.5">32.5</option>
+                                                    <option value="33">33</option>
+                                                    <option value="33.5">33.5</option>
+                                                    <option value="34.5">34.5</option>
+                                                    <option value="35">35</option>
+                                                    <option value="35.5">35.5</option>
+                                                    <option value="36">36</option>
+                                                    <option value="37">37</option>
+                                                    <option value="37.5">37.5</option>
+                                                    <option value="38">38</option>
+                                                    <option value="39">39</option>
+                                                    <option value="40">40</option>
+                                                    <option value="41">41</option>
+                                                    <option value="41.5">41.5</option>
+                                                    <option value="42">42</option>
+                                                    <option value="43">43</option>
                                                 </select>
                                             </div>
                                         </label>
-                                        <label className="mb-3">
-                                            <h3>Atlaide</h3>
-                                            <select
-                                                id="discount"
-                                                className="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full"
-                                                value={discount}
-                                                onChange={(e) => setDiscount(e.target.value)}
-                                            >
-                                                <option value="">-- Atlaides nav --</option>
-                                                {discounts.map(item => (
-                                                    <option key={item._id} value={item._id}>
-                                                        {item.title}, {item.type}%
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </label>
                                         <h3>Attēls</h3>
                                         <label
-                                            className="flex justify-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
-
-                                            <span className="flex items-center space-x-2">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24"
-                                                    stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                                </svg>
-                                                <span className="font-medium text-gray-600">
-                                                    Drop files to Attach, or
-                                                    <span className="text-blue-600 underline pl-1">browse</span>
-                                                </span>
-                                            </span>
-                                            <input
-                                                type="file"
-                                                id='image'
-                                                className="hidden form-control-file"
-                                                onChange={handleImageChange}
-                                            />
+                                            className="flex justify-center "
+                                        >
+                                            {image ? (
+                                                <img
+                                                    src={image && image.filesUploaded[0].url}
+                                                    alt="imageUploded"
+                                                    className="w-[10%] h-[10%] object-cover mx-auto"
+                                                />
+                                            ) : (
+                                                <button
+                                                    onClick={() => (isPickers ? setIsPickers(false) : setIsPickers(true))}
+                                                    type="button"
+                                                    className="w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none text-blue-500 font-semibold"
+                                                >
+                                                    Attēla izvēle
+                                                </button>
+                                            )}
                                         </label>
+                                        <div className="mt-4 relative">
+                                            {isPickers && (
+                                                <PickerOverlay
+                                                    apikey={"AZ7q1o1bGQjKxGTdI4G9rz"}
+                                                    onSuccess={(res) => {
+                                                        setImage(res);
+                                                        setIsPickers(false);
+                                                    }}
+                                                    onError={(res) => alert(res)}
+                                                    pickerOptions={{
+                                                        maxFiles: 1,
+                                                        accept: ["image/*"],
+                                                        errorsTimeout: 2000,
+                                                        maxSize: 1 * 1000 * 1000,
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+
                                         <div className="flex items-center justify-end pt-3 border-t border-solid border-blueGray-200 rounded-b mt-4 jus">
-                                            <Button type="submit" >Pievienot produktu</Button>
+                                            <Button type="submit">Pievienot produktu</Button>
                                             <button
                                                 className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1  ease-linear transition-all duration-150"
                                                 type="button"

@@ -5,7 +5,6 @@ const orderSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: "UserInfo",
-        required: true,
     },
     items: [
         {
@@ -42,4 +41,4 @@ const orderSchema = new Schema({
 
 const Orders = mongoose.model("Orders", orderSchema)
 
-module.exports = Orders 
+module.exports = Orders

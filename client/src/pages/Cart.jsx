@@ -8,7 +8,6 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { BsFillTrashFill } from 'react-icons/bs'
 import Checkout from '../components/Checkout';
-
 import { useUserData, useCartData, useUpdateCartItemQuantity } from '../API/CartAPI'
 
 const Cart = () => {
@@ -57,10 +56,17 @@ const Cart = () => {
 
   const handleIncrement = (itemIndex) => {
     const updatedCart = [...cart];
-    updatedCart[itemIndex].quantity++;
-    updateCartItemQuantity(updatedCart[itemIndex]._id, updatedCart[itemIndex].quantity);
-    setCart(updatedCart);
+    const productQuantity = updatedCart[itemIndex].product.quantity;
+    if (updatedCart[itemIndex].quantity < productQuantity) {
+      updatedCart[itemIndex].quantity++;
+      updateCartItemQuantity(updatedCart[itemIndex]._id, updatedCart[itemIndex].quantity);
+      setCart(updatedCart);
+    } else {
+      toast.error("Nevar pievienot vairāk par pieejamo daudzumu");
+
+    }
   };
+  
 
   return (
     <>
@@ -78,7 +84,6 @@ const Cart = () => {
               </Link>
               <p className="text-5xl font-black leading-10 text-gray-800 pt-3">Grozs</p>
               {isLoading ? (
-                // If cart is loading, display loading message
                 <h1 className='text-center'>
                   Loading...
                 </h1>
@@ -95,8 +100,8 @@ const Cart = () => {
                     <>
                       <div className="lg:block sm:hidden flex items-center mt-4 pt-8 border-t border-gray-200 w-full relative" key={item._id}>
                         <div className='flex items-center'>
-                          <div className="xl:w-[10%] lg:w-[20%] ">
-                            <img src={`/uploads/${item.product?.image}`} alt />
+                          <div className="xl:w-[13%] lg:w-[20%] ">
+                            <img src={item.product?.image} alt />
                           </div>
                           <div className="pl-3 lg:w-[65%] xl:w-full flex justify-between">
                             <div className='w-[30%]'>
@@ -106,9 +111,9 @@ const Cart = () => {
                               <p className="text-xs text-gray-600 ">Color: {item.product?.color}</p>
                             </div>
                             <div className='xl:w-[45%] lg:w-full flex lg:flex-col sm:flex-row justify-between items-end'>
-                              <div className=" w-full bg-[#F7F8FD] rounded-lg h-14 flex items-center justify-between lg:px-3 font-bold xl:w-[40%] lg:w-[50%] sm:w-[50%]">
+                              <div className=" w-full bg-[#e7e7ee] rounded-lg h-14 flex items-center justify-between lg:px-3 font-bold xl:w-[40%] lg:w-[50%] sm:w-[50%]">
                                 <button
-                                  className="text-[#FF7D1A] text-2xl leading-none font-bold mb-1 lg:text-3xl hover:opacity-60"
+                                  className="text-[#FF7D1A] text-2xl leading-none font-bold mb-1 lg:text-3xl hover:opacity-60 pr-3"
                                   onClick={() => handleDecrement(index)}
                                 >
                                   -
@@ -128,7 +133,7 @@ const Cart = () => {
                                   }}
                                 />
                                 <button
-                                  className="text-[#FF7D1A] text-2xl leading-none font-bold lg:text-3xl hover:opacity-60"
+                                  className="text-[#FF7D1A] text-2xl leading-none font-bold lg:text-3xl hover:opacity-60 pl-3"
                                   onClick={() => handleIncrement(index)}
                                 >
                                   +
@@ -233,7 +238,7 @@ const Cart = () => {
                     <p className="text-base leading-none text-gray-800">{subtotal.toFixed(2)} €</p>
                   </div>
                   <div className="flex items-center justify-between pt-5 border-b-4">
-                    <p className="text-base leading-none text-gray-800">PVN (10%)</p>
+                    <p className="text-base leading-none text-gray-800">PVN (21%)</p>
                     <p className="text-base leading-none text-gray-800">{tax.toFixed(2)} €</p>
                   </div>
                   <div className="flex items-center justify-between pt-5 border-b-4">

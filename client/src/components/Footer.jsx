@@ -31,10 +31,10 @@ const Footer = () => {
                 <FaEnvelope className='w-4 h-5 mr-1' /><a href="mailto:abika@inbox.lv" className='mb-2 no-underline text-black'>abika@inbox.lv</a>
               </div>
               <div className='flex clex-col mb-2'>
-                <FaMapMarked className='w-4 h-5 mr-1' /><a href="" className='mb-2 no-underline text-black'>Vagonu iela 23, Rīga</a>
+                <FaMapMarked className='w-4 h-5 mr-1' /><a href="https://goo.gl/maps/KGR9PbkcxnyssUnp7" className='mb-2 no-underline text-black'>Vagonu iela 23, Rīga</a>
               </div>
               <div className='flex clex-col mb-2'>
-                <FaMobile className='w-4 h-5 mr-1' /><a href="" className='mb-2 no-underline text-black'>67382030, 20005038, 29462665</a>
+                <FaMobile className='w-4 h-5 mr-1' /><a className='mb-2 no-underline text-black'>67382030, 20005038, 29462665</a>
               </div>
             </div>
           </div>

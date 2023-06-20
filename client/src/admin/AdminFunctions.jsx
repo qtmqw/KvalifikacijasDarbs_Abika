@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Container } from 'react-bootstrap';
+import { Container, Modal } from 'react-bootstrap';
 import { Button } from '@material-tailwind/react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { BsFillTrashFill } from 'react-icons/bs'
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { DiscountAdd, DiscountA, Category, CategoryId } from '../utils/APIRoutes';
+import { DiscountAdd, DiscountA, Category, CategoryId, RatingP, Discount } from '../utils/APIRoutes';
 
 const AdminFunctions = () => {
     const [title, setTitle] = useState('');
@@ -16,12 +16,37 @@ const AdminFunctions = () => {
     const [discount, setDiscount] = useState([]);
     const [category, setCategory] = useState([]);
     const [ratings, setRatings] = useState([]);
+    const [modalDiscount, setModalDiscount] = useState(null);
+    const [modalCategory, setModalCategory] = useState(null);
+    const [modalRating, setModalRating] = useState(null);
 
+
+    const handleModalOpenDiscount = () => {
+        setModalDiscount(true);
+    };
+
+    const handleModalCloseDiscount = () => {
+        setModalDiscount(false);
+    };
+
+    const handleModalOpenCategory = () => {
+        setModalCategory(true);
+    };
+
+    const handleModalCloseCategory = () => {
+        setModalCategory(false);
+
+    }; const handleModalOpenRating = () => {
+        setModalRating(true);
+    };
+
+    const handleModalCloseRating = () => {
+        setModalRating(false);
+    };
 
     const fetchRatings = async () => {
         try {
-            // Replace the URL with your ratings route endpoint
-            const response = await axios.get('http://localhost:8080/rating/ratings');
+            const response = await axios.get(RatingP);
             setRatings(response.data.ratings);
         } catch (error) {
             console.error(error);
@@ -116,7 +141,7 @@ const AdminFunctions = () => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const response = await axios.delete(`http://localhost:8080/d/${itemId}`);
+                    const response = await axios.delete(`${Discount}/${itemId}`);
                     if (response.status === 200) {
                         setDiscount(prevCart => prevCart.filter(item => item._id !== itemId));
                         toast.success("Item removed from cart");
@@ -195,7 +220,7 @@ const AdminFunctions = () => {
                 <div className="border-0 rounded-lg shadow-lg  flex flex-col mx-auto  bg-white w-[33%]">
                     <div className="flex items-start justify-between p-4 border-b border-solid border-blueGray-200 rounded-t">
                         <h3 className="text-3xl font-semibold">
-                            Category
+                            Kategorija
                         </h3>
                     </div>
                     <div className="relative p-6 flex-auto">
@@ -222,69 +247,94 @@ const AdminFunctions = () => {
                 </div>
                 <div className="border-0 rounded-lg shadow-lg  flex flex-col mx-auto  bg-white w-[33%]">
                     <div className="flex items-start justify-between p-4 border-b border-solid border-blueGray-200 rounded-t">
-                        <h3 className="text-3xl font-semibold">
-                            Produktu reitingi
+                        <h3 className="text-2xl font-semibold">
+                            Reitingi, Atlaides, Kategorijas
                         </h3>
                     </div>
-                    <div>
-                        {ratings.map((rating) => (
-                            <div key={rating._id} className="p-2 flex-col border-b-2 border-solid border-blueGray-200">
-                                <p>
-                                    User: {rating.user}
-                                </p>
-                                <p>
-                                    Product: {rating.product}
-                                </p>
-                                <p>
-                                    Reitings: {rating.value}
-                                </p>
-                            </div>
-                        ))}
+                    <div className='flex flex-col w-full my-auto'>
+                        <div className='p-3'>
+                            <Button className='bg-orange w-[100%]' onClick={handleModalOpenRating}>
+                                Apskatīt reitingus
+                            </Button>
+                        </div>
+                        <Modal show={modalRating} onHide={handleModalCloseRating}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Reitingi</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                {ratings && ratings.map((ratingItem) => (
+                                    <div className='border-b-2 border-gray-300'>
+                                        <div key={ratingItem.id} className='w-full'>
+                                            <h5>Lietotāja ID: {ratingItem.user}</h5>
+                                            <h5>Produkta ID: {ratingItem.product}</h5>
+                                            <h5>Vērtējums: {ratingItem.value}</h5>
+                                        </div>
+                                    </div>
+                                ))}
+                            </Modal.Body>
+                        </Modal>
+                        <div className='p-3'>
+                            <Button className='bg-orange w-[100%]' onClick={handleModalOpenDiscount}>
+                                Apskatīt atlaides
+                            </Button>
+                        </div>
+                        <Modal show={modalDiscount} onHide={handleModalCloseDiscount}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Atlaides</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                {discount && discount.map((discountItem) => (
+                                    <div className='flex border-b-2 border-gray-300'>
+                                        <div key={discountItem.id} className='w-full'>
+                                            <h5>Nosaukums: {discountItem.title}</h5>
+                                            <p>Procenti: {discountItem.type} %</p>
+                                            <p>Derīgs līdz: {discountItem.validUntil}</p>
+                                        </div>
+                                        <div className='flex items-center'>
+                                            <BsFillTrashFill
+                                                className='text-red-500 cursor-pointer mr-5'
+                                                rounded={false}
+                                                block={false}
+                                                iconOnly={false}
+                                                ripple="light"
+                                                onClick={() => handleRemoveDisc(discountItem._id)}
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </Modal.Body>
+                        </Modal>
+                        <div className='p-3'>
+                        <Button className='bg-orange w-[100%]' onClick={handleModalOpenCategory}>
+                            Apskatīt kategorijas
+                        </Button>
+                    </div>
+                    <Modal show={modalCategory} onHide={handleModalCloseCategory}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Kategorijas</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            {category && category.map(categoryItem => (
+                                <div className='flex border-b-2 border-gray-300'>
+                                    <div key={categoryItem.id} className='w-full'>
+                                        <h5>Nosaukums: {categoryItem.name}</h5>
+                                    </div>
+                                    <div className='flex items-center'>
+                                        <BsFillTrashFill
+                                            className='text-red-500 cursor-pointer mr-5'
+                                            rounded={false}
+                                            block={false}
+                                            iconOnly={false}
+                                            ripple="light"
+                                            onClick={() => handleRemove(categoryItem._id)}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                        </Modal.Body>
+                    </Modal>
                     </div>
                 </div>
-            </div>
-            <div className='flex w-full gap-4 mb-5'>
-                <div className=" border border-3 rounded-lg shadow-lg flex flex-col bg-white w-[32%]">
-                    {discount.map(item => (
-                        <div className='flex'>
-                            <div className="relative p-2 flex-auto border-b border-solid border-blueGray-200">
-                                <p>Nosaukums: {item.title}</p>
-                                <p>Procenti: {item.type}%</p>
-                                <p>Datums: {item.validUntil}</p>
-                            </div>
-                            <div className='flex items-center mr-5'>
-                                <BsFillTrashFill
-                                    className='text-red-500 cursor-pointer'
-                                    rounded={false}
-                                    block={false}
-                                    iconOnly={false}
-                                    ripple="light"
-                                    onClick={() => handleRemoveDisc(item._id)}
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <div className=" border border-3 rounded-lg shadow-lg flex flex-col bg-white w-[32%]">
-                    {category.map(item => (
-                        <div className='flex'>
-                            <div className="relative p-2 flex-auto border-b border-solid border-blueGray-200">
-                                <p>Nosaukums: {item.name}</p>
-                            </div>
-                            <div className='flex items-center mr-5'>
-                                <BsFillTrashFill
-                                    className='text-red-500 cursor-pointer'
-                                    rounded={false}
-                                    block={false}
-                                    iconOnly={false}
-                                    ripple="light"
-                                    onClick={() => handleRemove(item._id)}
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
             </div>
         </Container>
     )

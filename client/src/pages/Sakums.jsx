@@ -1,13 +1,16 @@
 import React from 'react'
 import Drebes1 from '../assets/drebes1.jpg';
-import Drebes2 from '../assets/drebes2.jpeg'
 import Drebes3 from '../assets/drebes3.jpeg'
 import Drebes4 from '../assets/drebes4.jpeg'
-import Drebes5 from '../assets/drebes5.jpeg'
+import Drebes5 from '../assets/drebes5.JPG'
 import { Carousel, Container } from 'react-bootstrap'
 import { Button } from "@material-tailwind/react"
 import { Link } from 'react-router-dom';
-
+import W from '../assets/categoryimages/W.JPG'
+import V from '../assets/categoryimages/V.JPG'
+import M from '../assets/categoryimages/M.JPG'
+import AK from '../assets/categoryimages/AK.png'
+import A from '../assets/categoryimages/A.JPG'
 
 const Saak = () => {
   return (
@@ -69,7 +72,7 @@ const Saak = () => {
         <div className='hidden lg:block md:block'>
           <div className='mt-5 flex flex-nowrap md:w-[100%] lg:w-full gap-4 mx-auto'>
             <div className='p-3 bg-[#fdedd5] rounded-xl shadow-md'>
-              <img src={Drebes2} alt="Sieviešu apģērbi" className='w-full h-auto mx-auto' />
+              <img src={W} alt="Sieviešu apģērbi" className='w-[100%] h-auto mx-auto' />
               <h1 className='text-lg sm:text-2xl text-center my-3'>
                 Sieviešu apģērbi
               </h1>
@@ -80,7 +83,7 @@ const Saak = () => {
               </Link>
             </div>
             <div className='p-3 bg-[#fdedd5] rounded-xl shadow-md'>
-              <img src={Drebes2} alt="Sieviešu apģērbi" className='' />
+              <img src={M} alt="Sieviešu apģērbi" className='w-[100%] h-auto' />
               <h1 className=' text-2xl text-center my-3'>
                 Vīriešu apģērbi
               </h1>
@@ -91,7 +94,7 @@ const Saak = () => {
               </Link>
             </div>
             <div className='p-3 bg-[#fdedd5] rounded-xl shadow-md'>
-              <img src={Drebes2} alt="Sieviešu apģērbi" className='' />
+              <img src={A} alt="Sieviešu apģērbi" className='w-[100%] h-auto' />
               <h1 className=' text-2xl text-center my-3'>
                 Apavi
               </h1>
@@ -102,9 +105,9 @@ const Saak = () => {
               </Link>
             </div>
           </div>
-          <div className='mb-5 mt-4 flex flex-nowrap lg:w-[65%] md:w-[70%] gap-4 mx-auto'>
-            <div className='p-3 bg-[#fdedd5] rounded-xl shadow-md'>
-              <img src={Drebes2} alt="Sieviešu apģērbi" className='' />
+          <div className='mb-5 mt-4 flex flex-nowrap lg:w-[70%] md:w-[70%] gap-4 mx-auto'>
+            <div className='p-3 bg-[#fdedd5] rounded-xl shadow-md w-[50%]'>
+              <img src={V} alt="Sieviešu apģērbi" className='w-[100%] h-auto' />
               <h1 className=' text-2xl text-center my-3'>
                 Veļa
               </h1>
@@ -114,8 +117,8 @@ const Saak = () => {
                 </Button>
               </Link>
             </div>
-            <div className='p-3 bg-[#fdedd5] rounded-xl shadow-md'>
-              <img src={Drebes2} alt="Sieviešu apģērbi" className='' />
+            <div className='p-3 bg-[#fdedd5] rounded-xl shadow-md w-[39%]'>
+              <img src={AK} alt="Sieviešu apģērbi" className='w-[100%] h-auto' />
               <h1 className=' text-2xl text-center my-3'>
                 Aksesuāri
               </h1>
@@ -131,7 +134,7 @@ const Saak = () => {
         <div className='lg:hidden md:hidden sm:block'>
           <div className='mt-4 grid grid-cols-2 gap-2'>
             <div className='p-3 bg-[#fdedd5] rounded-xl shadow-md'>
-              <img src={Drebes2} alt="Sieviešu apģērbi" className='w-full h-auto mx-auto' />
+              <img src={W} alt="Sieviešu apģērbi" className='w-full h-auto mx-auto' />
               <h1 className='text-lg sm:text-2xl text-center my-3'>
                 Sieviešu
               </h1>
@@ -142,7 +145,7 @@ const Saak = () => {
               </Link>
             </div>
             <div className='p-3 bg-[#fdedd5] rounded-xl shadow-md'>
-              <img src={Drebes2} alt="Sieviešu apģērbi" className='' />
+              <img src={M} alt="Sieviešu apģērbi" className='' />
               <h1 className=' text-2xl text-center my-3'>
                 Vīriešu
               </h1>
@@ -153,7 +156,7 @@ const Saak = () => {
               </Link>
             </div>
             <div className='p-3 bg-[#fdedd5] rounded-xl shadow-md'>
-              <img src={Drebes2} alt="Sieviešu apģērbi" className='' />
+              <img src={A} alt="Sieviešu apģērbi" className='' />
               <h1 className=' text-2xl text-center my-3'>
                 Apavi
               </h1>
@@ -164,7 +167,7 @@ const Saak = () => {
               </Link>
             </div>
             <div className='p-3 bg-[#fdedd5] rounded-xl shadow-md'>
-              <img src={Drebes2} alt="Sieviešu apģērbi" className='' />
+              <img src={V} alt="Sieviešu apģērbi" className='' />
               <h1 className=' text-2xl text-center my-3'>
                 Veļa
               </h1>
@@ -177,7 +180,7 @@ const Saak = () => {
           </div>
           <div className='mx-auto w-[50%] mt-2 mb-5'>
             <div className='p-3 bg-[#fdedd5] rounded-xl shadow-md'>
-              <img src={Drebes2} alt="Sieviešu apģērbi" className='' />
+              <img src={AK} alt="Sieviešu apģērbi" className='' />
               <h1 className=' text-2xl text-center my-3'>
                 Aksesuāri
               </h1>

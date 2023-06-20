@@ -15,7 +15,6 @@ const User = mongoose.model("UserInfo")
 
 const schema = new passwordValidator();
 
-
 schema
     .is().min(8)
     .is().max(100)
@@ -23,14 +22,12 @@ schema
     .has().lowercase()
     .has().digits()
     .has().not().spaces()
-    .is().not().oneOf(['Passw0rd', 'Password123']);
-
-// routes
+    .is().not().oneOf(['Passw0rd', 'Password123', 'Parole', 'Password']);
 
 // register
 router.post("/register", async (req, res) => {
-    const { username, email, password, userType } = req.body
-    // Validate input fields
+    const { username, name, lastname, email, company, password, userType } = req.body
+    
     if (!validator.isEmail(email)) {
         return res.status(400).json({ error: "Invalid email" });
     }
@@ -43,12 +40,19 @@ router.post("/register", async (req, res) => {
     }
     try {
         const oldUser = await User.findOne({ email })
+        const oldUserCompany = await User.findOne({ company })
         if (oldUser) {
             return res.status(409).json({ error: "User with email already exists" });
         }
+        if (oldUserCompany) {
+            return res.status(409).json({ error: "User with company already exists" });
+        }
         await User.create({
             username,
+            name,
+            lastname,
             email,
+            company,
             password: await bcrypt.hash(password, 10),
             userType,
         })
@@ -66,12 +70,12 @@ router.post("/login", async (req, res) => {
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ error: "Invalid email or password" });
+            return res.status(400).json({ error: "Nepareizs e-pasts vai parole" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ error: "Invalid email or password" });
+            return res.status(400).json({ error: "Nepareizs e-pasts vai parole" });
         }
 
         const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
@@ -91,7 +95,7 @@ router.post("/userData", async (req, res) => {
     try {
         const user = jwt.verify(token, process.env.JWT_SECRET);
         const useremail = user.email;
-        const userData = await User.findOne({ email: useremail }, "_id username email userType");
+        const userData = await User.findOne({ email: useremail }, "_id username name lastname email company userType");
         res.send({ status: "OK", data: { userId: userData._id, ...userData._doc } });
     } catch (error) {
         console.error(error.message);
@@ -105,7 +109,7 @@ router.post("/forgot-password", async (req, res) => {
     try {
         const oldUser = await User.findOne({ email });
         if (!oldUser) {
-            return res.json({ status: "User Not Exists!!" });
+            return res.json({ status: "Lietotājs neeksistē!" });
         }
         const secret = process.env.JWT_SECRET + oldUser.password;
         const token = jwt.sign({ email: oldUser.email, id: oldUser._id }, secret, {
@@ -123,7 +127,7 @@ router.get("/reset-password/:id/:token", async (req, res) => {
     console.log(req.params);
     const oldUser = await User.findOne({ _id: id });
     if (!oldUser) {
-        return res.json({ status: "User Not Exists!!" });
+        return res.json({ status: "Lietotājs neeksistē!" });
     }
     const secret = process.env.JWT_SECRET + oldUser.password;
     try {
@@ -142,9 +146,13 @@ router.post("/reset-password/:id/:token", async (req, res) => {
 
     const oldUser = await User.findOne({ _id: id });
     if (!oldUser) {
-        return res.json({ status: "User Not Exists!!" });
+        return res.json({ status: "Lietotājs neeksistē!" });
     }
     const secret = process.env.JWT_SECRET + oldUser.password;
+    const isValidPassword = schema.validate(password, { list: true });
+    if (isValidPassword.length > 0) {
+        return res.status(400).json({ error: "Invalid password. Password requirements: " + isValidPassword.join(", ") });
+    }
     try {
         const verify = jwt.verify(token, secret);
         const encryptedPassword = await bcrypt.hash(password, 10);
@@ -182,7 +190,7 @@ router.post("/deleteUser", async (req, res) => {
         User.deleteOne({ _id: userid }, function (err, res) {
             console.log(err);
         });
-        res.send({ status: "OK", data: "Deleted" });
+        res.send({ status: "OK" });
     } catch (error) {
         console.log(error);
     }
@@ -197,11 +205,8 @@ router.patch("/:id", async (req, res) => {
         if (req.body.email) {
             user.email = req.body.email;
         }
-        if (req.body.password) {
-            user.password = req.body.password;
-        }
         await user.save();
-        res.status(200).json({ message: "User updated", user });
+        res.status(200).json({ message: "Lietotājs atjaunots", user });
     } catch (err) {
         res.status(400).json(`Error: ${err}`);
     }

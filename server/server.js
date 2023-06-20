@@ -31,6 +31,7 @@ const DiscountRoute = require('./routes/DiscountRoute');
 const OrderRoute = require('./routes/OrderRoute');
 const RatingRoute = require('./routes/RatingRoute')
 
+
 // user routes
 app.use('/', UserRoute);
 app.use('/products', ProductRoute);

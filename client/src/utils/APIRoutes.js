@@ -1,4 +1,4 @@
-export const host = "http://localhost:8080";
+export const host = "https://kd-back.onrender.com";
 export const loginR = `${host}/login`;
 export const registerR = `${host}/register`;
 export const userR = `${host}/userData`;
@@ -11,7 +11,9 @@ export const Category = `${host}/category/category`;
 export const CategoryId = `${host}/category`;
 export const CartR = `${host}/cart`;
 export const CartA = `${host}/cart/add`;
+export const Discount = `${host}/d`;
 export const DiscountA = `${host}/d/discountAll`;
 export const DiscountAdd = `${host}/d/discount`;
 export const OrderP = `${host}/order/order`;
 export const OrderG = `${host}/order`;
+export const RatingP = `${host}/rating/rating`;

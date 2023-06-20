@@ -29,7 +29,7 @@ const Prof = () => {
                                 <label className="block uppercase tracking-wide text-gray-700 text-md">
                                     <FloatingLabel
                                         controlId="floatingInput"
-                                        label="E-MAIL"
+                                        label="E-pasts"
                                         className="mb-3"
                                     >
                                         <Form.Control
@@ -48,7 +48,7 @@ const Prof = () => {
                                 <label className="block uppercase tracking-wide text-gray-700 text-md mb-2">
                                     <FloatingLabel
                                         controlId="floatingInput"
-                                        label="password"
+                                        label="Parole"
                                         className="mb-3"
                                     >
                                         <Form.Control

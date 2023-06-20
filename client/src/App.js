@@ -14,10 +14,8 @@ import Kontakti from './pages/Kontakti';
 import Registreties from './components/Registreties';
 import Pieslegties from './components/Pieslegties';
 import ParolesMaina from './pages/ParolesMaina';
-import Profils from './pages/Profils';
 import Grozs from './pages/Cart';
 import UserDetails from './components/userDetails';
-import AdminPage from '../src/admin/AdminPage';
 import AdminUserBoard from '../src/admin/AdminUserBord';
 import AdminProducts from '../src/admin/AdminProducts'
 import AdminFunctions from '../src/admin/AdminFunctions'
@@ -27,8 +25,6 @@ import Product from './pages/Product';
 import NF from './components/404';
 import Add from './components/Pasutijums';
 
-
-import PD from './product/prod'
 function App() {
 
   const [loggedIn, setLoggedIn] = useState(false);
@@ -58,8 +54,7 @@ function App() {
           <Route path="/Pieslegties" element={loggedIn ? (<Sakums />) : (<Pieslegties />)} />
           <Route path="/ParolesMaina" element={loggedIn ? (<Sakums />) : (<ParolesMaina />)} />
           <Route path="/Grozs" element={loggedIn ? (<Grozs />) : (<Sakums />)} />
-          <Route path="/Profils" element={loggedIn ? (<UserDetails />) : (<Sakums />)} />
-          <Route path="/AdminPage" element={isAdmin &&  <AdminPage />} />
+          <Route path="/userData" element={loggedIn ? (<UserDetails />) : (<Sakums />)} />
           <Route path="/AdminUserBoard" element={isAdmin && <AdminUserBoard />} />
           <Route path="/AdminProducts" element={isAdmin &&  <AdminProducts />} />
           <Route path="/AdminFunctions" element={isAdmin && <AdminFunctions />} />
@@ -70,7 +65,6 @@ function App() {
           <Route path="*" element={<Navigate to="/" />} />
 
           <Route path="/Add" element={<Add />} />
-          <Route path="/PD" element={<PD />} />
         </Routes>
       </div>
 

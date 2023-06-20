@@ -123,6 +123,7 @@ const AdminOrderPage = () => {
                                                         axios.patch(`${OrderG}/${order._id}/status`, { status: newStatus })
                                                             .then((res) => {
                                                                 toast("Status tika izmainīts")
+                                                                window.location.reload();
                                                             })
                                                             .catch((err) => {
                                                                 toast("Status netika izmainīts")

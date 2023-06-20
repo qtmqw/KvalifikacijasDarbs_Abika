@@ -1,31 +1,17 @@
 // import modules
 const express = require("express");
 const router = express.Router();
-const multer = require("multer")
 const Product = require("../models/Produkti");
 const Category = require("../models/Kategorijas");
 const Discount = require("../models/Atlaide");
-
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, '../client/public/uploads')
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname)
-    }
-})
-const upload = multer({ storage: storage })
-
 
 // get all products
 router.get("/", async (req, res) => {
     try {
         let products = await Product.find().populate('category').populate('discount');
 
-        // Check if color query parameter exists
         if (req.query.color) {
-            const color = req.query.color; // convert color to lowercase
+            const color = req.query.color;
             products = products.filter(product => product.color.some(c => c.toLowerCase() === color.toLowerCase()));
         }
 
@@ -35,15 +21,9 @@ router.get("/", async (req, res) => {
     }
 });
 
-
-// add product
-router.post("/", upload.single("image"), async (req, res) => {
+router.post("/", async (req, res) => {
     try {
-        const { title, description, color, size, price, categoryIds, discount } = req.body;
-
-        if (!req.file) { // check if req.file exists
-            return res.status(400).json({ message: "Image file not provided" });
-        }
+        const { image, title, description, color, size, price, categoryIds } = req.body;
 
         if (!categoryIds) {
             return res.status(400).json({ message: "Category IDs not provided" });
@@ -55,9 +35,7 @@ router.post("/", upload.single("image"), async (req, res) => {
             return res.status(400).json({ message: "Category not found" });
         }
 
-        const image = req.file.originalname;
-
-        const product = new Product({
+        const product = {
             image,
             title,
             description,
@@ -65,15 +43,14 @@ router.post("/", upload.single("image"), async (req, res) => {
             size,
             price,
             category: categories,
-            discount
-        });
-        await product.save();
-
-        res.json(product);
+        };
+        const newProduct = await Product.create(product);
+        res.status(201).json(newProduct);
     } catch (err) {
-        res.status(400).json(`Error: ${err}`);
+        res.status(400).json({ error: err.message });
     }
 });
+
 
 // get product by id
 router.get("/:id", async (req, res) => {
@@ -88,14 +65,37 @@ router.get("/:id", async (req, res) => {
 // edit product
 router.put("/:id", async (req, res) => {
     try {
-        const product = await Product.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true }
-        );
+        const { id } = req.params;
+        const { image, title, description, color, size, price, categoryIds } = req.body;
+
+        if (!categoryIds) {
+            return res.status(400).json({ message: "Category IDs not provided" });
+        }
+
+        const categoryIdsArray = categoryIds.split(",");
+        const categories = await Category.find({ _id: { $in: categoryIdsArray } });
+        if (categories.length !== categoryIdsArray.length) {
+            return res.status(400).json({ message: "Category not found" });
+        }
+
+        const updatedProduct = {
+            image,
+            title,
+            description,
+            color,
+            size,
+            price,
+            category: categories,
+        };
+
+        const product = await Product.findByIdAndUpdate(id, updatedProduct, { new: true });
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
         res.json(product);
     } catch (err) {
-        res.status(400).json(`Error: ${err}`);
+        res.status(400).json({ error: err.message });
     }
 });
 
@@ -124,6 +124,25 @@ router.patch("/:id", async (req, res) => {
     }
 });
 
+router.patch("/q/:id", async (req, res) => {
+    try {
+        const { quantity } = req.body;
+
+        if (quantity < 0 || quantity > 1000 || quantity % 1) {
+            throw new Error("Invalid quantity value");
+        }
+        const product = await Product.findByIdAndUpdate(
+            req.params.id,
+            { quantity },
+            { new: true }
+        );
+        await product.save();
+        res.json(product);
+    } catch (err) {
+        res.status(400).json(`Error: ${err}`);
+    }
+});
+
 // delete product
 router.delete("/:id", async (req, res) => {
     try {
@@ -139,7 +158,7 @@ router.post("/search", async (req, res) => {
     try {
         const { search } = req.body;
         const products = await Product.find({
-            title: { $regex: search, $options: "i" },
+            title: { $regex: `^${search}`, $options: "i" },
         });
         res.json(products);
     } catch (err) {

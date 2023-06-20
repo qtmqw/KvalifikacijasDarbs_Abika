@@ -6,16 +6,27 @@ const UserSchemaDetails = new mongoose.Schema(
             type: String,
             required: true,
         },
+        name: { 
+            type: String, 
+            required: true
+        },
+        lastname: { 
+            type: String, 
+            required: true
+        },
         email: {
             type: String,
             required: true,
             unique: true
         },
+        company: { 
+            type: String, 
+            required: true
+        },
         password: {
             type: String,
             required: true,
         },
-
         userType: {
             type: String,
             enum: ["Admin", "User"],
